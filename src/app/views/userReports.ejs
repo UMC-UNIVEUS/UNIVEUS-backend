@@ -1,0 +1,101 @@
+<!-- <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
+    <title>유저 신고 관리</title>
+  </head>
+  <body>
+      <%- include('nav.html') %>
+
+      <div class = "container">
+      <ul class="list-group list-group-flush">
+        <% for (let i = 0; i < userReports.length; i++) { %>
+        <li class="list-group-item">
+        <h3>신고자</h3> 
+        <p>닉네임 : <%=userReports[i].reporter.nickname%></p>
+        <p>이메일 : <%=userReports[i].reporter.email_id%></p>
+        <p>전화번호 : <%=userReports[i].reporter.phone%></p>  
+        <p>학과 : <%=userReports[i].reporter.major%></p>
+        <p>학번 : <%=userReports[i].reporter.class_of%></p>
+        <p>성별 : <%= userReports[i].reportedUser.gender === 1 ? "남자" : "여자" %></p>
+
+        <h3>신고 내용</h3>
+        <p>신고일 : <%=userReports[i].reportsUserResult.reported_at%></p>
+        <p>신고 사유(불건전한 언행) : <%=userReports[i].reportsUserResult.reason_category1 === 1? "O" : "X" %></p>
+        <p>신고 사유(불건전한 프로필) : <%=userReports[i].reportsUserResult.reason_category2 === 1? "O" : "X" %></p>
+        <p>신고 사유(광고 홍보성 게시글) : <%=userReports[i].reportsUserResult.reason_category3 === 1? "O" : "X" %></p>
+        <p>신고 사유(부적절한 이미지) : <%=userReports[i].reportsUserResult.reason_category4 === 1? "O" : "X" %></p>
+        <p>신고 사유(기타) : <%=userReports[i].reportsUserResult.reason_category5 === 1? "O" : "X" %></p>
+        <p>신고 사유 상세 : <%=userReports[i].reportsUserResult.reason_text%></p>
+        <p>신고 상태 : <%=userReports[i].reportsUserResult.report_status%></p>
+
+        <h3>피신고인</h3>
+        <p>닉네임 : <%=userReports[i].reportedUser.nickname%></p>
+        <p>이메일 : <%=userReports[i].reportedUser.email_id%></p>
+        <p>전화번호 : <%=userReports[i].reportedUser.phone%></p>  
+        <p>학과 : <%=userReports[i].reportedUser.major%></p>
+        <p>학번 : <%=userReports[i].reportedUser.class_of%></p>
+        <p>성별 : <%= userReports[i].reportedUser.gender === 1 ? "남자" : "여자" %></p>
+        <p>누적 신고 수 : <%=userReports[i].reportedUser.reported_num%></p>
+        
+        <% if (userReports[i].reportsUserResult.report_status === 0) { %>
+            <button class="block btn btn-dark" data-user="<%=userReports[i].reportedUser.user_id%>" 
+                data-report="<%=userReports[i].reportsUserResult.user_report_id%>"
+                type="button">유저 제재</button>
+        <% } else if (userReports[i].reportsUserResult.report_status === 1) { %>
+            <button type="button" data-user="<%=userReports[i].reportedUser.user_id%>" 
+                data-report="<%=userReports[i].reportsUserResult.user_report_id%>"
+                class="free btn btn-info">유저 제재 해제</button>
+        <% } else { %>
+            <p style="color: red;">처리 완료된 신고 - 더 이상 조치가 필요하지 않습니다.</p>
+        <% } %>        
+    </li>
+        <% }%>
+      </ul>
+
+      </div>
+
+      <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+      <script>
+        $('.block').click((e)=> {
+        let userId = e.target.dataset.user;
+        let reportId = e.target.dataset.report;
+        window.location.href = `/admin/user/block/${reportId}/${userId}`;
+      });
+
+
+      $('.free').click((e)=> {
+        let userId = e.target.dataset.user;
+        let reportId = e.target.dataset.report;
+
+        fetch(`/admin/user/block/free/${reportId}/${userId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId }) // userId를 JSON 형식으로 전송
+        })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('서버 응답이 실패했습니다.');
+          }
+          return response.json();
+        })
+        .then((data) => {
+            window.location.reload();
+        })
+        .catch((error) => {
+          console.error('에러:', error);
+        });
+      });
+      </script>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+  </body>
+</html> -->
