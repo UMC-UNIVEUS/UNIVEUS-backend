@@ -1,6 +1,7 @@
 # 협업 규칙
 
 archivvonjang님의 [블로그](https://velog.io/@archivvonjang/Git-Commit-Message-Convention) 를 참고하여 정리하였습니다.
+<br/>
 
 ## Commit Message Convention
 
