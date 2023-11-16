@@ -39,7 +39,7 @@ export const baseResponse = {
     POST_POSTID_NOT_EXIST : { "isSuccess": false, "code": 3000, "message": "해당 게시글이 존재하지 않습니다." },
     POST_TITLE_LENGTH : { "isSuccess": false, "code": 3001, "message": "제목은 최대 48자리를 입력해주세요." },
     POST_LOCATION_LENGTH : { "isSuccess": false, "code": 3002, "message": "모임장소는 최대 24자리를 입력해주세요." },
-    POST_PEOPLE_LIMIT : { "isSuccess": false, "code": 3003, "message": "제한 인원은 4명 OR 6명만 가능합니다." },
+    POST_PEOPLE_LIMIT : { "isSuccess": false, "code": 3003, "message": "제한 인원은 1명 - 5명만 가능합니다." },
     POST_CATEGORY_LIMIT : { "isSuccess": false, "code": 3004, "message": "축제 기간에는 '축제' 카테고리만 가능합니다." },
     POST_INFORMATION_EMPTY : { "isSuccess": false, "code": 3005, "message": "미입력된 항목이 있습니다." },
     POST_CONTENT_LENGTH : { "isSuccess": false, "code": 3006, "message": "소개글은 최대 500자리를 입력해주세요." },

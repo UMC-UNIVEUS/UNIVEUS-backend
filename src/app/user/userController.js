@@ -35,6 +35,7 @@ export const login = async(req, res) => {
     const accessToken = jwt.sign({ userEmail : userEmail }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '7days', issuer : 'univeus' })    
 
     if(!accessToken) return res.send(errResponse(baseResponse.VERIFIED_ACCESS_TOKEN_EMPTY));
+
     
     if (!await isUser(userEmail)) {
         createUser(userEmail);

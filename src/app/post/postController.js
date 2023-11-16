@@ -4,9 +4,9 @@ import {baseResponse, response, errResponse} from "../../../config/response";
 import { retrievePost, retrieveParticipant, retrievePostImages, retrieveParticipantList, formatingEndDate, formatingMeetingDate, formatingCreatedAt, isValidOpenChat} from "./postProvider";
 import { createPost, createPostImage, editPost,patchPostImage, removePost, addScrap, addLike, 
     applyParticipant, registerParticipant, refuseParticipant,
-    addOneDayAlarm, applyUniveus,closeUniveus, inviteOneParticipant
+    addOneDayAlarm, applyUniveus,closeUniveus
     ,changePostStatus, removeParticipant,changeStatus, changeCurrentPeople } from "./postService";
-import {getUserIdByEmail, getUserByNickName, getUserById, getIsParticipateOtherById, getParticipateAvailable} from "../user/userProvider";
+import {getUserIdByEmail, getUserByNickName, getUserById, getParticipateAvailable} from "../user/userProvider";
 import { sendCreatePostMessageAlarm, sendParticipantMessageAlarm, sendCancelMessageAlarm} from "../user/userController"
 import { changeParticipateAvailable, returnParticipateAvailable } from "../user/userService";
 
@@ -58,25 +58,20 @@ export const getPost = async(req, res) => {
  * POST: /post
  */
 export const postPost = async(req, res) => {
-
     
-    const {category, limit_gender, limit_people, location, meeting_date, openchat, 
-        end_date, title, content, images, invited_userNickNames } = req.body; // 축제용 >> limit_gender, invited_userNickNames
-    const notUndefined = [category, limit_gender, limit_people, location, meeting_date, openchat, 
-        end_date, title, content,invited_userNickNames]; // 빠지면 안될 정보들
+    const {category, limit_gender, limit_people, location, meeting_date, 
+        confirmation_method, title, content, images } = req.body; // 축제용 >> limit_gender, invited_userNickNames
+    const notUndefined = [category, limit_gender, limit_people, location, meeting_date, 
+        confirmation_method, title, content]; // 빠지면 안될 정보들
     const userEmail = req.verifiedToken.userEmail;
     const userIdFromJWT = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID (작성자 id) 
-
     
     for(let i = 0; i < notUndefined.length; i++){
         if(notUndefined[i] == null){
             return res.send(errResponse(baseResponse.POST_INFORMATION_EMPTY));
         } 
-    }
-    if(category != 4){ // 축제용 조건문
-        return res.send(errResponse(baseResponse.POST_CATEGORY_LIMIT));
-    }    
-    if(limit_people != 4 && limit_people != 6){ // 축제용 조건문
+    } 
+    if(limit_people <  1 || limit_people > 5){
         return res.send(errResponse(baseResponse.POST_PEOPLE_LIMIT));
     }    
     if(location.length > 24){
@@ -85,97 +80,17 @@ export const postPost = async(req, res) => {
     if(title.length > 48){ 
         return res.send(errResponse(baseResponse.POST_TITLE_LENGTH));
     }
-    if(content.length > 500){ // 축제용 조건문
+    if(content.length > 500){
         return res.send(errResponse(baseResponse.POST_CONTENT_LENGTH));
     }
-    if(invited_userNickNames.length == 0){ // 아무도 초대하지 않았는데 초대하기 눌렀을 때
-        return res.send(errResponse(baseResponse.POST_INVITE_EMPTY)); 
-    }
 
-    if(limit_people == 4) { // 축제용 조건문
+    const postPostResult = await createPost(userIdFromJWT, category, limit_gender, limit_people + 1, location, meeting_date, 
+                    end_date, title,images[0], content, confirmation_method);
 
-        if (invited_userNickNames[0] == "") return res.send(errResponse(baseResponse.POST_INVITE_EMPTY));
-
-        if (invited_userNickNames.length != 1) return res.send(errResponse(baseResponse.POST_PARTICIPATE_ONLY_ONE));    
-         // 초대 가능 인원 수는 1명
-        const participant = await getUserByNickName(invited_userNickNames[0]); // 닉네임으로 유저 전체 정보 얻기
-
-        if (typeof participant == "undefined") return res.send(errResponse(baseResponse.POST_PARTICIPANT_NOT_EXIST));      
-
-        if (userIdFromJWT == participant.user_id) return res.send(errResponse(baseResponse.POST_PARTICIPANT_INVITEE_OVERLAP));   
-
-        if (await getParticipateAvailable(userIdFromJWT) == 0) return res.send(errResponse(baseResponse.USER_ALREADY_PARTICIPATE));
-
-        if (await getParticipateAvailable(participant.user_id) == 0) return res.send(errResponse(baseResponse.USER_ALREADY_PARTICIPATE));
-
-        const postPostResult = await createPost(userIdFromJWT, category, limit_gender, limit_people, location, meeting_date, openchat, 
-                        end_date, title,images[0], content);
-
-        if(typeof images != "undefined") await createPostImage(images,postPostResult.insertId); 
-
-
-        await inviteOneParticipant(postPostResult.insertId, participant.user_id, userIdFromJWT);
-
-        // TODO :  user 테이블의 participate-available 0으로 만들어주기
-        await changeParticipateAvailable(participant.user_id);
-        await changeParticipateAvailable(userIdFromJWT);
-
-        await sendCreatePostMessageAlarm(userIdFromJWT, postPostResult.insertId, participant); // 작성 알림 (to 작성자, 초대 받은 사람) 
-
-        return res.send(response(baseResponse.SUCCESS, `생성된 post_id = ${postPostResult.insertId}`)); // 성공   
-    }
-
-    if (limit_people == 6) {   
-
-        if (invited_userNickNames[0] == "") return res.send(errResponse(baseResponse.POST_INVITE_EMPTY));
-
-        if (invited_userNickNames[1] == "") return res.send(errResponse(baseResponse.POST_INVITE_EMPTY));
-
-        if (invited_userNickNames.length != 2) return res.send(errResponse(baseResponse.POST_PARTICIPATE_ONLY_TWO));    
-
-        const participant1 = await getUserByNickName(invited_userNickNames[0]); 
-
-        if (typeof participant1 == "undefined") return res.send(errResponse(baseResponse.USER_FIRST_NOT_EXIST));      
-
-        const participant2 = await getUserByNickName(invited_userNickNames[1]); 
-
-        if (typeof participant2 == "undefined") return res.send(errResponse(baseResponse.USER_SECOND_NOT_EXIST));        
-
-        if (userIdFromJWT == participant1.user_id || userIdFromJWT == participant2.user_id) return res.send(errResponse(baseResponse.POST_PARTICIPANT_INVITEE_OVERLAP));           
-                    
-        if (participant1.user_id == participant2.user_id) return res.send(errResponse(baseResponse.POST_PARTICIPANT_NOT_OVERLAP));
-
-        if (await getParticipateAvailable(userIdFromJWT) == 0) return res.send(errResponse(baseResponse.USER_ALREADY_PARTICIPATE));
-
-        if (await getParticipateAvailable(participant1.user_id) == 0) return res.send(errResponse(baseResponse.USER_ALREADY_PARTICIPATE));
-
-        if (await getParticipateAvailable(participant2.user_id) == 0) return res.send(errResponse(baseResponse.USER_ALREADY_PARTICIPATE));
-
-        const participants = [participant1, participant2]
-
-        const postPostResult = await createPost(userIdFromJWT, category, limit_gender, limit_people, location, meeting_date, openchat, 
-            end_date, title,images[0], content);
-
-        if (typeof images != "undefined") await createPostImage(images,postPostResult.insertId);
-
-
-        await inviteOneParticipant(postPostResult.insertId, participant1.user_id, userIdFromJWT);
-
-        await inviteOneParticipant(postPostResult.insertId, participant2.user_id, userIdFromJWT);
-
-        // TODO :  user 테이블의 participate-available 0으로 만들어주기
-        await changeParticipateAvailable(participant1.user_id);
-
-        await changeParticipateAvailable(participant2.user_id);
-
-        await changeParticipateAvailable(userIdFromJWT);
-
-        await sendCreatePostMessageAlarm(userIdFromJWT, postPostResult.insertId, participants); // 작성 알림 (to 작성자, 초대 받은 사람) 
-
-        return res.send(response(baseResponse.SUCCESS, `생성된 post_id = ${postPostResult.insertId}`)); // 성공
-
-        }
-    }
+    if(typeof images != "undefined") await createPostImage(images,postPostResult.insertId); 
+    // await sendCreatePostMessageAlarm(userIdFromJWT, postPostResult.insertId, participant); // 작성 알림 (to 작성자, 초대 받은 사람
+    return res.send(response(baseResponse.SUCCESS, `생성된 post_id = ${postPostResult.insertId}`)); // 성공   
+}
 
 /**
  * API name : 게시글 수정
@@ -638,13 +553,3 @@ export const postImage = async(req, res) => {
     if (!fileResponse) return res.send(errResponse(baseResponse.S3_ERROR));
     return res.send(response(baseResponse.SUCCESS, fileResponse));
 };
-
-/** kakao 오픈채팅링크 유효성 검사 */
-export const validateOpentChatLink =  async(req, res) => {
-    const openChaturi = req.body.openChaturi;
-
-    if (isValidOpenChat(openChaturi)) {
-        return res.send(response(baseResponse.SUCCESS));
-    }
-    return res.send(errResponse(baseResponse.OPEN_CHAT_URI_NOT_VALID));
-}
