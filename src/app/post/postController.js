@@ -92,6 +92,7 @@ export const postPost = async(req, res) => {
     return res.send(response(baseResponse.SUCCESS, `생성된 post_id = ${postPostResult.insertId}`)); // 성공   
 }
 
+
 /**
  * API name : 게시글 수정
  * PATCH: /post/{post_id} 
@@ -432,7 +433,7 @@ export const participateUniveus = async(req, res) => {
         await changeParticipateAvailable(userIdFromJWT);
 
         const MessageAlarmList = [Writer, [alreadyParticipant], Invitee, [guest]];
-        await sendParticipantMessageAlarm(post_id, MessageAlarmList); //게시글 참여 시 문자 알림 (to old 참여자, new 참여자)
+        //await sendParticipantMessageAlarm(post_id, MessageAlarmList); //게시글 참여 시 문자 알림 (to old 참여자, new 참여자)
         return res.send(response(baseResponse.SUCCESS));          
     }  
 
@@ -502,7 +503,7 @@ export const participateUniveus = async(req, res) => {
         await changeParticipateAvailable(userIdFromJWT);
 
         const MessageAlarmList = [Writer, [alreadyParticipant1, alreadyParticipant2], Invitee, [guest1, guest2]];
-        await sendParticipantMessageAlarm(post_id, MessageAlarmList); //게시글 참여 시 문자 알림 (to old 참여자, new 참여자)
+        //await sendParticipantMessageAlarm(post_id, MessageAlarmList); //게시글 참여 시 문자 알림 (to old 참여자, new 참여자)
 
         return res.send(response(baseResponse.SUCCESS));
         }  
