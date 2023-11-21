@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import {baseResponse, response, errResponse} from "../../../config/response";
-import { retrievePost, retrieveParticipant, retrievePostImages, retrieveParticipantList, formatingEndDate, formatingMeetingDate, formatingCreatedAt, isValidOpenChat} from "./postProvider";
+import { retrievePost, retrieveParticipant, retrievePostImages, retrieveParticipantList, formatingEndDate, formatingMeetingDate, formatingCreatedAt } from "./postProvider";
 import { createPost, createPostImage, editPost,patchPostImage, removePost, addScrap, addLike, 
     applyParticipant, registerParticipant, refuseParticipant,
     addOneDayAlarm, applyUniveus,closeUniveus
@@ -54,8 +54,9 @@ export const getPost = async(req, res) => {
 };
 
 /**
- * API name : 게시글 작성 >> 넘어온 데이터 형식에 따라 모임, 마감 시간 저장할 방식 수정해야 함
+ * API name : 게시글 작성
  * POST: /post
+ * 수정 by yuze
  */
 export const postPost = async(req, res) => {
     
@@ -85,7 +86,7 @@ export const postPost = async(req, res) => {
     }
 
     const postPostResult = await createPost(userIdFromJWT, category, limit_gender, limit_people + 1, location, meeting_date, 
-                    end_date, title,images[0], content, confirmation_method);
+                     title,images[0], content, confirmation_method);
 
     if(typeof images != "undefined") await createPostImage(images,postPostResult.insertId); 
     // await sendCreatePostMessageAlarm(userIdFromJWT, postPostResult.insertId, participant); // 작성 알림 (to 작성자, 초대 받은 사람
