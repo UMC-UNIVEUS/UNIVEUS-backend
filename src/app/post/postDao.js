@@ -35,9 +35,9 @@ export const selectParticipant = async(connection, post_id)=>{ // 참여자 목�
 export const insertPost = async(connection, insertPostParams)=>{// 게시글 생성 + 게시글 참여자 테이블 생성
     const postPostQuery = `
         INSERT INTO post(user_id, category, limit_gender, current_people, limit_people, location, 
-        meeting_date, openchat, end_date, title, main_img,
-        content, created_at, post_status) 
-        VALUES (?,?,?,1,?,?, ?,?,?,?,?, ?,now(), "recruiting");
+        meeting_date, title, main_img,
+        content, created_at, post_status, confirmation_method) 
+        VALUES (?,?,?,1,?,?,?,?,?,?,now(), "recruiting", ?);
     `;
 
     const postParticipantTableQuery = `
@@ -45,7 +45,7 @@ export const insertPost = async(connection, insertPostParams)=>{// 게시글 생
         VALUES (?,?,"writer");
     `;
     const insertPostRow = await connection.query(postPostQuery, insertPostParams);
-    const postParticipantTableRow = await connection.query(postParticipantTableQuery, [insertPostParams[0],insertPostRow[0].insertId]);
+    const postParticipantTableRow = await connection.query(postParticipantTableQuery, [insertPostParams[0], insertPostRow[0].insertId]);
     //insertPostRow.insertId는 생성된 post의 post_id, insertPostParams[0]는 user_id
     return insertPostRow[0];
 };
@@ -225,28 +225,6 @@ export const insertUniveus = async(connection, insertParticipantParams)=>{// 유
     const postUniveusRow = await connection.query(postUniveusQuery, insertParticipantParams);
     const addCurrentPeopleRow = await connection.query(addCurrentPeopleQuery, insertParticipantParams[0]);
     const applyParticipantAlarmRow = await connection.query(applyParticipantAlarmQuery, insertParticipantParams);
-};
-
-export const addParticipant = async(connection, askParticipantParams)=>{// 유니버스 초대 (언젠간 쓰일 예정...)
-    const postParticipantQuery = `
-        INSERT INTO participant_users(post_id, user_id, status) 
-        VALUES (?,?, "complete(invite)");
-    `;
-
-    const addCurrentPeopleQuery = `
-        UPDATE post 
-        SET current_people = current_people + 1
-        WHERE post_id = ?;
-    `;
-
-    const inviteParticipantAlarmQuery = `
-        INSERT INTO alarm(post_id, participant_id, user_id, alarm_type) 
-        VALUES (?,?,?,"invite_alarm");
-    `;
-
-    const postParticipantRow = await connection.query(postParticipantQuery, askParticipantParams);
-    const addCurrentPeopleRow = await connection.query(addCurrentPeopleQuery, askParticipantParams[0]);
-    const inviteParticipantAlarmRow = await connection.query(inviteParticipantAlarmQuery, askParticipantParams);
 };
 
 export const blockUniveus = async(connection, closeUniveusParams)=>{ // 모집 마감

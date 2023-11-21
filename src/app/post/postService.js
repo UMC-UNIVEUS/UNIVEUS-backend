@@ -4,14 +4,14 @@
 import pool from "../../../config/database";
 import { insertPost, insertPostImages, updatePost, updatePostImages, erasePost, insertScrap, insertLike,
      insertParticipant, updateParticipant,deleteParticipant, insertUniveus, 
-     addParticipant,blockUniveus, switchPostStatus, eraseParticipant,
+     blockUniveus, switchPostStatus, eraseParticipant,
      updateStatus, updateCurrentPeople } from "./postDao";
 
-export const createPost = async(userIdFromJWT, category, limit_gender, limit_people, location, meeting_date, openchat, 
-    end_date, title, main_img, content) =>{
+export const createPost = async(userIdFromJWT, category, limit_gender, limit_people, location, meeting_date, 
+    title, main_img, content, confirmation_method) =>{
  
-    const insertPostParams =[userIdFromJWT, category, limit_gender, limit_people, location, meeting_date, openchat, 
-    end_date, title, main_img,content]; 
+    const insertPostParams =[userIdFromJWT, category, limit_gender, limit_people, location, meeting_date, 
+    title, main_img, content, confirmation_method]; 
 
     const connection = await pool.getConnection(async conn => conn);
     const createpostResult = await insertPost(connection,insertPostParams);
@@ -119,14 +119,6 @@ export const applyUniveus = async(post_id, participant_id) =>{// 유니버스 �
     connection.release();
 };
 
-export const inviteOneParticipant = async(post_id, participant_userID, user_id) =>{// 유니버스 초대 (축제용)
-
-    const askParticipantParams =[post_id,participant_userID, user_id]; 
-
-    const connection = await pool.getConnection(async conn => conn);
-    const askParticipantResult = await addParticipant(connection,askParticipantParams);
-    connection.release();
-}; 
 
 export const closeUniveus = async(post_id,user_id) =>{// 게시글 모집 마감 (축제용)
 
