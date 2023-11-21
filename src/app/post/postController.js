@@ -16,41 +16,42 @@ import { changeParticipateAvailable, returnParticipateAvailable } from "../user/
  */
 export const getPost = async(req, res) => {
 	
-    const {post_id} = req.params;
+    const postId = req.params.post_id;
     const userEmail = req.verifiedToken.userEmail;
-    const userIdFromJWT = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID (작성자 id) 
-    const Post = await retrievePost(post_id); 
+    const loginUser = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID (작성자 id) 
+    const post = await retrievePost(postId); 
 
-    if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // 게시글이 존재하지 않는다면
+    if (typeof post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // 게시글이 존재하지 않는다면
 
-        formatingMeetingDate(Post);
+        formatingMeetingDate(post);
 
-        formatingEndDate(Post);
+        formatingEndDate(post);
 
-        formatingCreatedAt(Post);
+        formatingCreatedAt(post);
         
-        const Participants = await retrieveParticipant(post_id); 
-        const Participant = [];
-        const Writer = Participants[0];
+        const participants = await retrieveParticipant(postId); 
+        const participant = [];
+        const wrtier = participants[0];
 
-        const changeClassof = Math.floor(Writer.class_of / 100000 % 100);
-        Writer.class_of = changeClassof + "학번";
-        for(let i = 1; i < Participants.length; i++){
-            Participant.push(Participants[i]);
+        const changeClassof = Math.floor(wrtier.class_of / 100000 % 100);
+        wrtier.class_of = changeClassof + "학번";
+
+        for(let i = 1; i < participants.length; i++){
+            participant.push(participants[i]);
         }
-        const PostImages = await retrievePostImages(post_id); 
-        const connectedUser = await getUserById(userIdFromJWT);
+        const postImages = await retrievePostImages(postId); 
+        const connectedUser = await getUserById(loginUser);
 
-        const isParticipateThisPost = Participants.find((item) => item.user_id === userIdFromJWT);
+        const isParticipateThisPost = participants.find((item) => item.userId === loginUser);
 
         if(isParticipateThisPost){
-            Object.assign(connectedUser,{"isParticipateThisPost":1});
+            Object.assign(connectedUser,{ "isParticipateThisPost" : 1 });
         }
         else{
-            Object.assign(connectedUser,{"isParticipateThisPost":0});
+            Object.assign(connectedUser,{ "isParticipateThisPost" : 0 });
         }
 
-        return res.send(response(baseResponse.SUCCESS, {Post, PostImages, connectedUser, Writer, Participant}));
+        return res.send(response(baseResponse.SUCCESS, { post, postImages, connectedUser, wrtier, participant }));
 };
 
 /**
