@@ -1,4 +1,19 @@
-# 협업 규칙
+<h2> 축제용에서 개선된 사항 </h2>
+<details>
+<summary>JavaScript >> TypeScript 로 변경 </summary>
+</details>
+
+<details>
+<summary>SQL문 >> ORM 사용 </summary>
+</details>
+
+<details>
+<summary>DTO 사용 </summary>
+</details>
+
+
+<details>
+<summary><h3>협업 규칙</h3> </summary>
 
 archivvonjang님의 [블로그](https://velog.io/@archivvonjang/Git-Commit-Message-Convention) 를 참고하여 정리하였습니다.
 <br/>
@@ -194,3 +209,6 @@ git commit -m "커밋메시지 입력
 🏦	일반 데이터베이스 별 (마이그레이션, 스크립트, 확장명 등)<br/>
 🐳	도커 구성<br/>
 🤝	파일을 병합 할 때
+</details>
+
+
