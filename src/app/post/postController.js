@@ -15,7 +15,7 @@ import { changeParticipateAvailable, returnParticipateAvailable } from "../user/
  * GET: /post/{post_id}
  */
 export const getPost = async(req, res) => {
-	
+    
     const postId = req.params.post_id;
     const userEmail = req.verifiedToken.userEmail;
     const loginUser = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID (작성자 id) 
