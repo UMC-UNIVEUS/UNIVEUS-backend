@@ -1,7 +1,4 @@
 <h2> 축제용에서 개선된 사항 </h2>
-<details>
-<summary>JavaScript >> TypeScript 로 변경 예정 </summary>
-</details>
 
 <details>
 <summary>SQL문 >> ORM 사용 예정 </summary>
