@@ -12,6 +12,16 @@
 </details>
 
 
+<h3>ERD</h3>
+
+<details>
+<summary>ERD</summary>    
+
+![294210307-4daa9a3f-fffa-4143-a812-ceab46d8201e](https://github.com/UMC-UNIVEUS/UNIVEUS-backend/assets/131960164/d3b0d8c6-d890-4d67-a152-0ea99302fab8)
+
+
+</details>
+
 <details>
 <summary><h3>협업 규칙</h3> </summary>
 
