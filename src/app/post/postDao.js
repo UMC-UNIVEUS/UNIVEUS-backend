@@ -32,21 +32,18 @@ export const selectParticipant = async(connection, post_id)=>{ // 참여자 목�
 };
 
 
-export const insertPost = async(connection, insertPostParams)=>{// 게시글 생성 + 게시글 참여자 테이블 생성
+export const insertPost = async(connection, insertPostParams)=>{ // 게시글 생성 + 게시글 참여자 테이블 생성
     const postPostQuery = `
-        INSERT INTO post(user_id, category, limit_gender, current_people, limit_people, location, 
-        meeting_date, openchat, end_date, title, main_img,
-        content, created_at, post_status) 
-        VALUES (?,?,?,1,?,?, ?,?,?,?,?, ?,now(), "recruiting");
+        INSERT INTO post(
+            user_id, category, limit_gender, limit_people, participation_method, 
+            meeting_date, meeting_time, location, end_date, end_time, 
+            title, contents, main_img, 
+            current_people, created_at, post_status
+        )
+        VALUES (?,?,?,?,?, ?,?,?,?,?, ?,?,?, 1,now(),"recruiting");
     `;
 
-    const postParticipantTableQuery = `
-        INSERT INTO participant_users(user_id, post_id, status) 
-        VALUES (?,?,"writer");
-    `;
-    const insertPostRow = await connection.query(postPostQuery, insertPostParams);
-    const postParticipantTableRow = await connection.query(postParticipantTableQuery, [insertPostParams[0],insertPostRow[0].insertId]);
-    //insertPostRow.insertId는 생성된 post의 post_id, insertPostParams[0]는 user_id
+    const insertPostRow = await connection.query(postPostQuery, insertPostParams); //insertPostRow.insertId는 생성된 post의 post_id
     return insertPostRow[0];
 };
 

@@ -10,12 +10,8 @@ import {adminMiddleware} from "../../../config/adminMiddleware"
 const postRouter = express.Router();
 
 postRouter.get('/:post_id',jwtMiddleware, wrapAsync(getPost)); // 게시글(+참여자 목록) 조회 API
-postRouter.post('/', jwtMiddleware, adminMiddleware, wrapAsync(postPost)); // 게시글 작성 API
-postRouter.post('/image/upload',
-    jwtMiddleware,
-    uploadImage.array('image', 4),
-    handleMulterErrors,
-    postImage);
+postRouter.post('/', wrapAsync(postPost)); // 게시글 작성 API ( axios에러 땜시 jwt미들웨어, admin 미들웨어 일단 없앰)
+postRouter.post('/image/upload',jwtMiddleware, uploadImage.array('image', 4), handleMulterErrors, postImage);
 postRouter.patch('/:post_id', jwtMiddleware, wrapAsync(patchPost)); // 게시글 수정 API
 postRouter.delete('/:post_id', jwtMiddleware, wrapAsync(deletePost)); // 게시글 삭제 API
 postRouter.patch('/:post_id/scrap', jwtMiddleware, wrapAsync(patchScrap)); // 게시글 스크랩 API
@@ -29,8 +25,5 @@ postRouter.post('/:post_id/participant/onedayalarm', wrapAsync(postOneDayAlarm))
 postRouter.post('/:post_id/participant', jwtMiddleware, wrapAsync(participateUniveus)); // 유니버스 참여 + 자동 모집 마감 API (축제용)
 postRouter.delete('/:post_id/participant/cancel', jwtMiddleware, wrapAsync(cancelParticipant)); // 유니버스 참여 취소 API
 postRouter.post('/:validate/chat-link', wrapAsync(validateOpentChatLink));
-
-
-
 
 export default postRouter;

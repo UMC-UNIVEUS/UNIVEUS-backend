@@ -7,11 +7,13 @@ import { insertPost, insertPostImages, updatePost, updatePostImages, erasePost, 
      addParticipant,blockUniveus, switchPostStatus, eraseParticipant,
      updateStatus, updateCurrentPeople } from "./postDao";
 
-export const createPost = async(userIdFromJWT, category, limit_gender, limit_people, location, meeting_date, openchat, 
-    end_date, title, main_img, content) =>{
+export const createPost = async(userIdFromJWT, body) =>{
  
-    const insertPostParams =[userIdFromJWT, category, limit_gender, limit_people, location, meeting_date, openchat, 
-    end_date, title, main_img,content]; 
+    const insertPostParams =[
+        userIdFromJWT, body.category, body.limit_gender, body.limit_people, body.participation_method,
+        body.meeting_date, body.meeting_time, body.location, body.end_date, body.end_time,
+        body.title, body.contents, body.images[0]
+    ];
 
     const connection = await pool.getConnection(async conn => conn);
     const createpostResult = await insertPost(connection,insertPostParams);
@@ -21,7 +23,9 @@ export const createPost = async(userIdFromJWT, category, limit_gender, limit_peo
 
 export const createPostImage = async(images, post_id) =>{ //게시글 이미지 저장
 
-    const insertPostImagesParams =[images, post_id]; 
+    const insertPostImagesParams =[
+        images, post_id
+    ];
 
     const connection = await pool.getConnection(async conn => conn);
     const createpostImagesResult = await insertPostImages(connection,insertPostImagesParams);
