@@ -10,9 +10,10 @@ import {
     showUserProfile
 } from './profileProvider';
 import {
-    ModifyIntroProfile
+    ModifyIntroProfile, modifyUserProfile
 } from "./profileService";
 import {getUserIdByEmail} from "../user/userProvider";
+import {userEmailIdCheckDTO} from "./profile_check_dto";
 
 //24.01.08 추가해야 할 부분
 /*
@@ -23,6 +24,23 @@ import {getUserIdByEmail} from "../user/userProvider";
 5. 다른 유저가 특정 유저의 프로필 조회 시 api 추가(기존 조회 데이터 + N문 N답)
 + 기존 유저 프로필에서 모임 생성, 참여 횟수 조회 데이터 보내줬었는지 확인.
  */
+
+
+/* 1. 프로필 수정 api 추가 */
+export const putUserProfile = async (req, res) => {
+    const userEmail = req.verifiedToken.userEmail;
+    // 빈 아이디 체크 << 이거 dto로 처리해야 하는지?
+    //1. 모든 걸 받아서 처리하는 미들웨어 하나 만들기. receivedData라는 객체에 헤더, 쿼리, path variable로 받은 데이터를 정해진 네이밍에 넣고 그걸 하나씩 꺼내서 존재하는지 확인. 존재하면 전달.
+    //2. 애초에 특정 값이 존재하는지만 확인하는 미들웨어 여러 개 만들기. 이메일은 이메일, 쿼리에 특정 값이 비어있으면 쿼리 등.
+    // if (!userEmail) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+    const userId = await userEmailIdCheckDTO(userEmail);
+    if(userId === -1)
+        return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+    else
+        return res.send(response(baseResponse.SUCCESS, await modifyUserProfile(userId)));
+}
+
+
 
 
 /* export const getUserProfile = async (req, res) => {

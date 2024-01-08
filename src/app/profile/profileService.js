@@ -28,3 +28,6 @@ export const ModifyIntroProfile = async (defaultInfo, detailInfo, user_id) => {
 };
 
 
+export const modifyUserProfile = async(user_id) => {
+
+}
