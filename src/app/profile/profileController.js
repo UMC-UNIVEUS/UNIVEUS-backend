@@ -14,6 +14,16 @@ import {
 } from "./profileService";
 import {getUserIdByEmail} from "../user/userProvider";
 
+//24.01.08 추가해야 할 부분
+/*
+1. 프로필 수정 api 추가(사진, 닉네임 수정 가능)
+2. 프로필 정보 조회 시 유저 상태(ex. Beta Tester) 데이터 추가
+3. N문 N답 조회, 수정 api 추가
+4. 유저가 본인 프로필 조회 했을 때 N문 N답을 작성하지 않았는지, 했는지 구분 하는 상태 값 추가로 프론트한테 보내줘야 함.
+5. 다른 유저가 특정 유저의 프로필 조회 시 api 추가(기존 조회 데이터 + N문 N답)
++ 기존 유저 프로필에서 모임 생성, 참여 횟수 조회 데이터 보내줬었는지 확인.
+ */
+
 
 /* export const getUserProfile = async (req, res) => {
     const {user_id} = req.params;
