@@ -9,6 +9,7 @@ import { createPost, createPostImage, editPost,patchPostImage, removePost, addSc
 import {getUserIdByEmail, getUserByNickName, getUserById, getIsParticipateOtherById, getParticipateAvailable} from "../user/userProvider";
 import { sendCreatePostMessageAlarm, sendParticipantMessageAlarm, sendCancelMessageAlarm} from "../user/userController"
 import { changeParticipateAvailable, returnParticipateAvailable } from "../user/userService";
+import {postPostResponseDTO} from "./postDto";
 
 /**
  * API name : 게시글 조회(게시글 + 참여자 목록)
@@ -84,11 +85,12 @@ export const postPost = async(req, res) => { // 일단 나는 Controller에서 �
         return res.send(errResponse(baseResponse.POST_CONTENT_LENGTH));
     }
 
-    const postPostResult = await createPost(userIdFromJWT, req.body);
+    const Post = await createPost(userIdFromJWT, req.body);
 
-    if(typeof images != "undefined") await createPostImage(images,postPostResult.insertId);
+    if(typeof images != "undefined") await createPostImage(images,Post.insertId);
 
-    return res.send(response(baseResponse.SUCCESS, `생성된 post_id = ${postPostResult.insertId}`)); // 성공
+    //return res.send(response(baseResponse.SUCCESS, `생성된 post_id = ${postPostResult.insertId}`)); // 성공
+    return res.send(response(baseResponse.SUCCESS, postPostResponseDTO(Post)));
 }
 
 /**

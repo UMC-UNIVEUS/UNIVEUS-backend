@@ -16,9 +16,9 @@ export const createPost = async(userIdFromJWT, body) =>{
     ];
 
     const connection = await pool.getConnection(async conn => conn);
-    const createpostResult = await insertPost(connection,insertPostParams);
+    const createPostResult = await insertPost(connection,insertPostParams);
     connection.release();
-    return createpostResult;
+    return createPostResult;
 };
 
 export const createPostImage = async(images, post_id) =>{ //게시글 이미지 저장
