@@ -1,15 +1,22 @@
 import dotenv from "dotenv";
-dotenv.config();
 import {baseResponse, response, errResponse} from "../../../config/response";
 import { retrievePost, retrieveParticipant, retrievePostImages, retrieveParticipantList, formatingEndDate, formatingMeetingDate, formatingCreatedAt, isValidOpenChat} from "./postProvider";
 import { createPost, createPostImage, editPost,patchPostImage, removePost, addScrap, addLike, 
     applyParticipant, registerParticipant, refuseParticipant,
     addOneDayAlarm, applyUniveus,closeUniveus, inviteOneParticipant
     ,changePostStatus, removeParticipant,changeStatus, changeCurrentPeople } from "./postService";
-import {getUserIdByEmail, getUserByNickName, getUserById, getIsParticipateOtherById, getParticipateAvailable} from "../user/userProvider";
+import {
+    getUserIdByEmail,
+    getUserByNickName,
+    getUserById,
+    getIsParticipateOtherById,
+    getParticipateAvailable,
+    getUserParticipateStatusById
+} from "../user/userProvider";
 import { sendCreatePostMessageAlarm, sendParticipantMessageAlarm, sendCancelMessageAlarm} from "../user/userController"
 import { changeParticipateAvailable, returnParticipateAvailable } from "../user/userService";
 import {postPostResponseDTO} from "./postDto";
+dotenv.config();
 
 /**
  * API name : 게시글 조회(게시글 + 참여자 목록)
@@ -23,35 +30,30 @@ export const getPost = async(req, res) => {
     const Post = await retrievePost(post_id); 
 
     if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // 게시글이 존재하지 않는다면
-
-        formatingMeetingDate(Post); // 이렇게 데이터를 가공하는 부분이 DTO로 들어가면 되는건가..?
-
-        formatingEndDate(Post);
-
-        formatingCreatedAt(Post);
         
-        const Participants = await retrieveParticipant(post_id); 
-        const Participant = [];
-        const Writer = Participants[0];
+        const Participant = await retrieveParticipant(post_id);
 
-        const changeClassof = Math.floor(Writer.class_of / 100000 % 100);
-        Writer.class_of = changeClassof + "학번";
-        for(let i = 1; i < Participants.length; i++){
-            Participant.push(Participants[i]);
-        }
-        const PostImages = await retrievePostImages(post_id); 
-        const connectedUser = await getUserById(userIdFromJWT);
+        const Writer = Participant[0];
+        const changeStudentId = Math.floor(Writer.student_id / 100000 % 100);
+        Writer.student_id = changeStudentId + "학번";
 
-        const isParticipateThisPost = Participants.find((item) => item.user_id === userIdFromJWT);
-
-        if(isParticipateThisPost){
-            Object.assign(connectedUser,{"isParticipateThisPost":1});
-        }
-        else{
-            Object.assign(connectedUser,{"isParticipateThisPost":0});
+        const ParticipantList = [];
+        for(let i = 1; i < Participant.length; i++){
+            ParticipantList.push(Participant[i]);
         }
 
-        return res.send(response(baseResponse.SUCCESS, {Post, PostImages, connectedUser, Writer, Participant}));
+        const PostImages = await retrievePostImages(post_id);
+        let connectedUserStatus = await getUserParticipateStatusById(userIdFromJWT, post_id);
+
+        if(connectedUserStatus === null){ // 여기 테스트 해봐야 함
+            connectedUserStatus = "PERSON";
+        }
+        
+        const connectedUser = { // 여기 테스트 해봐야 함
+            "status": connectedUserStatus
+        }
+        
+        return res.send(response(baseResponse.SUCCESS, {connectedUser, Writer, Post, PostImages, ParticipantList}));
 };
 
 /**
@@ -67,8 +69,8 @@ export const postPost = async(req, res) => { // 일단 나는 Controller에서 �
     const notUndefined = [category, limit_gender, limit_people, participation_method, meeting_date, meeting_time, location,
         end_date, end_time, title, contents]; // 빠지면 안될 정보들
 
-    const userIdFromJWT = await getUserIdByEmail(req.verifiedToken.userEmail); // 토큰을 통해 얻은 유저 ID (작성자 id)
-
+    //const userIdFromJWT = await getUserIdByEmail(req.verifiedToken.userEmail); // 토큰을 통해 얻은 유저 ID (작성자 id)
+    const userIdFromJWT = 1;
     for(let i = 0; i < notUndefined.length; i++){
         if(notUndefined[i] == null){
             return res.send(errResponse(baseResponse.POST_INFORMATION_EMPTY));

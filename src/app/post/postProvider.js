@@ -78,23 +78,6 @@ export const formatingEndDate = (post) => {
     Object.assign(post, datetime);
 }
 
-/** created_date 포맷팅 */
-export const formatingCreatedAt = (post) => {
-    const date = dayjs(post.created_at);
-    const created_month = date.month() < 10 ? "0" + (date.month() + 1)  : ""+(date.month() + 1);
-    const created_date = date.date() < 10 ? "0" + date.date() : ""+date.date();
-    const created_time = (date.hour() < 10 ? "0" + date.hour() : ""+date.hour()) + ":" + (date.minute() < 10 ? "0" + date.minute() : ""+date.minute());
-    delete post.created_at;
-
-    const datetime = {
-        "created_month":created_month,
-        "created_date":created_date,
-        "created_time":created_time,
-    }
-   
-    Object.assign(post, datetime);
-}
-
 /** kakao 유효성 검사 */
 export const isValidOpenChat = (openChaturi) => {
     

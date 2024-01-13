@@ -21,10 +21,10 @@ export const selectPostImages = async(connection, post_id)=>{ // 게시글 이�
 
 export const selectParticipant = async(connection, post_id)=>{ // 참여자 목록 조회 (작성자 제외)
     const selectParticipantQuery = `
-        SELECT participant_users.participant_id, participant_users.post_id, user.user_id, user.gender, user.nickname, user.major, user.class_of, participant_users.status
-        FROM participant_users
+        SELECT participant_user.user_id, user.gender, user.nickname, user.student_id, user.major, participant_user.status
+        FROM participant_user
         INNER JOIN user
-        ON participant_users.user_id = user.user_id
+        ON participant_user.user_id = user.id
         WHERE post_id = ?;
     `;
     const [ParticipantRow] = await connection.query(selectParticipantQuery, post_id);
