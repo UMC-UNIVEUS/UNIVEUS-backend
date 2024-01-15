@@ -25,12 +25,11 @@ dotenv.config();
 export const getPost = async(req, res) => {
 	
     const {post_id} = req.params;
-    const userEmail = req.verifiedToken.userEmail;
-    const userIdFromJWT = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID (작성자 id) 
-    const Post = await retrievePost(post_id); 
+    const userIdFromJWT = req.verifiedToken.userId;
+    const Post = await retrievePost(post_id);
 
     if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // 게시글이 존재하지 않는다면
-        
+
         const Participant = await retrieveParticipant(post_id);
 
         const Writer = Participant[0];
@@ -52,7 +51,7 @@ export const getPost = async(req, res) => {
         const connectedUser = { // 여기 테스트 해봐야 함
             "status": connectedUserStatus
         }
-        
+
         return res.send(response(baseResponse.SUCCESS, {connectedUser, Writer, Post, PostImages, ParticipantList}));
 };
 
@@ -61,6 +60,9 @@ export const getPost = async(req, res) => {
  * POST: /post
  */
 export const postPost = async(req, res) => { // 일단 나는 Controller에서 에러 핸들링을 함
+
+    const userIdFromJWT = req.verifiedToken.userId; // 이 부분에서 userId를 못 찾는 에러가 발생함
+    console.log(userIdFromJWT);
 
     const end_datetime = new Date(req.body.meeting_datetime);
     end_datetime.setHours(end_datetime.getHours() + 9 - 2); // UTC >> KST로 바꿔주고, 2시간 전으로 지정
@@ -76,13 +78,10 @@ export const postPost = async(req, res) => { // 일단 나는 Controller에서 �
         "title": req.body.title,
         "contents": req.body.contents,
         "images": req.body.images,
-
     }
 
     const notUndefined = [body.category, body.limit_gender, body.limit_people, body.participation_method,
         body.meeting_datetime, body.location, body.title, body.contents]; // 빠지면 안될 정보들
-
-    const userIdFromJWT = await getUserIdByEmail(req.verifiedToken.userEmail); // 토큰을 통해 얻은 유저 ID (작성자 id)
 
     for(let i = 0; i < notUndefined.length; i++){
         if(notUndefined[i] == null){
@@ -113,9 +112,14 @@ export const postPost = async(req, res) => { // 일단 나는 Controller에서 �
  */
 export const patchPost =  async(req, res) => {
 
+    const userIdFromJWT = req.verifiedToken.userId;
+
+    const {post_id} = req.params;
+    const Post = await retrievePost(post_id);
+    if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
+
     const body = {
-        "post_id": req.params,
-        "user_id": req.body.user_id,
+        "user_id": Post.user_id,
         "category": req.body.category,
         "limit_gender": req.body.limit_gender,
         "limit_people": req.body.limit_people,
@@ -131,16 +135,11 @@ export const patchPost =  async(req, res) => {
     const notUndefined = [body.category, body.limit_gender, body.limit_people, body.participation_method,
         body.meeting_datetime, body.location, body.title, body.contents]; // 빠지면 안될 정보들
 
-    const userIdFromJWT = await getUserIdByEmail(req.verifiedToken.userEmail); // 토큰을 통해 얻은 유저 ID (작성자 id)
-
     for(let i = 0; i < notUndefined.length; i++){
         if(notUndefined[i] == null){
             return res.send(errResponse(baseResponse.POST_INFORMATION_EMPTY));
         }
     }
-
-    const Post = await retrievePost(body.post_id);
-    if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
 
     if (body.user_id !== userIdFromJWT) return res.send(errResponse(baseResponse.USER_USERID_USERIDFROMJWT_NOT_MATCH)); //접속한 유저가 작성자가 아니라면
 
@@ -158,33 +157,21 @@ export const patchPost =  async(req, res) => {
 export const deletePost =  async(req, res) => {
 
     const {post_id} = req.params;
-    // const {user_id} = req.body; // 작성자의 ID
-    const userEmail = req.verifiedToken.userEmail;
-    const userIdFromJWT = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID 
+    const userIdFromJWT = req.verifiedToken.userId;
+
     const Post = await retrievePost(post_id);
+    if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
+    if (Post.post_status === "END") return res.send(errResponse(baseResponse.POST_MATCHED_CANT_DELETE));
 
+    if (Post.user_id !== userIdFromJWT) return res.send(errResponse(baseResponse.USER_USERID_JWT_NOT_MATCH)); //접속한 유저가 작성자가 아니라면
 
-    if (Post.user_id !== userIdFromJWT) return res.send(errResponse(baseResponse.USER_USERID_USERIDFROMJWT_NOT_MATCH)); //접속한 유저가 작성자가 아니라면
-    
-    if (typeof Post == "undefined")return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST))     
-
-    const participants = await retrieveParticipant(post_id);
-
-    /** 참여자 참여권 돌려주기*/
-    participants.forEach(async function(participant) {
-        await returnParticipateAvailable(participant.user_id);
-    });
-    
-    if (Post.post_status === "end") return res.send(errResponse(baseResponse.POST_MATCHED_CANT_DELETE));
-    
-
-    const deletePostResult = await removePost(post_id);
+    const deletePostResult = await removePost(post_id); // post 하나가 지워지면 participant_user 테이블도 따라서 지워지는 cascade 설정해줘야 함.
    
     return res.send(response(baseResponse.SUCCESS, deletePostResult));
 };
 
 /**
- * API name : 게시글 좋아요 >> 축제 때는 필요 X
+ * API name : 게시글 좋아요
  * PATCH: /post/{post_id}/like
  */
 export const patchLike = async(req, res) => {

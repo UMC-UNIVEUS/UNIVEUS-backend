@@ -1,5 +1,5 @@
 import {
-    selectUser, selectUserByNickname, selectUserIdByEmail, selectAlarms,
+    selectUser, selectUserByNickname, selectAlarms,
     selectUserById, selectIsParticipateOtherById, selectUserNickNameById, selectPhoneByEmail,
     selectAuthStatusByEmail, selectUserByNickName, selectUserReportedNum, selectUserAccountStatus,
     selectParticipateAvailalble, selectUserParticipateStatusById
@@ -54,15 +54,6 @@ export const getUserByNickName = async(nickname) => {// 닉네임으로 유저 �
     connection.release();
     return User;
 };
-
-export const getUserIdByEmail = async(email_id) => {// 이메일로 유저 id 조회
-
-    const connection = await pool.getConnection(async (conn) => conn);
-    const [UserId] = await selectUserIdByEmail(connection, email_id);
-    connection.release();
-    return UserId.user_id;
-};
-
 export const retrieveAlarms = async(userIdFromJWT) => {// 알림 내역 조회
 
     const connection = await pool.getConnection(async (conn) => conn);
@@ -134,8 +125,10 @@ export const getParticipateAvailable = async (userId) => {
 /** 특정 게시글에 대한 유저의 상태(작성자 or 참여자 or 일반 유저) */
 export const getUserParticipateStatusById = async (userId, post_id) =>{
 
+    const selectUserParticipateStatusParams =[userId, post_id];
+
     const connection = await pool.getConnection(async (conn) => conn);
-    const UserParticipateStatus = await selectUserParticipateStatusById(connection, userId, post_id);
+    const UserParticipateStatus = await selectUserParticipateStatusById(connection, selectUserParticipateStatusParams);
     connection.release();
 
     return UserParticipateStatus;

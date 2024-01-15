@@ -1,13 +1,13 @@
 /** user에 Email Id insert */
 export const insertUserEmailId = async(connection, email_id) => {
-    const insertUserQuery = `INSERT INTO user (email_id) VALUES ('${email_id}');`;
+    const insertUserQuery = `INSERT INTO user (email) VALUES ('${email_id}');`;
     const insertUserRow = await connection.query(insertUserQuery);
     return insertUserRow
 }
 
 export const selectUser = async(connection, email_id) => {
 
-    const selectUserQuery = `SELECT email_id FROM user WHERE email_id = '${email_id}'`;
+    const selectUserQuery = `SELECT email_id FROM user WHERE email = '${email_id}'`;
     const selectUserRow = await connection.query(selectUserQuery);
     return selectUserRow[0];
 }
@@ -50,16 +50,6 @@ export const updateUserProfileInfo = async(connection, updateUserParams) => {
     const updateUserRow = await connection.query(updateUserQuery, values);
     return updateUserRow;
   };
-
-export const selectUserIdByEmail = async(connection,email_id) => {// 이메일로 유저 id 조회
-    const selectUserIdQuery = `
-        SELECT user_id
-        FROM user
-        WHERE email_id = ?;
-    `;
-    const selectUserIdRow = await connection.query(selectUserIdQuery,email_id);
-    return selectUserIdRow[0];
-};
 
 export const selectUserNickNameById = async(connection,user_id) => {// user_id로 유저 닉네임 조회
     const selectUserNickNameByIdQuery = `
@@ -193,18 +183,13 @@ export const selectParticipateAvailalble = async(connection, userId) => {
     return selectParticipateAvailalbleRow[0].participate_available;
 }
 
-export const updateParticipateAvailableReturn = async(connection, userId) => {
-    const updateParticipateAvailableQuery = `UPDATE user SET participate_available = 1 WHERE user_id = ${userId};`;
-    const updateParticipateAvailableRow = await connection.query(updateParticipateAvailableQuery);
-}
-
-export const selectUserParticipateStatusById = async(connection, userId, post_id ) =>{
+export const selectUserParticipateStatusById = async(connection, selectUserParticipateStatusParams ) =>{
     const selectUserParticipateStatusByIdQuery = `
         SELECT status
         FROM participant_user
-        WHERE user_id = ?, post_id = ?;
+        WHERE user_id = ? AND post_id = ?;
     `;
-    const [userParticipateStatusRow] = await connection.query(selectUserParticipateStatusByIdQuery,userId, post_id);
+    const [userParticipateStatusRow] = await connection.query(selectUserParticipateStatusByIdQuery,selectUserParticipateStatusParams);
     return userParticipateStatusRow[0];
 
 }

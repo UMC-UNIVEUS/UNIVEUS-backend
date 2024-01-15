@@ -9,7 +9,6 @@ export const retrievePost = async(post_id) =>{
     connection.release();
 
     return postResult[0];
-
 };
 
 export const retrievePostImages = async(post_id) =>{

@@ -3,7 +3,7 @@ export const selectPost = async(connection, post_id)=>{ // 게시글 조회
     const selectPostQuery = `
         SELECT *
         FROM post
-        WHERE post_id = ?;
+        WHERE id = ?;
     `;
     const [PostRow] = await connection.query(selectPostQuery, post_id);
     return PostRow;
@@ -99,7 +99,7 @@ export const erasePost = async(connection, post_id)=>{// 게시글 삭제
     const deletePostQuery = `
         DELETE 
         FROM post
-        WHERE post_id = ?;
+        WHERE id = ?;
     `;
     const deletePostRow = await connection.query(deletePostQuery, post_id);
 };
@@ -108,7 +108,7 @@ export const insertLike = async(connection, post_id)=>{// 게시글 좋아요
     const addLikeQuery = `
         UPDATE post 
         SET likes = likes + 1
-        WHERE post_id = ?;
+        WHERE id = ?;
     `;
     const insertLikeRow = await connection.query(addLikeQuery, post_id);
 };
