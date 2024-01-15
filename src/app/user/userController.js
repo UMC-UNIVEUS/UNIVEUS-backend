@@ -46,6 +46,8 @@ export const login = async(req, res) => {
 
     const accessToken = jwt.sign({ userId : userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '100days', issuer : 'univeus' })    
 
+    console.log(userId)
+
     // if(!accessToken) return res.send(errResponse(baseResponse.VERIFIED_ACCESS_TOKEN_EMPTY));
 
     // if (!await isAuthNumber(userId)) {
