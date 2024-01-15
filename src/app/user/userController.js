@@ -4,7 +4,8 @@ import { addUserProfileInfo, isKyonggiEmail, createAuthNum, checkAlarms,
     createUser, addUserPhoneNumber, addAgreementTerms } from "./userService";
 import { isUser, isNicknameDuplicate, retrieveAlarms, getUserIdByEmail, 
     getUserNickNameById, isAuthNumber, isAuthUser, 
-    getUserById, getUserPhoneNumber, removeEmojisAndSpace } from "./userProvider";
+    getUserById, getUserPhoneNumber, removeEmojisAndSpace,
+    isProfileExist, isUserAgree } from "./userProvider";
 import { retrievePost } from "../post/postProvider";
 import jwt from "jsonwebtoken";
 import { sendSMS } from "../../../config/naverCloudClient";
@@ -19,6 +20,7 @@ const cache = new NodeCache();
 export const login = async(req, res) => {
     const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
     const googleAccessToken = req.body.accessToken;
+    let userId 
 
     const resUserInfo = await axios.get(GOOGLE_USERINFO_URL, {
       headers: {
@@ -28,26 +30,43 @@ export const login = async(req, res) => {
 
     const userEmail = resUserInfo.data.email;  
 
+    // 경기대 이메일인지 확인
     if (isKyonggiEmail(userEmail) == false) {
         return res.send(errResponse(baseResponse.SIGNUP_EMAIL_KYONGGI));
     }
 
-    const accessToken = jwt.sign({ userEmail : userEmail }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '7days', issuer : 'univeus' })    
-
-    if(!accessToken) return res.send(errResponse(baseResponse.VERIFIED_ACCESS_TOKEN_EMPTY));
-    
+    // 구글 로그인을 해 본 유저인지 확인
     if (!await isUser(userEmail)) {
-        createUser(userEmail);
+        userId = createUser(userEmail);
         return res.send(response(baseResponse.LOGIN_NOT_USER, { accessToken }));
     }
-
-    if (!await isAuthNumber(userEmail)) {
-        return res.send(response(baseResponse.LOGIN_NOT_AUTH_NUMBER, { accessToken }));
+    else {
+        userId = getUserIdByEmail(userEmail)
     }
 
-    if (!await isAuthUser(userEmail)) {
-        return res.send(response(baseResponse.LOGIN_NOT_AUTH_COMPLETE_USER, { accessToken }));
-    }
+    const accessToken = jwt.sign({ userId : userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '100days', issuer : 'univeus' })    
+
+    // if(!accessToken) return res.send(errResponse(baseResponse.VERIFIED_ACCESS_TOKEN_EMPTY));
+
+    // if (!await isAuthNumber(userId)) {
+    //     return res.send(response(baseResponse.LOGIN_NOT_AUTH_NUMBER, { accessToken }));
+    // }
+
+    // // TODO 이용약관 동의 여부 확인
+    // if (!await isUserAgree(userId)) {
+    //     return res.send(response(baseResponse.LOGIN_NOT_USER_AGREE, { accessToken }));
+    // }
+
+    // // 소속인증 한 유저
+    // if (!await isAuthUser(userId)) {
+    //     return res.send(response(baseResponse.LOGIN_NOT_AUTH_COMPLETE_USER, { accessToken }));
+    // }
+
+    // // 프로필 유무 확인
+    // if (!await isProfileExist(userId)) {
+    //     return res.send(response(baseResponse.LOGIN_PROFILE_NOT_EXIST, { accessToken }));
+    // }
+
     return res.send(response(baseResponse.SUCCESS,{ accessToken }));
 }
 
