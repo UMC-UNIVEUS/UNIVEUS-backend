@@ -2,7 +2,7 @@
 (CRUD에 해당하는 서버 로직 처리) */
 
 import pool from "../../../config/database";
-import { insertPost, insertPostImages, updatePost, updatePostImages, erasePost, insertScrap, insertLike,
+import { insertPost, insertPostImages, updatePost, updatePostImages, erasePost, insertLike,
      insertParticipant, updateParticipant,deleteParticipant, insertUniveus, 
      addParticipant,blockUniveus, switchPostStatus, eraseParticipant,
      updateStatus, updateCurrentPeople } from "./postDao";
@@ -11,7 +11,7 @@ export const createPost = async(userIdFromJWT, body) =>{
  
     const insertPostParams =[
         userIdFromJWT, body.category, body.limit_gender, body.limit_people, body.participation_method,
-        body.meeting_date, body.meeting_time, body.location, body.end_date, body.end_time,
+        body.meeting_datetime, body.location, body.end_datetime,
         body.title, body.contents, body.images[0]
     ];
 
@@ -43,11 +43,13 @@ export const patchPostImage = async(images, post_id) =>{ //게시글 이미지 �
     return editPostImagesResult;
 };
 
-export const editPost = async(category, limit_gender,limit_people, location, meeting_date, openchat, // 게시글 수정
-    end_date, title,image,content, post_id)=>{
+export const editPost = async(body)=>{
   
-    const updatePostParams =[category, limit_gender,limit_people, location, meeting_date, openchat, 
-        end_date, title,image,content, post_id]; 
+    const updatePostParams =[
+        body.category, body.limit_gender, body.limit_people, body.participation_method,
+        body.meeting_datetime, body.location, body.end_datetime,
+        body.title, body.contents, body.images[0], body.post_id
+    ];
 
     const connection = await pool.getConnection(async conn => conn);
     const updatePostResult = await updatePost(connection,updatePostParams); 
@@ -61,16 +63,6 @@ export const removePost = async(post_id)=>{// 게시글 삭제
     const removePostResult = await erasePost(connection,post_id); 
     connection.release();
 };
-
-export const addScrap = async(post_id,userIdFromJWT)=>{// 게시글 스크랩
-
-    const addScarpParams =[post_id, userIdFromJWT]; 
-
-    const connection = await pool.getConnection(async conn => conn);
-    const insertScrapResult = await insertScrap(connection, addScarpParams); 
-    connection.release();
-};
-
 
 export const addLike = async(post_id)=>{// 게시글 좋아요
 

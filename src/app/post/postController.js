@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import {baseResponse, response, errResponse} from "../../../config/response";
 import { retrievePost, retrieveParticipant, retrievePostImages, retrieveParticipantList, formatingEndDate, formatingMeetingDate, formatingCreatedAt, isValidOpenChat} from "./postProvider";
-import { createPost, createPostImage, editPost,patchPostImage, removePost, addScrap, addLike, 
+import { createPost, createPostImage, editPost,patchPostImage, removePost, addLike,
     applyParticipant, registerParticipant, refuseParticipant,
     addOneDayAlarm, applyUniveus,closeUniveus, inviteOneParticipant
     ,changePostStatus, removeParticipant,changeStatus, changeCurrentPeople } from "./postService";
@@ -62,36 +62,48 @@ export const getPost = async(req, res) => {
  */
 export const postPost = async(req, res) => { // 일단 나는 Controller에서 에러 핸들링을 함
 
+    const end_datetime = new Date(req.body.meeting_datetime);
+    end_datetime.setHours(end_datetime.getHours() + 9 - 2); // UTC >> KST로 바꿔주고, 2시간 전으로 지정
 
-    const {category, limit_gender, limit_people, participation_method, meeting_date, meeting_time, location,
-        end_date, end_time, title, contents, images } = req.body;
+    const body = {
+        "category": req.body.category,
+        "limit_gender": req.body.limit_gender,
+        "limit_people": req.body.limit_people,
+        "participation_method": req.body.participation_method,
+        "meeting_datetime": req.body.meeting_datetime,
+        "location": req.body.location,
+        "end_datetime": end_datetime,
+        "title": req.body.title,
+        "contents": req.body.contents,
+        "images": req.body.images,
 
-    const notUndefined = [category, limit_gender, limit_people, participation_method, meeting_date, meeting_time, location,
-        end_date, end_time, title, contents]; // 빠지면 안될 정보들
+    }
 
-    //const userIdFromJWT = await getUserIdByEmail(req.verifiedToken.userEmail); // 토큰을 통해 얻은 유저 ID (작성자 id)
-    const userIdFromJWT = 1;
+    const notUndefined = [body.category, body.limit_gender, body.limit_people, body.participation_method,
+        body.meeting_datetime, body.location, body.title, body.contents]; // 빠지면 안될 정보들
+
+    const userIdFromJWT = await getUserIdByEmail(req.verifiedToken.userEmail); // 토큰을 통해 얻은 유저 ID (작성자 id)
+
     for(let i = 0; i < notUndefined.length; i++){
         if(notUndefined[i] == null){
             return res.send(errResponse(baseResponse.POST_INFORMATION_EMPTY));
         } 
     }
 
-    if(req.body.location.length > 24){
+    if(body.location.length > 24){
         return res.send(errResponse(baseResponse.POST_LOCATION_LENGTH));
     }    
-    if(req.body.title.length > 48){
+    if(body.title.length > 48){
         return res.send(errResponse(baseResponse.POST_TITLE_LENGTH));
     }
-    if(req.body.content.length > 500){ // 축제용 조건문
+    if(body.contents.length > 500){ // 축제용 조건문
         return res.send(errResponse(baseResponse.POST_CONTENT_LENGTH));
     }
 
-    const Post = await createPost(userIdFromJWT, req.body);
+    const Post = await createPost(userIdFromJWT, body);
 
-    if(typeof images != "undefined") await createPostImage(images,Post.insertId);
+    if(typeof body.images != "undefined") await createPostImage(body.images,Post.insertId);
 
-    //return res.send(response(baseResponse.SUCCESS, `생성된 post_id = ${postPostResult.insertId}`)); // 성공
     return res.send(response(baseResponse.SUCCESS, postPostResponseDTO(Post)));
 }
 
@@ -101,43 +113,40 @@ export const postPost = async(req, res) => { // 일단 나는 Controller에서 �
  */
 export const patchPost =  async(req, res) => {
 
-    const {post_id} = req.params;
-    const {user_id, category, limit_gender,limit_people, location, meeting_date, openchat, 
-        end_date, title,images,content} = req.body;
-    const notUndefined = [category, limit_gender, limit_people, location, meeting_date, openchat, 
-        end_date, title, content]; // 빠지면 안될 정보들
-    const userEmail = req.verifiedToken.userEmail;
-    const userIdFromJWT = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID 
-    const Post = await retrievePost(post_id); 
+    const body = {
+        "post_id": req.params,
+        "user_id": req.body.user_id,
+        "category": req.body.category,
+        "limit_gender": req.body.limit_gender,
+        "limit_people": req.body.limit_people,
+        "participation_method": req.body.participation_method,
+        "meeting_datetime": req.body.meeting_datetime,
+        "location": req.body.location,
+        "end_datetime": end_datetime,
+        "title": req.body.title,
+        "contents": req.body.contents,
+        "images": req.body.images,
+    }
 
-    if (user_id !== userIdFromJWT) return res.send(errResponse(baseResponse.USER_USERID_USERIDFROMJWT_NOT_MATCH)); //접속한 유저가 작성자가 아니라면
+    const notUndefined = [body.category, body.limit_gender, body.limit_people, body.participation_method,
+        body.meeting_datetime, body.location, body.title, body.contents]; // 빠지면 안될 정보들
 
-    if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
+    const userIdFromJWT = await getUserIdByEmail(req.verifiedToken.userEmail); // 토큰을 통해 얻은 유저 ID (작성자 id)
 
     for(let i = 0; i < notUndefined.length; i++){
-        if(notUndefined[i] == null){ 
+        if(notUndefined[i] == null){
             return res.send(errResponse(baseResponse.POST_INFORMATION_EMPTY));
-        } 
+        }
     }
-    if(category != 4){ // 축제용 조건문
-        return res.send(errResponse(baseResponse.POST_CATEGORY_LIMIT));
-    }    
-    if(limit_people != 4 && limit_people != 6){ // 축제용 조건문
-        return res.send(errResponse(baseResponse.POST_PEOPLE_LIMIT));
-    }    
-    if(location.length > 24){
-        return res.send(errResponse(baseResponse.POST_LOCATION_LENGTH));
-    }    
-    if(title.length > 48){ 
-        return res.send(errResponse(baseResponse.POST_TITLE_LENGTH));
-    }
-    if(content.length > 500){ // 축제용 조건문
-        return res.send(errResponse(baseResponse.POST_CONTENT_LENGTH));
-    }
-    const patchPostResult = await editPost(category, limit_gender,limit_people, location, meeting_date, openchat, 
-        end_date, title,images[0], content, post_id); 
 
-    if(typeof images != "undefined") await patchPostImage(images,post_id); 
+    const Post = await retrievePost(body.post_id);
+    if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
+
+    if (body.user_id !== userIdFromJWT) return res.send(errResponse(baseResponse.USER_USERID_USERIDFROMJWT_NOT_MATCH)); //접속한 유저가 작성자가 아니라면
+
+    const patchPostResult = await editPost(body);
+
+    if(typeof body.images != "undefined") await patchPostImage(body.images,body.post_id);
 
     return res.send(response(baseResponse.SUCCESS, patchPostResult));
     } 
@@ -172,27 +181,6 @@ export const deletePost =  async(req, res) => {
     const deletePostResult = await removePost(post_id);
    
     return res.send(response(baseResponse.SUCCESS, deletePostResult));
-};
-
-/**
- * API name : 게시글 스크랩 >> 축제 때는 필요 X
- * PATCH: /post/{post_id}/scrap
- */
-export const patchScrap = async(req, res) => {
-
-    const {post_id} = req.params;
-    const userEmail = req.verifiedToken.userEmail;
-    const userIdFromJWT = await getUserIdByEmail(userEmail); //토큰을 통한 이메일로 유저 id 구하기
-
-    const Post = await retrievePost(post_id); 
-    
-    if(Post){ // Post가 존재한다면
-        const addScrapResult = await addScrap(post_id, userIdFromJWT);   
-        return res.send(response(baseResponse.SUCCESS, addScrapResult));
-    } 
-    else{ 
-        return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST))
-    } 
 };
 
 /**

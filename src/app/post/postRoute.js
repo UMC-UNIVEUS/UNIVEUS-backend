@@ -1,6 +1,6 @@
 import express from "express"
 import {handleMulterErrors, uploadImage} from '../../../config/imageUploader';
-import {getPost, postPost, patchPost, deletePost,patchScrap, patchLike, postParticipant, 
+import {getPost, postPost, patchPost, deletePost, patchLike, postParticipant,
     getParticipant, patchParticipant, deleteParticipant, patchStatus,postOneDayAlarm, participateUniveus,
     cancelParticipant, postImage, validateOpentChatLink} from "./postController";
 import { jwtMiddleware } from "../../../config/jwtMiddleWare";
@@ -12,9 +12,8 @@ const postRouter = express.Router();
 postRouter.get('/:post_id',jwtMiddleware, wrapAsync(getPost)); // 게시글(+참여자 목록) 조회 API
 postRouter.post('/', wrapAsync(postPost)); // 게시글 작성 API ( axios에러 땜시 jwt미들웨어, admin 미들웨어 일단 없앰)
 postRouter.post('/image/upload',jwtMiddleware, uploadImage.array('image', 4), handleMulterErrors, postImage);
-postRouter.patch('/:post_id', jwtMiddleware, wrapAsync(patchPost)); // 게시글 수정 API
+postRouter.patch('/:post_id', wrapAsync(patchPost)); // 게시글 수정 API
 postRouter.delete('/:post_id', jwtMiddleware, wrapAsync(deletePost)); // 게시글 삭제 API
-postRouter.patch('/:post_id/scrap', jwtMiddleware, wrapAsync(patchScrap)); // 게시글 스크랩 API
 postRouter.patch('/:post_id/like', jwtMiddleware, wrapAsync(patchLike)); // 게시글 좋아요 API
 postRouter.get('/:post_id/participant', jwtMiddleware, wrapAsync(getParticipant)); // 게시글 참여자 신청 내역 조회 API
 postRouter.post('/:post_id/participant/apply', jwtMiddleware, adminMiddleware, wrapAsync(postParticipant)); // 게시글 참여 신청 API + 참여 신청 알람(to 작성자) API

@@ -36,11 +36,11 @@ export const insertPost = async(connection, insertPostParams)=>{ // 게시글 �
     const postPostQuery = `
         INSERT INTO post(
             user_id, category, limit_gender, limit_people, participation_method, 
-            meeting_date, meeting_time, location, end_date, end_time, 
+            meeting_datetime, location, end_datetime, 
             title, contents, main_img, 
             current_people, created_at, post_status
         )
-        VALUES (?,?,?,?,?, ?,?,?,?,?, ?,?,?, 1,now(),"recruiting");
+        VALUES (?,?,?,?,?, ?,?,?, ?,?,?, 1,now(),"recruiting");
     `;
 
     const insertPostRow = await connection.query(postPostQuery, insertPostParams); //insertPostRow.insertId는 생성된 post의 post_id
@@ -82,13 +82,13 @@ export const updatePost = async(connection, updatePostParams)=>{// 게시글 수
         SET category =?,
         limit_gender =?,
         limit_people =?,
+        participation_method = ?,
+        meeting_datetime =?, 
         location =?, 
-        meeting_date =?, 
-        openchat =?, 
-        end_date =?, 
-        title =?,
-        main_img =?,
-        content =?,
+        end_datetime =?,
+        title =?, 
+        contents =?, 
+        main_img = ?
         updated_at = now()
         WHERE post_id =?;
     `;
@@ -102,21 +102,6 @@ export const erasePost = async(connection, post_id)=>{// 게시글 삭제
         WHERE post_id = ?;
     `;
     const deletePostRow = await connection.query(deletePostQuery, post_id);
-};
- 
-export const insertScrap = async(connection, addScarpParams)=>{// 게시글 스크랩 수 증가 + post_scrapes 테이블 생성
-    const addScrapQuery = `
-        UPDATE post 
-        SET scrapes = scrapes + 1
-        WHERE post_id = ?;
-    `;
-
-    const postScrapTableQuery = `
-        INSERT INTO post_scrapes(post_id, user_id) 
-        VALUES (?,?);
-    `;
-    const updateScrapRow = await connection.query(addScrapQuery, addScarpParams[0]);
-    const insertScrapTableRow = await connection.query(postScrapTableQuery, addScarpParams); // 여기 (postScrapTableQuery, post_id, user_id)처럼 인수를 3개 넘겨주면 에러남 
 };
 
 export const insertLike = async(connection, post_id)=>{// 게시글 좋아요
