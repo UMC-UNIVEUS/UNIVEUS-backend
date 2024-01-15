@@ -37,7 +37,7 @@ export const login = async(req, res) => {
 
     // 구글 로그인을 해 본 유저인지 확인
     if (!await isUser(userEmail)) {
-        userId = createUser(userEmail);
+        userId = await createUser(userEmail);
         return res.send(response(baseResponse.LOGIN_NOT_USER, { accessToken }));
     }
     else {
