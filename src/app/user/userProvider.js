@@ -57,7 +57,7 @@ export const getUserIdByEmail = async(email_id) => {// 이메일로 유저 id �
     const connection = await pool.getConnection(async (conn) => conn);
     const [UserId] = await selectUserIdByEmail(connection, email_id);
     connection.release();
-    return UserId.user_id;
+    return UserId.id;
 };
 
 export const retrieveAlarms = async(userIdFromJWT) => {// 알림 내역 조회
