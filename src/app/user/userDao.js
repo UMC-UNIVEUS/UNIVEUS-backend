@@ -53,9 +53,9 @@ export const updateUserProfileInfo = async(connection, updateUserParams) => {
 
 export const selectUserIdByEmail = async(connection,email_id) => {// 이메일로 유저 id 조회
     const selectUserIdQuery = `
-        SELECT user_id
+        SELECT id
         FROM user
-        WHERE email_id = ?;
+        WHERE email = ?;
     `;
     const selectUserIdRow = await connection.query(selectUserIdQuery,email_id);
     return selectUserIdRow[0];
