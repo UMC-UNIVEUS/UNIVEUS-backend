@@ -7,6 +7,11 @@ export const baseResponse = {
 
     SIGNUP_MAJOR_EMPTY : {"isSuccess" : false, "code" : "USER0001", "message" : "학과를 입력해주세요."},
     SIGNUP_STUDENTID_EMPTY : {"isSuccess" : false, "code" : "USER0002", "message" : "학번을 입력해주세요."},
+    VERIFY_PHONE_EMPTY : {"isSuccess" : false, "code" : "USER0003", "message" : "번호를 입력해주세요"},
+    SEND_AUTH_NUMBER_MSG_FAIL : {"isSuccess" : false, "code" : "USER0005", "message" : "인증번호 문자 전송을 실패했습니다."},
+    ALREADY_AUTH_NUMBER : {"isSuccess" : false, "code" : "USER0006", "message" : "이미 인증을 완료하였습니다" },
+    VERIFY_NUMBER_EMPTY : {"isSuccess" : false, "code" : "USER0007", "message" : "인증번호가 입력되어있지 않습니다." },
+    VERIFY_NUMBER_FAIL : {"isSuccess" : false, "code" : "USER0008", "message" : "인증번호가 올바르지 않습니다." },
 
     USER_FIRST_NOT_EXIST : { "isSuccess": false, "code": 2000, "message": "초대한 유저 중 첫 번째 유저가 존재하지 않습니다." },
     USER_SECOND_NOT_EXIST : { "isSuccess": false, "code": 2001, "message": "초대한 유저 중 두 번째 유저가 존재하지 않습니다." },
@@ -16,10 +21,7 @@ export const baseResponse = {
     SIGNUP_NICKNAME_EMPTY : {"isSuccess" : false, "code" : 2005, "message" : "닉네임을 입력해주세요."},
     SIGNUP_GENDER_EMPTY : {"isSuccess" : false, "code" : 2006, "message" : "성별을 입력해주세요."},
     LOGIN_NOT_USER : {"isSuccess" : false, "code" : 100000, "message" : "회원이 아닙니다. 본인인증 페이지로 리다이렉트 됩니다." },
-    SEND_AUTH_NUMBER_MSG : {"isSuccess" : true, "code" : 2010, "message" : "인증번호 문자 전송이 완료되었습니다."},
-    SEND_AUTH_NUMBER_MSG_FAIL : {"isSuccess" : false, "code" : 2011, "message" : "인증번호 문자 전송을 실패했습니다."},
-    VERIFY_NUMBER_SUCCESS : {"isSuccess" : true, "code" : 2012, "message" : "휴대폰 본인인증을 성공하였습니다." },
-    VERIFY_NUMBER_FAIL : {"isSuccess" : false, "code" : 2013, "message" : "인증번호가 올바르지 않습니다." },
+
     NICK_NAME_DUPLICATE : {"isSuccess" : false, "code" : 2014, "message" : "닉네임이 중복됩니다." },
     SIGNUP_PHONE_NUMBER_EMPTY : {"isSuccess" : false, "code" : 2015, "message" : "전화번호를 입력해주세요."},
     USER_USERID_USERIDFROMJWT_NOT_MATCH : {"isSuccess":false, "code":2016, "message":"user_id와 userIdFromJWT가 일치하지 않습니다."},
@@ -33,7 +35,7 @@ export const baseResponse = {
     THIRD_AGREEMENT_EMPTY : {"isSuccess" : false, "code" : 2024, "message" : "세 번째 약관에 동의하지 않았습니다." },
     USERS_ACCOUNT_WITHDRAW : {"isSuccess" : false, "code" : 2025, "message" : "탈퇴한 회원입니다." },
     USERS_ACCOUNT_BLOCKED : {"isSuccess" : false, "code" : 2026, "message" : "정지된 계정입니다." },
-    ALREADY_AUTH_NUMBER : {"isSuccess" : false, "code" : 2027, "message" : "이미 인증을 완료하였습니다" },
+
     USER_ALREADY_PARTICIPATE : {"isSuccess" : false, "code" : 2028, "message" : "오늘 참여 횟수를 모두 소진하였습니다."},
     LOGIN_PROFILE_NOT_EXIST : {"isSuccess" : false, "code" : 2029, "message" : "프로필 등록을 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
     LOGIN_NOT_USER_AGREE : {"isSuccess" : false, "code" : 2030, "message" : "약관동의를 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
