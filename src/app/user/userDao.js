@@ -20,31 +20,16 @@ export const selectUserByNickname = async(connection, nickname) => {
 }
 
 /** 본인인증 후 userInfo update */
-export const updateUserProfileInfo = async(connection, updateUserParams) => {
+export const updateUserAffiliation = async(connection, updateUserParams) => {
     const userInfo = updateUserParams;
 
-    console.log(updateUserParams)
-
     const updateUserQuery = 
-    `
-        UPDATE user
-        SET 
-        nickname = ?,
-        gender = ?,
-        major = ?,
-        class_of = ?,
-        auth_status = 1,
-        participate_available = 1
-
-        WHERE email_id = ?;
-    `;
+    `UPDATE user SET major = ?, student_id = ? WHERE id = ?;`;
 
     const values = [  
-      userInfo.nickname,  
-      userInfo.gender,      
       userInfo.major,       
       userInfo.studentId,    
-      userInfo.userEmail
+      userInfo.userId
     ];
   
     const updateUserRow = await connection.query(updateUserQuery, values);
