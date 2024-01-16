@@ -439,15 +439,12 @@ export const patchAlarms = async(req, res) => {
 // TODO: DAO, SERVICE 구현
 export const agreementTerms = async(req, res) => {
 
-    const userEmail = req.verifiedToken.userEmail;
-    const userId = await getUserIdByEmail(userEmail);
+    const userId = req.verifiedToken.userId;
     const userAgreed = req.body.userAgreement
 
-    if (userAgreed[0] == 0) return res.send(errResponse(baseResponse.FIRST_AGREEMENT_EMPTY));
+    if (userAgreed[0] != 'checked') return res.send(errResponse(baseResponse.FIRST_AGREEMENT_EMPTY));
 
-    if (userAgreed[1] == 0) return res.send(errResponse(baseResponse.SECOND_AGREEMENT_EMPTY));
-
-    if (userAgreed[2] == 0) return res.send(errResponse(baseResponse.THIRD_AGREEMENT_EMPTY));
+    if (userAgreed[1] != 'checked') return res.send(errResponse(baseResponse.SECOND_AGREEMENT_EMPTY));
 
     await addAgreementTerms(userId, userAgreed);
 
