@@ -14,6 +14,8 @@ import {
 } from "./profileService";
 import {getUserIdByEmail} from "../user/userProvider";
 import {userEmailIdCheckDTO} from "./profile_check_dto";
+import {userProfileDTO} from "./profileResponseDTO";
+
 
 //24.01.08 추가해야 할 부분
 /*
@@ -110,11 +112,22 @@ export const getUserParticipate = async (req, res) => {
     const getUserParticipateResponse = await showUserParticipate(user_id);
     return res.status(200).json(response(baseResponse.SUCCESS, getUserParticipateResponse));
 };
+// export const getUserProfile = async (req, res) => {
+//     const userEmail = req.verifiedToken.userEmail;
+//     // 빈 아이디 체크
+//     if (!userEmail) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+//     const user_id = await getUserIdByEmail(userEmail);
+//     const getUserProfileResponse = await showUserProfile(user_id);
+//     return res.status(200).json(response(baseResponse.SUCCESS, getUserProfileResponse));
+// };
+
 export const getUserProfile = async (req, res) => {
-    const userEmail = req.verifiedToken.userEmail;
-    // 빈 아이디 체크
-    if (!userEmail) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
-    const user_id = await getUserIdByEmail(userEmail);
-    const getUserProfileResponse = await showUserProfile(user_id);
-    return res.status(200).json(response(baseResponse.SUCCESS, getUserProfileResponse));
-};
+    const user_id = req.verifiedToken.userId;
+    //프로필용 db를 하나 더 만들면 좋지 않을까 하면서 일단 그렇게 짜봤음. 추후 상의 후 수정
+    //나중에 임의의 유저가 특정 글에서 작성자 프로필에 접근할 땐, 작성자 id로 프로필 id를 찾거나
+    //또는 프로필 id를 user테이블에 저장하는 건..비효율적?
+    const profile_id = req.params;
+    // 빈 아이디 체크 >> 나중에 미들웨어로 뺄거임 표시만
+    if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+    return userProfileDTO(showUserProfile(profile_id), user_id);
+}

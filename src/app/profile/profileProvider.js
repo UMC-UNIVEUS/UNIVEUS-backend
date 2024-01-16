@@ -149,12 +149,19 @@ export const showUserParticipate = async (user_id) => {
 };
 
 
-export const showUserProfile = async(user_id) => {
-    const connection = await pool.getConnection(async (conn) => conn);
-    const showUserProfileResult = await selectUserProfilebyId(connection, user_id);
+// export const showUserProfile = async(user_id) => {
+//     const connection = await pool.getConnection(async (conn) => conn);
+//     const showUserProfileResult = await selectUserProfilebyId(connection, user_id);
+//
+//     const changeClassof = Math.floor(showUserProfileResult[0].class_of / 100000 % 100);
+//     showUserProfileResult[0].class_of = changeClassof + "학번"
+//     connection.release();
+//     return showUserProfileResult[0];
+// };
 
-    const changeClassof = Math.floor(showUserProfileResult[0].class_of / 100000 % 100);
-    showUserProfileResult[0].class_of = changeClassof + "학번"
+export const showUserProfile = async(profile_id) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const showUserProfileResult = await selectUserProfilebyId(connection, profile_id);
     connection.release();
     return showUserProfileResult[0];
 };
