@@ -73,6 +73,7 @@ export const login = async(req, res) => {
 export const sendAuthNumber = async(req, res) => {
     const to = req.body.phoneNumber;
 
+    /** req.body에 phoneNumber가 누락 된 경우 errResponse 전송 */
     if (typeof to == "undefined") {
         return res.send(errResponse(baseResponse.VERIFY_PHONE_EMPTY));
     }
@@ -85,31 +86,33 @@ export const sendAuthNumber = async(req, res) => {
     // 서버 캐시에 인증번호 및 유저 전화번호 임시 저장, 3분동안 유효
     cache.set(to, sendAuth, 180);
 
+    /** 인증번호 전송 메세지가 성공하지 못한 경우 errResponse 전송 */
     if (!success) {
         return res.send(errResponse(baseResponse.SEND_AUTH_NUMBER_MSG_FAIL));
     } 
 
-    return res.send(response(baseResponse.SEND_AUTH_NUMBER_MSG))
+    return res.send(response(baseResponse.SUCCESS))
 }
 
 /** 인증번호 검증 API */
 export const verifyNumber = async(req, res) => {
-
-    console.log(req.body)
-
+    
     const phoneNumber = await getUserPhoneNumber(req.verifiedToken.userId);
 
+    /** phoneNumber가 null일 경우 이미 검증된 번호임*/
     if(phoneNumber != null) {
         return res.send(errResponse(baseResponse.ALREADY_AUTH_NUMBER))  
-    } 
+    }
 
     const userPhone = req.body.phoneNumber;
     const userAuthNumber = req.body.number;
 
+    /** userPhone(전화번호)가 입력되지 않는 경우 errResponse 전송*/
     if (userPhone == "") {
         return res.send(errResponse(baseResponse.VERIFY_PHONE_EMPTY));
     }
 
+    /** userAuthNumber(인증번호)가 입력되지 않는 경우 errResponse 전송*/
     if (userAuthNumber == "") {
         return res.send(errResponse(baseResponse.VERIFY_NUMBER_EMPTY));
     }
@@ -122,7 +125,7 @@ export const verifyNumber = async(req, res) => {
 
         cache.del(userPhone);
         
-        return res.send(response(baseResponse.VERIFY_NUMBER_SUCCESS));
+        return res.send(response(baseResponse.SUCCESS));
     }
     
     return res.send(errResponse(baseResponse.VERIFY_NUMBER_FAIL));
