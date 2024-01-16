@@ -123,7 +123,7 @@ export const updateAlarms = async(connection, alarm_id) => {// 알림 확인
 
 /** user의 phone 번호 update */
 export const updateUserPhoneNumber = async(connection, userPhoneNumber, userId) => {
-    const updateUserQuery = `UPDATE user SET phone = '${userPhoneNumber}' WHERE user_id = ${userId};`;
+    const updateUserQuery = `UPDATE user SET phone = '${userPhoneNumber}' WHERE id = ${userId};`;
     const updateUserRow = await connection.query(updateUserQuery);
     return updateUserRow;
 }

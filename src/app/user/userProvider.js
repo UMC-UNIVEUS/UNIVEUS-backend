@@ -1,4 +1,4 @@
-import { selectUser, selectUserByNickname, selectUserIdByEmail, selectAlarms, 
+import { selectUserByNickname, selectUserIdByEmail, selectAlarms, 
     selectUserById, selectIsParticipateOtherById,selectUserNickNameById, selectPhoneById, 
     selectAuthInfoByUserId,selectUserByNickName, selectUserReportedNum, selectUserAccountStatus,
     selectParticipateAvailalble, selectUserAgreeById } from "./userDao"
@@ -106,9 +106,9 @@ export const getUserAccountStatus = async(userEmail) => {
 }
 
 /** 유저의 phoneNumber 가져오기 */
-export const getUserPhoneNumber = async(userEmail) => {
+export const getUserPhoneNumber = async(userId) => {
     const connection = await pool.getConnection(async (conn) => conn);
-    const [getUserPhoneNumberResult] = await selectPhoneByEmail(connection, userEmail);
+    const [getUserPhoneNumberResult] = await selectPhoneById(connection, userId);
     connection.release();
     return getUserPhoneNumberResult[0].phone;
 }
