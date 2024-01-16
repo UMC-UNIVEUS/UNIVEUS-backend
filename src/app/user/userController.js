@@ -1,7 +1,7 @@
 import { baseResponse, errResponse, response } from "../../../config/response";
 import axios from "axios";
 import { addUserAffiliation, isKyonggiEmail, createAuthNum, checkAlarms, 
-    createUser, addUserPhoneNumber, addAgreementTerms } from "./userService";
+    createUser, addUserPhoneNumber, addAgreementTerms, addUserProfile } from "./userService";
 import { isUser, isNicknameDuplicate, retrieveAlarms, getUserIdByEmail, 
     getUserNickNameById, isAuthNumber, isAuthUser, 
     getUserById, getUserPhoneNumber, removeEmojisAndSpace,
@@ -408,7 +408,6 @@ export const patchAlarms = async(req, res) => {
 };
 
 /** 약관 동의 API*/
-// TODO: DAO, SERVICE 구현
 export const agreementTerms = async(req, res) => {
 
     const userId = req.verifiedToken.userId;
@@ -419,6 +418,29 @@ export const agreementTerms = async(req, res) => {
     if (userAgreed[1] != 'checked') return res.send(errResponse(baseResponse.SECOND_AGREEMENT_EMPTY));
 
     await addAgreementTerms(userId, userAgreed);
+
+    return res.send(response(baseResponse.SUCCESS));
+}
+
+/** 유저 프로필 등록*/
+export const registerUserProfile = async(req, res) => {
+    const userId = req.verifiedToken.userId;
+
+    const userProfile = {
+        nickname : req.body.nickname,
+        gender : req.body.gender
+    }
+
+    /**
+     * req.body에서 nickname이 비어있을 때
+     * req.body에서 gender가 비어있을 때
+     */
+
+    if (req.body.nickname == "") return res.send(errResponse(baseResponse.USER_NICKNAME_EMPTY));
+
+    if (req.body.gender == "") return res.send(errResponse(baseResponse.USER_GENDER_EMPTY));
+
+    await addUserProfile(userId, userProfile)
 
     return res.send(response(baseResponse.SUCCESS));
 }

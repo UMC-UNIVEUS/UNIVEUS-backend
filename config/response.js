@@ -12,6 +12,8 @@ export const baseResponse = {
     ALREADY_AUTH_NUMBER : {"isSuccess" : false, "code" : "USER0006", "message" : "이미 인증을 완료하였습니다" },
     VERIFY_NUMBER_EMPTY : {"isSuccess" : false, "code" : "USER0007", "message" : "인증번호가 입력되어있지 않습니다." },
     VERIFY_NUMBER_FAIL : {"isSuccess" : false, "code" : "USER0008", "message" : "인증번호가 올바르지 않습니다." },
+    USER_NICKNAME_EMPTY : {"isSuccess" : false, "code" : "USER0009", "message" : "닉네임이 비어있습니다." },
+    USER_GENDER_EMPTY : {"isSuccess" : false, "code" : "USER0010", "message" : "성별이 비어있습니다." },
 
     USER_FIRST_NOT_EXIST : { "isSuccess": false, "code": 2000, "message": "초대한 유저 중 첫 번째 유저가 존재하지 않습니다." },
     USER_SECOND_NOT_EXIST : { "isSuccess": false, "code": 2001, "message": "초대한 유저 중 두 번째 유저가 존재하지 않습니다." },

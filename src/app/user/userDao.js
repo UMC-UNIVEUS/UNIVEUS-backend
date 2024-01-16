@@ -189,3 +189,10 @@ export const selectUserAgreeById = async(connection, userId) => {
     const [selectUserAgreeRow] = await connection.query(selectUserAgreeQuery);
     return selectUserAgreeRow.length;
 }
+
+/** userProfile 업데이트 */
+export const updateNicknameAndGender = async(connection, userId, userProfile) => {
+    const updateUserProfileQuery = `UPDATE user SET nickname = ?, gender = ? WHERE id = ?;`
+    const updateUserParams = [userProfile.nickname, userProfile.gender, userId]
+    const [updateUserProfileRow] = await connection.query(updateUserProfileQuery, updateUserParams)
+}
