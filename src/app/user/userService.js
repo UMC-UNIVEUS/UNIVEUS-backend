@@ -1,4 +1,4 @@
-import { updateUserProfileInfo, updateAlarms, insertUserEmail, 
+import { updateUserAffiliation, updateAlarms, insertUserEmail, 
     updateUserPhoneNumber, insertAgreementTerms, updateAccountStatus, 
     updateUserReportedNum, updateParticipateAvailable, updateParticipateAvailableReturn } from "./userDao"
 import pool from "../../../config/database"
@@ -22,13 +22,11 @@ export const createAuthNum = () => {
     return Math.floor(Math.random() * 900000) + 100000;
 }
 
-/** 유저생성 - 본인인증 후 유저 생성*/
-export const addUserProfileInfo = async(userInfo) => {
-
+/** 소속등록 */
+export const addUserAffiliation = async(userInfo) => {
         const connection = await pool.getConnection(async conn => conn);
-        const authUserResult = await updateUserProfileInfo(connection, userInfo);
+        const affiliationUserResult = await updateUserAffiliation(connection, userInfo);
         connection.release();
-        return authUserResult;
 };
 
 export const checkAlarms = async(alarm_id) =>{// 알림 확인 

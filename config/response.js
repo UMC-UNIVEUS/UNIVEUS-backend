@@ -4,6 +4,10 @@ export const baseResponse = {
     SUCCESS : { "isSuccess": true, "code": 1000, "message":"성공" },
 
     //유저 관련 response msg
+
+    SIGNUP_MAJOR_EMPTY : {"isSuccess" : false, "code" : "USER0001", "message" : "학과를 입력해주세요."},
+    SIGNUP_STUDENTID_EMPTY : {"isSuccess" : false, "code" : "USER0002", "message" : "학번을 입력해주세요."},
+
     USER_FIRST_NOT_EXIST : { "isSuccess": false, "code": 2000, "message": "초대한 유저 중 첫 번째 유저가 존재하지 않습니다." },
     USER_SECOND_NOT_EXIST : { "isSuccess": false, "code": 2001, "message": "초대한 유저 중 두 번째 유저가 존재하지 않습니다." },
     USER_USERID_NOT_EXIST : { "isSuccess": false, "code": 2002, "message": "해당 유저가 존재하지 않습니다." },
@@ -11,8 +15,6 @@ export const baseResponse = {
     SIGNUP_EMAIL_KYONGGI : {"isSuccess" : false, "code" : 2004, "message" : "경기대학교 이메일만 사용 가능합니다."},
     SIGNUP_NICKNAME_EMPTY : {"isSuccess" : false, "code" : 2005, "message" : "닉네임을 입력해주세요."},
     SIGNUP_GENDER_EMPTY : {"isSuccess" : false, "code" : 2006, "message" : "성별을 입력해주세요."},
-    SIGNUP_MAJOR_EMPTY : {"isSuccess" : false, "code" : 2007, "message" : "학과를 입력해주세요."},
-    SIGNUP_STUDENTID_EMPTY : {"isSuccess" : false, "code" : 2008, "message" : "학번을 입력해주세요."},
     LOGIN_NOT_USER : {"isSuccess" : false, "code" : 100000, "message" : "회원이 아닙니다. 본인인증 페이지로 리다이렉트 됩니다." },
     SEND_AUTH_NUMBER_MSG : {"isSuccess" : true, "code" : 2010, "message" : "인증번호 문자 전송이 완료되었습니다."},
     SEND_AUTH_NUMBER_MSG_FAIL : {"isSuccess" : false, "code" : 2011, "message" : "인증번호 문자 전송을 실패했습니다."},
