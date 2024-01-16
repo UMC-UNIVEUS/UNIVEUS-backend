@@ -1,7 +1,9 @@
 import { response, errResponse, baseResponse } from "../../../config/response";
 
-export const SuccessDTO = async() =>
+export const SuccessDTO = async() => {
     return response(baseResponse.SUCCESS);
+}
+
 
 export const userProfileDTO = async(UserProfileResponse, user_id) => {
     const changeClassof = Math.floor(UserProfileResponse.class_of / 100000 % 100);
