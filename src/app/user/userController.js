@@ -95,7 +95,9 @@ export const sendAuthNumber = async(req, res) => {
 /** 인증번호 검증 API */
 export const verifyNumber = async(req, res) => {
 
-    const phoneNumber = await getUserPhoneNumber(req.verifiedToken.userEmail);
+    console.log(req.body)
+
+    const phoneNumber = await getUserPhoneNumber(req.verifiedToken.userId);
 
     if(phoneNumber != null) {
         return res.send(errResponse(baseResponse.ALREADY_AUTH_NUMBER))  
@@ -112,11 +114,10 @@ export const verifyNumber = async(req, res) => {
         return res.send(errResponse(baseResponse.VERIFY_NUMBER_EMPTY));
     }
 
-
     const authNumber = cache.get(userPhone);
 
     if (authNumber == userAuthNumber) {
-        const userId = await getUserIdByEmail(req.verifiedToken.userEmail);
+        const userId = req.verifiedToken.userId;
         addUserPhoneNumber(userPhone, userId);
 
         cache.del(userPhone);
