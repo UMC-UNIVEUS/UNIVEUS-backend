@@ -344,6 +344,10 @@ export const checkNickNameDuplicate = async (req, res) => {
 /**소속 등록 API */
 export const registerAffiliation = async (req, res) => {
 
+        /** 
+         * req.body에서 major가 누락되었을 경우 errResponse return
+         * req.body에서 studentId가 누락되었을 경울 errResponse return
+         */
         if (typeof req.body.major == "undefined") return res.send(errResponse(baseResponse.SIGNUP_MAJOR_EMPTY));
 
         if (typeof req.body.studentId == "undefined") return res.send(errResponse(baseResponse.SIGNUP_STUDENTID_EMPTY));   
