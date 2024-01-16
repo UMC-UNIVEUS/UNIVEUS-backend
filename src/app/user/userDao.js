@@ -1,8 +1,8 @@
-/** user에 Email Id insert */
-export const insertUserEmailId = async(connection, email_id) => {
-    const insertUserQuery = `INSERT INTO user (email_id) VALUES ('${email_id}');`;
+/** user에 Email insert 후 id 반환 */
+export const insertUserEmail = async(connection, userEmail) => {
+    const insertUserQuery = `INSERT INTO user (email) VALUES ('${userEmail}');`;
     const insertUserRow = await connection.query(insertUserQuery);
-    return insertUserRow
+    return insertUserRow.insertId
 }
 
 export const selectUser = async(connection, email_id) => {
@@ -53,19 +53,19 @@ export const updateUserProfileInfo = async(connection, updateUserParams) => {
 
 export const selectUserIdByEmail = async(connection,email_id) => {// 이메일로 유저 id 조회
     const selectUserIdQuery = `
-        SELECT user_id
+        SELECT id
         FROM user
-        WHERE email_id = ?;
+        WHERE email = ?;
     `;
     const selectUserIdRow = await connection.query(selectUserIdQuery,email_id);
     return selectUserIdRow[0];
 };
 
-export const selectUserNickNameById = async(connection,user_id) => {// user_id로 유저 닉네임 조회
+export const selectUserNickNameById = async(connection, userId) => {// user_id로 유저 닉네임 조회
     const selectUserNickNameByIdQuery = `
         SELECT nickname
         FROM user
-        WHERE user_id = ?;
+        WHERE id = ?;
     `;
     const [UserNickNameByIdRow] = await connection.query(selectUserNickNameByIdQuery,user_id);
     return UserNickNameByIdRow[0];
@@ -129,17 +129,17 @@ export const updateUserPhoneNumber = async(connection, userPhoneNumber, userId) 
 }
 
 /** user의 phone 번호 조회 */
-export const selectPhoneByEmail = async(connection, userEmail) => {
-    const selectPhoneByEmailQuery = `SELECT phone FROM user WHERE email_id = '${userEmail}';`;
+export const selectPhoneById = async(connection, userId) => {
+    const selectPhoneByEmailQuery = `SELECT phone FROM user WHERE id = '${ userId }';`;
     const selectPhoneByEmailRow = await connection.query(selectPhoneByEmailQuery);
     return selectPhoneByEmailRow;
 }
 
-/**user의 auth_status를 검색 */
-export const selectAuthStatusByEmail = async(connection, userEmail) => {
-    const selectAuthStatusByEmailQuery = `SELECT auth_status FROM user WHERE email_id = '${userEmail}';`;
-    const selectAuthStatusByEmailRow = await connection.query(selectAuthStatusByEmailQuery);
-    return selectAuthStatusByEmailRow;
+/**user의 본인인증 정보를 검색 */
+export const selectAuthInfoByUserId = async(connection, userId) => {
+    const selectAuthInfoByEmailQuery = `SELECT major, student_id FROM user WHERE id = '${userId}';`;
+    const selectAuthInfoByEmailRow = await connection.query(selectAuthInfoByEmailQuery);
+    return selectAuthInfoByEmailRow;
 }
 
 /** 임의 user를 insert */
@@ -196,4 +196,11 @@ export const selectParticipateAvailalble = async(connection, userId) => {
 export const updateParticipateAvailableReturn = async(connection, userId) => {
     const updateParticipateAvailableQuery = `UPDATE user SET participate_available = 1 WHERE user_id = ${userId};`;
     const updateParticipateAvailableRow = await connection.query(updateParticipateAvailableQuery);
+}
+
+/**user 약관 동의 조회 */
+export const selectUserAgreeById = async(connection, userId) => {
+    const selectUserAgreeQuery = `SELECT * FROM user_agree WHERE user_id = ${userId}`;
+    const [selectUserAgreeRow] = await connection.query(selectUserAgreeQuery);
+    return selectUserAgreeRow.length;
 }

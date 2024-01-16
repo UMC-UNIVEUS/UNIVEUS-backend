@@ -1,18 +1,14 @@
-import { updateUserProfileInfo, updateAlarms, insertUserEmailId, 
+import { updateUserProfileInfo, updateAlarms, insertUserEmail, 
     updateUserPhoneNumber, insertAgreementTerms, updateAccountStatus, 
     updateUserReportedNum, updateParticipateAvailable, updateParticipateAvailableReturn } from "./userDao"
 import pool from "../../../config/database"
 
 /** 유저 생성 - 프로필 등록, 번호인증 전 user */
 export const createUser = async(userEmail) => {
-    try {
         const connection = await pool.getConnection(async conn => conn);
-        const createUserResult = await insertUserEmailId(connection, userEmail);
+        const createUserResult = await insertUserEmail(connection, userEmail);
         connection.release();
         return createUserResult; 
-    } catch(err) {
-        console.log(err);
-    }
 }
 
 /** 경기대 이메일인지 확인 */
@@ -33,7 +29,6 @@ export const addUserProfileInfo = async(userInfo) => {
         const authUserResult = await updateUserProfileInfo(connection, userInfo);
         connection.release();
         return authUserResult;
-
 };
 
 export const checkAlarms = async(alarm_id) =>{// 알림 확인 

@@ -13,7 +13,7 @@ export const baseResponse = {
     SIGNUP_GENDER_EMPTY : {"isSuccess" : false, "code" : 2006, "message" : "성별을 입력해주세요."},
     SIGNUP_MAJOR_EMPTY : {"isSuccess" : false, "code" : 2007, "message" : "학과를 입력해주세요."},
     SIGNUP_STUDENTID_EMPTY : {"isSuccess" : false, "code" : 2008, "message" : "학번을 입력해주세요."},
-    LOGIN_NOT_USER : {"isSuccess" : false, "code" : 2009, "message" : "회원이 아닙니다. 본인인증 페이지로 리다이렉트 됩니다." },
+    LOGIN_NOT_USER : {"isSuccess" : false, "code" : 100000, "message" : "회원이 아닙니다. 본인인증 페이지로 리다이렉트 됩니다." },
     SEND_AUTH_NUMBER_MSG : {"isSuccess" : true, "code" : 2010, "message" : "인증번호 문자 전송이 완료되었습니다."},
     SEND_AUTH_NUMBER_MSG_FAIL : {"isSuccess" : false, "code" : 2011, "message" : "인증번호 문자 전송을 실패했습니다."},
     VERIFY_NUMBER_SUCCESS : {"isSuccess" : true, "code" : 2012, "message" : "휴대폰 본인인증을 성공하였습니다." },
@@ -24,7 +24,7 @@ export const baseResponse = {
     USER_USERID_EMPTY : { "isSuccess": false, "code": 2017, "message": "user_Id를 입력해주세요." },
     USER_USER_NICKNAME_LENGTH : { "isSuccess": false, "code": 2018, "message": "닉네임 길이 제한을 초과하였습니다." },
     LOGIN_NOT_AUTH_NUMBER : {"isSuccess" : false, "code" : 2019, "message" : "번호인증이 필요합니다. 번호인증 페이지로 리다이렉트 됩니다." },
-    LOGIN_NOT_AUTH_COMPLETE_USER : {"isSuccess" : false, "code" : 2020, "message" : "본인인증을 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
+    LOGIN_NOT_AUTH_COMPLETE_USER : {"isSuccess" : false, "code" : 2020, "message" : "소속인증을 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
     NOT_ADMIN :{"isSuccess" : false, "code" : 2021, "message" : "축제 때 사용해 보시라우.ᐟ" },
     FIRST_AGREEMENT_EMPTY : {"isSuccess" : false, "code" : 2022, "message" : "첫 번째 약관에 동의하지 않았습니다." },
     SECOND_AGREEMENT_EMPTY : {"isSuccess" : false, "code" : 2023, "message" : "두 번째 약관에 동의하지 않았습니다." },
@@ -33,6 +33,8 @@ export const baseResponse = {
     USERS_ACCOUNT_BLOCKED : {"isSuccess" : false, "code" : 2026, "message" : "정지된 계정입니다." },
     ALREADY_AUTH_NUMBER : {"isSuccess" : false, "code" : 2027, "message" : "이미 인증을 완료하였습니다" },
     USER_ALREADY_PARTICIPATE : {"isSuccess" : false, "code" : 2028, "message" : "오늘 참여 횟수를 모두 소진하였습니다."},
+    LOGIN_PROFILE_NOT_EXIST : {"isSuccess" : false, "code" : 2029, "message" : "프로필 등록을 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
+    LOGIN_NOT_USER_AGREE : {"isSuccess" : false, "code" : 2030, "message" : "약관동의를 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
 
     
     //게시글 관련

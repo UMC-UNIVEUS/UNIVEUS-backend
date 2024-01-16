@@ -1,15 +1,14 @@
 import { selectUser, selectUserByNickname, selectUserIdByEmail, selectAlarms, 
-    selectUserById, selectIsParticipateOtherById,selectUserNickNameById, selectPhoneByEmail, 
-    selectAuthStatusByEmail,selectUserByNickName, selectUserReportedNum, selectUserAccountStatus,
-    selectParticipateAvailalble } from "./userDao"
+    selectUserById, selectIsParticipateOtherById,selectUserNickNameById, selectPhoneById, 
+    selectAuthInfoByUserId,selectUserByNickName, selectUserReportedNum, selectUserAccountStatus,
+    selectParticipateAvailalble, selectUserAgreeById } from "./userDao"
 
 import pool from "../../../config/database"
 
 /** 회원인지 확인 */
-export const isUser = async(email_id) => {
-
+export const isUser = async(userEmail) => {
     const connection = await pool.getConnection(async (conn) => conn);
-    const isUser = await selectUser(connection, email_id);
+    const isUser = await selectUserIdByEmail(connection, userEmail);
     connection.release();
     return isUser.length;
 }
@@ -58,7 +57,7 @@ export const getUserIdByEmail = async(email_id) => {// 이메일로 유저 id �
     const connection = await pool.getConnection(async (conn) => conn);
     const [UserId] = await selectUserIdByEmail(connection, email_id);
     connection.release();
-    return UserId.user_id;
+    return UserId.id;
 };
 
 export const retrieveAlarms = async(userIdFromJWT) => {// 알림 내역 조회
@@ -70,22 +69,23 @@ export const retrieveAlarms = async(userIdFromJWT) => {// 알림 내역 조회
 };
 
 /** 번호인증을 마친 user인지 */
-export const isAuthNumber = async(userEmail) => {
+export const isAuthNumber = async(userId) => {
     const connection = await pool.getConnection(async (conn) => conn);
-    const authNumberResult = await selectPhoneByEmail(connection, userEmail);
+    const authNumberResult = await selectPhoneById(connection, userId);
     connection.release();
 
     if (authNumberResult[0][0].phone == null) return false;
     return true;
 }
 
-/** 본인인증을 마친 user인지 */
-export const isAuthUser = async(userEmail) => {
+/** 소속인증을 마친 user인지 */
+export const isAuthUser = async(userId) => {
     const connection = await pool.getConnection(async (conn) => conn);
-    const isAuthUserResult = await selectAuthStatusByEmail(connection, userEmail);
+    const isAuthUserResult = await selectAuthInfoByUserId(connection, userId);
     connection.release();
 
-    if(isAuthUserResult[0][0].auth_status == null) return false;
+    if(isAuthUserResult[0].length == 0) return false;
+
     return true;
 }
 
@@ -127,4 +127,20 @@ export const getParticipateAvailable = async (userId) => {
     connection.release();
 
     return isParticipateAvailable;
+}
+
+/** 유저의 프로필 확인 */
+export const isProfileExist = async (userId) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const userProfile = await selectUserNickNameById(connection, userId);
+    connection.release();
+    return userProfile
+}
+
+/** 약관동의 유저 확인 */
+export const isUserAgree = async (userId) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const userAgree = await selectUserAgreeById(connection, userId);
+    connection.release();
+    return userAgree
 }
