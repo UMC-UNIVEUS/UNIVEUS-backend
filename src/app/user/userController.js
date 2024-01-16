@@ -356,29 +356,6 @@ export const registerAffiliation = async (req, res) => {
         
         await addUserAffiliation(userInfo);
 
-//         const to = await getUserPhoneNumber(userEmail);
-
-//         const content = `
-// [UNIVEUS] 
-// 안녕하세요. ${userInfo.nickname} 학우 님! 유니버스에 오신것을 환영합니다 :)
-
-// 문의사항 : https://www.instagram.com/unive.us 
-
-// **(중요)유니버스 사용 수칙**
-
-// - 함께 [생성/참여] 할 친구 또한 회원가입이 되어 있어야 해요.
-// 1인 신청은 불가합니다 :(
-    
-// 1. 모임을 생성하셨다면, 생성과 동시에 타 모임 참여는 불가능합니다!
-// 하루에 생성과 참여 둘 중 하나만 가능해요.
-// *생성 이후 타 모임에 참여로 바꾸고 싶다면 매칭 되기 전 생성된 모임을 삭제하시면 됩니다.
-// 2. 모임을 [생성] 할 시 “카카오톡 오픈채팅”방을 먼저 생성해주세요
-// [참여]는 상관 없습니다.
-// 3. 모임을 생성/참가한 후 함께하는 친구의 닉네임을 (꼭!) 추가해주세요
-// - 유니버스 접속링크 : https://univeus.com`;
-
-        // const { success } = await sendSMS(naverCloudSensSecret, { to, content });
-
         return res.send(response(baseResponse.SUCCESS));
 };
 
