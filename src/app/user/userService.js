@@ -54,8 +54,10 @@ export const addUserPhoneNumber = async(userPhoneNumber, userId) => {
 export const addAgreementTerms = async(userId, agreementParams) => {
     const connection = await pool.getConnection(async conn => conn);
 
-    for (let i = 1; i <= agreementParams.length; i++) {
-        insertAgreementTerms(connection, userId, i);
+    for (let i = 0; i < agreementParams.length; i++) {
+        if (agreementParams[i] == 'checked') {
+            insertAgreementTerms(connection, userId, i + 1);
+        }
     }
 
     connection.release();

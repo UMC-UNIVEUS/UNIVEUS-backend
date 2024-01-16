@@ -16,6 +16,6 @@ userRouter.post('/nickname/check', wrapAsync(checkNickNameDuplicate));
 userRouter.post('/start/univeus', jwtMiddleware, wrapAsync(startUniveUs));
 userRouter.get('/:user_id/alarm', jwtMiddleware, wrapAsync(accountStatusMiddleware), wrapAsync(getAlarms)); // 알림 내역 조회 API
 userRouter.patch('/:user_id/alarm', jwtMiddleware, wrapAsync(accountStatusMiddleware), wrapAsync(patchAlarms)); // 알림 확인 API
-userRouter.post('/agreement', jwtMiddleware, wrapAsync(accountStatusMiddleware), wrapAsync(agreementTerms));
+userRouter.post('/agreement', jwtMiddleware, agreementTerms);
 
 export default userRouter;
