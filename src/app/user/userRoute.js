@@ -1,8 +1,7 @@
 import express from "express"
 import {sendAuthNumber, login, 
-    verifyNumber,
-    checkNickNameDuplicate, registerAffiliation,
-    getAlarms, patchAlarms, agreementTerms} from "./userController"
+    verifyNumber, checkNickNameDuplicate, registerAffiliation,
+    getAlarms, patchAlarms, agreementTerms, registerUserProfile} from "./userController"
 import { jwtMiddleware } from "../../../config/jwtMiddleWare";
 import { accountStatusMiddleware } from "../../../config/accountStatusMiddleware";
 import {wrapAsync} from "../../../config/errorhandler";
@@ -17,5 +16,6 @@ userRouter.post('/register/affiliation', jwtMiddleware, wrapAsync(registerAffili
 userRouter.get('/:user_id/alarm', jwtMiddleware, wrapAsync(accountStatusMiddleware), wrapAsync(getAlarms)); // 알림 내역 조회 API
 userRouter.patch('/:user_id/alarm', jwtMiddleware, wrapAsync(accountStatusMiddleware), wrapAsync(patchAlarms)); // 알림 확인 API
 userRouter.post('/agreement', jwtMiddleware, agreementTerms);
+userRouter.post('/register/profile', jwtMiddleware, registerUserProfile);
 
 export default userRouter;
