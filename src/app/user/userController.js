@@ -41,7 +41,7 @@ export const login = async(req, res) => {
         return res.send(response(baseResponse.LOGIN_NOT_USER, { accessToken }));
     }
     
-    userId = await getUserIdByEmail("dlacodus0407@kyonggi.ac.kr" /**userEmail*/);
+    userId = await getUserIdByEmail(userEmail);
 
     const accessToken = jwt.sign({ userId : userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '100days', issuer : 'univeus' })    
 
