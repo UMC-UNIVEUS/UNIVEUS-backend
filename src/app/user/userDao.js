@@ -1,7 +1,8 @@
 /** user에 Email insert 후 id 반환 */
 export const insertUserEmail = async(connection, userEmail) => {
     const insertUserQuery = `INSERT INTO user (email) VALUES ('${userEmail}');`;
-    const insertUserRow = await connection.query(insertUserQuery);
+    const [insertUserRow] = await connection.query(insertUserQuery);
+
     return insertUserRow.insertId
 }
 
@@ -52,8 +53,9 @@ export const selectUserNickNameById = async(connection, userId) => {// user_id�
         FROM user
         WHERE id = ?;
     `;
-    const [UserNickNameByIdRow] = await connection.query(selectUserNickNameByIdQuery,user_id);
-    return UserNickNameByIdRow[0];
+    const [userNickNameByIdRow] = await connection.query(selectUserNickNameByIdQuery, userId);
+
+    return userNickNameByIdRow[0];
 };
 
 export const selectUserById = async(connection,user_id) => {// id로 유저 전체 조회
@@ -123,8 +125,8 @@ export const selectPhoneById = async(connection, userId) => {
 /**user의 본인인증 정보를 검색 */
 export const selectAuthInfoByUserId = async(connection, userId) => {
     const selectAuthInfoByEmailQuery = `SELECT major, student_id FROM user WHERE id = '${userId}';`;
-    const selectAuthInfoByEmailRow = await connection.query(selectAuthInfoByEmailQuery);
-    return selectAuthInfoByEmailRow;
+    const [selectAuthInfoByEmailRow] = await connection.query(selectAuthInfoByEmailQuery);
+    return selectAuthInfoByEmailRow[0];
 }
 
 /** 임의 user를 insert */

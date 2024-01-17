@@ -38,6 +38,7 @@ export const login = async(req, res) => {
     // 구글 로그인을 해 본 유저인지 확인
     if (!await isUser(userEmail)) {
         userId = await createUser(userEmail);
+        const accessToken = jwt.sign({ userId : userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '100days', issuer : 'univeus' })   
         return res.send(response(baseResponse.LOGIN_NOT_USER, { accessToken }));
     }
     
@@ -47,25 +48,26 @@ export const login = async(req, res) => {
 
     if(!accessToken) return res.send(errResponse(baseResponse.VERIFIED_ACCESS_TOKEN_EMPTY));
 
+    // 번호인증을 한 유저인지 확인
     if (!await isAuthNumber(userId)) {
         return res.send(response(baseResponse.LOGIN_NOT_AUTH_NUMBER, { accessToken }));
     }
-
-    // TODO 이용약관 동의 여부 확인
+    // 약관 동의를 한 유저인지 확인
     if (!await isUserAgree(userId)) {
         return res.send(response(baseResponse.LOGIN_NOT_USER_AGREE, { accessToken }));
     }
 
-    // 소속인증 한 유저
+    // 소속인증 한 유저인지 확인
     if (!await isAuthUser(userId)) {
         return res.send(response(baseResponse.LOGIN_NOT_AUTH_COMPLETE_USER, { accessToken }));
     }
 
-    // 프로필 유무 확인
+    // 프로필등록을 한 유저인지 확인
     if (!await isProfileExist(userId)) {
         return res.send(response(baseResponse.LOGIN_PROFILE_NOT_EXIST, { accessToken }));
     }
 
+    // 성공 시 response 반환
     return res.send(response(baseResponse.SUCCESS,{ accessToken }));
 }
 

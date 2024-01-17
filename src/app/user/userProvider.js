@@ -82,9 +82,10 @@ export const isAuthNumber = async(userId) => {
 export const isAuthUser = async(userId) => {
     const connection = await pool.getConnection(async (conn) => conn);
     const isAuthUserResult = await selectAuthInfoByUserId(connection, userId);
+
     connection.release();
 
-    if(isAuthUserResult[0].length == 0) return false;
+    if(isAuthUserResult.major == null || isAuthUserResult.student_id == null) return false;
 
     return true;
 }
@@ -133,8 +134,12 @@ export const getParticipateAvailable = async (userId) => {
 export const isProfileExist = async (userId) => {
     const connection = await pool.getConnection(async (conn) => conn);
     const userProfile = await selectUserNickNameById(connection, userId);
+    
     connection.release();
-    return userProfile
+
+    if (userProfile.nickname == null) return false
+    
+    return true
 }
 
 /** 약관동의 유저 확인 */
