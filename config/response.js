@@ -14,6 +14,11 @@ export const baseResponse = {
     VERIFY_NUMBER_FAIL : {"isSuccess" : false, "code" : "USER0008", "message" : "인증번호가 올바르지 않습니다." },
     USER_NICKNAME_EMPTY : {"isSuccess" : false, "code" : "USER0009", "message" : "닉네임이 비어있습니다." },
     USER_GENDER_EMPTY : {"isSuccess" : false, "code" : "USER0010", "message" : "성별이 비어있습니다." },
+    LOGIN_NOT_USER : {"isSuccess" : false, "code" : "USER0011", "message" : "회원이 아닙니다. 본인인증 페이지로 리다이렉트 됩니다." },
+    LOGIN_NOT_AUTH_NUMBER : {"isSuccess" : false, "code" : "USER0012", "message" : "번호인증이 필요합니다. 번호인증 페이지로 리다이렉트 됩니다." },
+    LOGIN_NOT_USER_AGREE : {"isSuccess" : false, "code" : "USER0013", "message" : "약관동의를 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
+    LOGIN_NOT_AUTH_COMPLETE_USER : {"isSuccess" : false, "code" : "USER0014", "message" : "소속인증을 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
+    LOGIN_PROFILE_NOT_EXIST : {"isSuccess" : false, "code" : "USER0015", "message" : "프로필 등록을 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
 
     USER_FIRST_NOT_EXIST : { "isSuccess": false, "code": 2000, "message": "초대한 유저 중 첫 번째 유저가 존재하지 않습니다." },
     USER_SECOND_NOT_EXIST : { "isSuccess": false, "code": 2001, "message": "초대한 유저 중 두 번째 유저가 존재하지 않습니다." },
@@ -22,15 +27,13 @@ export const baseResponse = {
     SIGNUP_EMAIL_KYONGGI : {"isSuccess" : false, "code" : 2004, "message" : "경기대학교 이메일만 사용 가능합니다."},
     SIGNUP_NICKNAME_EMPTY : {"isSuccess" : false, "code" : 2005, "message" : "닉네임을 입력해주세요."},
     SIGNUP_GENDER_EMPTY : {"isSuccess" : false, "code" : 2006, "message" : "성별을 입력해주세요."},
-    LOGIN_NOT_USER : {"isSuccess" : false, "code" : 100000, "message" : "회원이 아닙니다. 본인인증 페이지로 리다이렉트 됩니다." },
+    
 
     NICK_NAME_DUPLICATE : {"isSuccess" : false, "code" : 2014, "message" : "닉네임이 중복됩니다." },
     SIGNUP_PHONE_NUMBER_EMPTY : {"isSuccess" : false, "code" : 2015, "message" : "전화번호를 입력해주세요."},
     USER_USERID_USERIDFROMJWT_NOT_MATCH : {"isSuccess":false, "code":2016, "message":"user_id와 userIdFromJWT가 일치하지 않습니다."},
     USER_USERID_EMPTY : { "isSuccess": false, "code": 2017, "message": "user_Id를 입력해주세요." },
     USER_USER_NICKNAME_LENGTH : { "isSuccess": false, "code": 2018, "message": "닉네임 길이 제한을 초과하였습니다." },
-    LOGIN_NOT_AUTH_NUMBER : {"isSuccess" : false, "code" : 2019, "message" : "번호인증이 필요합니다. 번호인증 페이지로 리다이렉트 됩니다." },
-    LOGIN_NOT_AUTH_COMPLETE_USER : {"isSuccess" : false, "code" : 2020, "message" : "소속인증을 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
     NOT_ADMIN :{"isSuccess" : false, "code" : 2021, "message" : "축제 때 사용해 보시라우.ᐟ" },
     FIRST_AGREEMENT_EMPTY : {"isSuccess" : false, "code" : 2022, "message" : "첫 번째 약관에 동의하지 않았습니다." },
     SECOND_AGREEMENT_EMPTY : {"isSuccess" : false, "code" : 2023, "message" : "두 번째 약관에 동의하지 않았습니다." },
@@ -39,8 +42,6 @@ export const baseResponse = {
     USERS_ACCOUNT_BLOCKED : {"isSuccess" : false, "code" : 2026, "message" : "정지된 계정입니다." },
 
     USER_ALREADY_PARTICIPATE : {"isSuccess" : false, "code" : 2028, "message" : "오늘 참여 횟수를 모두 소진하였습니다."},
-    LOGIN_PROFILE_NOT_EXIST : {"isSuccess" : false, "code" : 2029, "message" : "프로필 등록을 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
-    LOGIN_NOT_USER_AGREE : {"isSuccess" : false, "code" : 2030, "message" : "약관동의를 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
 
     
     //게시글 관련
