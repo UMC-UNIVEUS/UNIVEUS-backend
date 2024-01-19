@@ -81,16 +81,6 @@ export const selectIsParticipateOtherById = async(connection,user_id) => {// id�
     return IsParticipateOtherByIdRow[0];
 };
 
-export const selectUserByNickName = async(connection,nickname) => {// 닉네임으로 유저 전체 조회
-    const selectUserByNickNameQuery = `
-        SELECT *
-        FROM user
-        WHERE nickname = ?;
-    `;
-    const [UserByNickNameRow] = await connection.query(selectUserByNickNameQuery,nickname);
-    return UserByNickNameRow[0];
-};
-
 export const selectAlarms = async(connection, userIdFromJWT) => {// 알림 내역 조회
     const selectAlarmsQuery = `
         SELECT *
@@ -174,13 +164,6 @@ export const selectUserAccountStatus = async(connection, userEmail) => {
 export const updateParticipateAvailable = async(connection, userId) => {
     const updateParticipateAvailableQuery = `UPDATE user SET participate_available = 0 WHERE user_id = ${userId};`;
     const updateParticipateAvailableRow = await connection.query(updateParticipateAvailableQuery);
-}
-
-/** 참여가능 횟수 조회 */
-export const selectParticipateAvailalble = async(connection, userId) => {
-    const selectParticipateAvailalbleQuery = `SELECT participate_available FROM user WHERE user_id = ${userId};`;
-    const [selectParticipateAvailalbleRow] = await connection.query(selectParticipateAvailalbleQuery);
-    return selectParticipateAvailalbleRow[0].participate_available;
 }
 
 export const selectUserParticipateStatusById = async(connection, selectUserParticipateStatusParams ) =>{

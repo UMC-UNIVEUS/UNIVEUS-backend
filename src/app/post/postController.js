@@ -1,38 +1,14 @@
 import dotenv from "dotenv";
 import {baseResponse, response, errResponse} from "../../../config/response";
-import {retrievePost, retrieveParticipant, retrievePostImages, isValidOpenChat, getWaiterNum} from "./postProvider";
+import {retrievePost, retrieveParticipant, retrievePostImages, getWaiterNum} from "./postProvider";
 import {
-    createPost,
-    createPostImage,
-    editPost,
-    patchPostImage,
-    removePost,
-    addLike,
-    applyParticipant,
-    registerParticipant,
-    refuseParticipant,
-    applyUniveus,
-    closeUniveus,
-    inviteOneParticipant
-    ,
-    changePostStatus,
-    removeParticipant,
-    changeStatus,
-    changeCurrentPeople,
-    removePostParticipants,
-    cancelLike,
-    sendAlarm
+    createPost, createPostImage, editPost, patchPostImage, removePost, addLike,
+    proposeParticipation, registerParticipant, applyUniveus, closeUniveus, changePostStatus,
+    removeParticipant, changeStatus, changeCurrentPeople, cancelLike, sendAlarm, approveParticipation
 } from "./postService";
-import {
-    getUserIdByEmail,
-    getUserByNickName,
-    getUserById,
-    getIsParticipateOtherById,
-    getParticipateAvailable,
-    getUserParticipateStatusById
-} from "../user/userProvider";
-import { sendCreatePostMessageAlarm, sendParticipantMessageAlarm, sendCancelMessageAlarm} from "../user/userController"
-import { changeParticipateAvailable, returnParticipateAvailable } from "../user/userService";
+import {getUserByNickName,getUserById,getParticipateAvailable,getUserParticipateStatusById} from "../user/userProvider";
+import { sendParticipantMessageAlarm, sendCancelMessageAlarm} from "../user/userController"
+import { changeParticipateAvailable } from "../user/userService";
 import {postPostResponseDTO} from "./postDto";
 dotenv.config();
 
@@ -78,9 +54,9 @@ export const getPost = async(req, res) => {
  * API name : 게시글 작성
  * POST: /post
  */
-export const postPost = async(req, res) => { // 일단 나는 Controller에서 에러 핸들링을 함
+export const postPost = async(req, res) => {
 
-    const userIdFromJWT = req.verifiedToken.userId; // 이 부분에서 userId를 못 찾는 에러가 발생함
+    const userIdFromJWT = req.verifiedToken.userId;
 
     const end_datetime = new Date(req.body.meeting_datetime);
     end_datetime.setHours(end_datetime.getHours() + 9 - 2); // UTC >> KST로 바꿔주고, 2시간 전으로 지정
@@ -118,7 +94,6 @@ export const postPost = async(req, res) => { // 일단 나는 Controller에서 �
     }
 
     const Post = await createPost(userIdFromJWT, body);
-    const Writer = await applyUniveus(Post.insertId,userIdFromJWT);
 
     if(typeof body.images != "undefined") await createPostImage(body.images,Post.insertId);
 
@@ -229,7 +204,7 @@ export const patchLikeCancel = async(req,res)=>{
  * API name : 게시글 참여 신청 + 참여 신청 알람(to 작성자)
  * POST: /post/{post_id}/participant/request
  */
-export const requestParticipant = async(req, res) => {
+export const requestParticipation = async(req, res) => {
 
     const {post_id} = req.params;
     const userIdFromJWT = req.verifiedToken.userId;
@@ -245,9 +220,9 @@ export const requestParticipant = async(req, res) => {
     const participateWaiterNum = await getWaiterNum(post_id);
     if(participateWaiterNum.num >= 10) return res.send(errResponse(baseResponse.POST_WAITER_LIMIT));
 
-    const requestParticipantResult = await applyParticipant(post_id, userIdFromJWT);
+    const requestParticipationResult = await proposeParticipation(post_id, userIdFromJWT);
     const sendAlarmToWriter = await sendAlarm(post_id, Post.user_id, 1);
-    return res.send(response(baseResponse.SUCCESS, requestParticipantResult));
+    return res.send(response(baseResponse.SUCCESS, requestParticipationResult));
 
 };
 
@@ -266,33 +241,6 @@ export const patchParticipant = async(req, res) => {
         if(Post){
             const patchParticipantResult = await registerParticipant(post_id, participant_id);
             return res.send(response(baseResponse.SUCCESS, patchParticipantResult));
-        } 
-        else{ 
-            return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
-        }
-    }
-    else{
-        return res.send(errResponse(baseResponse.USER_USERID_USERIDFROMJWT_NOT_MATCH));
-    }
-};
-
-/**
- * API name : 게시글 참여자 거절 + 참여 거절 알람(to 참여자)
- * DELETE: /{post_id}/participant/refuse
- */
-export const deleteParticipant = async(req, res) => {
-    
-    const {post_id} = req.params;
-    const {participant_id, user_id} = req.body;
-    const userEmail = req.verifiedToken.userEmail;
-    const userIdFromJWT = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID (작성자 ID 여야 함)
-    
-    const Post = await retrievePost(post_id); 
-    
-    if(user_id == userIdFromJWT){
-        if(Post){ 
-            const deleteParticipantResult = await refuseParticipant(post_id, participant_id);
-            return res.send(response(baseResponse.SUCCESS, deleteParticipantResult));
         } 
         else{ 
             return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
@@ -381,7 +329,6 @@ export const participateUniveus = async(req, res) => {
 
         if (invited_userNickNamesFromAPI[0] == " ") return res.send(errResponse(baseResponse.POST_INVITE_EMPTY)); 
 
-        const guest = await getUserByNickName(invited_userNickNamesFromAPI[0]); 
 
         if (typeof guest == "undefined") return res.send(errResponse(baseResponse.POST_PARTICIPANT_NOT_EXIST));
 
@@ -398,11 +345,6 @@ export const participateUniveus = async(req, res) => {
         const genderAllowed = Post.limit_gender == 0 || (Post.limit_gender == Invitee.gender && Post.limit_gender == guest.gender);
 
         if(!genderAllowed) return res.send(errResponse(baseResponse.POST_GENDER_LIMIT));
-
-        if (await getParticipateAvailable(userIdFromJWT) == 0) return res.send(errResponse(baseResponse.USER_ALREADY_PARTICIPATE));
-
-        if (await getParticipateAvailable(guest.user_id) == 0) return res.send(errResponse(baseResponse.USER_ALREADY_PARTICIPATE));
-
                             
             // 정상적인 참여
         const alreadyParticipant = await getUserById(participant_userIDsFromDB[0]); 
@@ -543,13 +485,3 @@ export const postImage = async(req, res) => {
     if (!fileResponse) return res.send(errResponse(baseResponse.S3_ERROR));
     return res.send(response(baseResponse.SUCCESS, fileResponse));
 };
-
-/** kakao 오픈채팅링크 유효성 검사 */
-export const validateOpentChatLink =  async(req, res) => {
-    const openChaturi = req.body.openChaturi;
-
-    if (isValidOpenChat(openChaturi)) {
-        return res.send(response(baseResponse.SUCCESS));
-    }
-    return res.send(errResponse(baseResponse.OPEN_CHAT_URI_NOT_VALID));
-}

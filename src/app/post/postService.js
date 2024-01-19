@@ -4,9 +4,8 @@
 import pool from "../../../config/database";
 import {
     insertPost, insertPostImages, updatePost, updatePostImages, erasePost, insertLike,
-    insertParticipant, updateParticipant, deleteParticipant, insertUniveus,
-    addParticipant, blockUniveus, switchPostStatus, eraseParticipant,
-    updateStatus, updateCurrentPeople, erasePostParticipants, deleteLike, insertAlarm
+    askParticipation, updateParticipant, addParticipant, blockUniveus, switchPostStatus,
+    eraseParticipant, updateStatus, updateCurrentPeople, deleteLike, insertAlarm, acceptParticipation
 } from "./postDao";
 
 export const createPost = async(userIdFromJWT, body) =>{ // 게시글 생성
@@ -90,12 +89,12 @@ export const sendAlarm = async(post_id,user_id, type)=>{ // 알림 보내기, ty
 }
 
 
-export const applyParticipant = async(post_id, userIdFromJWT) =>{// 게시글 참여 신청
+export const proposeParticipation = async(post_id, userIdFromJWT) =>{// 게시글 참여 신청
 
-    const insertParticipantParams =[post_id, userIdFromJWT];
+    const proposeParticipationParams =[post_id, userIdFromJWT];
 
     const connection = await pool.getConnection(async conn => conn);
-    const applyParticipantResult = await insertParticipant(connection,insertParticipantParams);
+    const proposeParticipationResult = await askParticipation(connection,proposeParticipationParams);
     connection.release();
 };
 
@@ -108,15 +107,6 @@ export const registerParticipant = async(post_id, participant_id) =>{// 게시�
     connection.release();
 };
 
-export const refuseParticipant = async(post_id, participant_id) =>{// 게시글 참여자 거절 + 참여 거절 알람(to 참여자)
-
-    const deleteParticipantParams =[post_id, participant_id]; 
-
-    const connection = await pool.getConnection(async conn => conn);
-    const refuseParticipantResult = await deleteParticipant(connection,deleteParticipantParams);
-    connection.release();
-};
-
 export const changeStatus = async(post_id)=>{// 게시글 모집 마감으로 변경
 
     const connection = await pool.getConnection(async conn => conn);
@@ -124,12 +114,12 @@ export const changeStatus = async(post_id)=>{// 게시글 모집 마감으로 �
     connection.release();
 };
 
-export const applyUniveus = async(post_id, participant_id) =>{// 유니버스 참여
+export const approveParticipation = async(postId, userId) =>{// 게시글 참여 신청 승인
 
-    const applyUniveusParams =[post_id, participant_id]; 
+    const approveParticipationParams =[postId, userId];
 
     const connection = await pool.getConnection(async conn => conn);
-    const applyUniveusResult = await insertUniveus(connection,applyUniveusParams);
+    const approveParticipationResult = await acceptParticipation(connection,approveParticipationParams);
     connection.release();
 };
 

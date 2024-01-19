@@ -68,14 +68,6 @@ export const formatingEndDate = (post) => {
     Object.assign(post, datetime);
 }
 
-/** kakao 유효성 검사 */
-export const isValidOpenChat = (openChaturi) => {
-    
-    if (openChaturi.startsWith("https://open.kakao.com/")) return true;
-
-    return false;
-}
-
 /** 게시글에 참여 신청한 대기자 인원수 조회*/
 export const getWaiterNum = async(post_id) =>{
 

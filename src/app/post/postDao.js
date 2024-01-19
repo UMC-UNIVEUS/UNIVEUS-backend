@@ -43,7 +43,12 @@ export const insertPost = async(connection, insertPostParams)=>{ // 게시글 �
         VALUES (?,?,?,?,?, ?,?,?, ?,?,?, 1,now(),"RECRUITING");
     `;
 
-    const insertPostRow = await connection.query(postPostQuery, insertPostParams); //insertPostRow.insertId는 생성된 post의 post_id
+    const participateWriterQuery = `
+        INSERT INTO participant_user(post_id, user_id, status) 
+        VALUES (?,?, 'WRITER');
+    `;
+    const insertPostRow = await connection.query(postPostQuery,insertPostParams); //insertPostRow[0].insertId는 생성된 post의 post_id
+    const participateWriterRow = await connection.query(participateWriterQuery, [insertPostRow[0].insertId, insertPostParams[0]]);
     return insertPostRow[0];
 };
 
@@ -139,12 +144,12 @@ export const insertAlarm = async (connection, sendAlarmParams, type)=>{
     const insertAlarmRow = await connection.query(insertAlarmQuery, sendAlarmParams);
 }
 
-export const insertParticipant = async(connection, insertParticipantParams)=>{// 게시글 참여 신청
-    const postParticipantQuery = `
+export const askParticipation = async(connection, insertParticipantParams)=>{// 게시글 참여 신청
+    const askParticipationQuery = `
         INSERT INTO participant_user(post_id, user_id, status) 
         VALUES (?,?, "WAITING");
     `;
-    const postParticipantRow = await connection.query(postParticipantQuery, insertParticipantParams);
+    const askParticipationRow = await connection.query(askParticipationQuery, insertParticipantParams);
 };
 
 
@@ -170,20 +175,6 @@ export const updateParticipant = async(connection, insertParticipantParams)=>{//
     const addParticipantAlarmRow = await connection.query(addParticipantAlarmQuery, insertParticipantParams);
 };
 
-export const deleteParticipant = async(connection, deleteParticipantParams)=>{// 게시글 참여자 거절 + 참여 거절 알람(to 참여자)
-    const deleteParticipantQuery = `
-        DELETE FROM participant_users
-        WHERE participant_id= ?;
-    `;
-
-    const addParticipantAlarmQuery = `
-        INSERT INTO alarm(post_id, user_id, alarm_type) 
-        VALUES (?,(SELECT user_id FROM participant_users WHERE participant_id = ?),"reject_alram");
-    `;
-    const addParticipantAlarmRow = await connection.query(addParticipantAlarmQuery, deleteParticipantParams);
-    const approveParticipantRow = await connection.query(deleteParticipantQuery, deleteParticipantParams[1]);
-};
-
 export const updateStatus = async(connection, post_id)=>{// 게시글 모집 마감으로 벼경
     const updateStatusQuery = `
         UPDATE post 
@@ -193,11 +184,12 @@ export const updateStatus = async(connection, post_id)=>{// 게시글 모집 마
     const updateStatusRow = await connection.query(updateStatusQuery, post_id);
 };
 
-export const insertUniveus = async(connection, insertParticipantParams)=>{// 유니버스 참여 완료로 변경, post_id, participant_id
+export const acceptParticipation = async(connection, insertParticipantParams)=>{// 게시글 참여 신청 승인
      
-    const postUniveusQuery = `
-        INSERT INTO participant_user(post_id, user_id, status) 
-        VALUES (?,?, "PARTICIPATE_COMPLETE");
+    const acceptParticipationQuery = `
+        UPDATE participant_user
+        SET status = 'PARTICIPATING'
+        WHERE post_id = ? AND user_id = ?;
     `;
 
     const addCurrentPeopleQuery = `
@@ -206,14 +198,14 @@ export const insertUniveus = async(connection, insertParticipantParams)=>{// 유
         WHERE id = ?;
     `;
 
-    const applyParticipantAlarmQuery = `
+    const acceptParticipationAlarmQuery = `
         INSERT INTO alarm(post_id, receiver_id, type) 
-        VALUES (?, ?,"PARTICIPATE_COMPLETE_ALARM");
+        VALUES (?, ?,"PARTICIPATION_COMPLETE_ALARM");
     `;
 
-    const postUniveusRow = await connection.query(postUniveusQuery, insertParticipantParams);
+    const postUniveusRow = await connection.query(acceptParticipationQuery, insertParticipantParams);
     const addCurrentPeopleRow = await connection.query(addCurrentPeopleQuery, insertParticipantParams[0]);
-    const applyParticipantAlarmRow = await connection.query(applyParticipantAlarmQuery, insertParticipantParams);
+    const applyParticipantAlarmRow = await connection.query(acceptParticipationAlarmQuery, insertParticipantParams);
 };
 
 export const addParticipant = async(connection, askParticipantParams)=>{// 유니버스 초대 (언젠간 쓰일 예정...)
