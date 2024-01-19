@@ -1,5 +1,5 @@
 import pool from "../../../config/database"
-import { selectPost, selectParticipant, selectPostImages, selectParticipantList } from "./postDao";
+import {selectPost, selectParticipant, selectPostImages, selectWaiterNum} from "./postDao";
 import dayjs from 'dayjs';
 
 export const retrievePost = async(post_id) =>{
@@ -24,15 +24,6 @@ export const retrieveParticipant = async(post_id)=>{
   
     const connection = await pool.getConnection(async conn => conn);
     const participantResult = await selectParticipant(connection,post_id);
-    connection.release();
-
-    return participantResult;
-};
-
-export const retrieveParticipantList = async(post_id)=>{ //게시글 참여자 신청 내역 조회 
-  
-    const connection = await pool.getConnection(async conn => conn);
-    const participantResult = await selectParticipantList(connection,post_id);
     connection.release();
 
     return participantResult;
@@ -84,3 +75,13 @@ export const isValidOpenChat = (openChaturi) => {
 
     return false;
 }
+
+/** 게시글에 참여 신청한 대기자 인원수 조회*/
+export const getWaiterNum = async(post_id) =>{
+
+    const connection = await pool.getConnection(async conn => conn);
+    const waiterNumResult = await selectWaiterNum(connection,post_id);
+    connection.release();
+
+    return waiterNumResult[0];
+};

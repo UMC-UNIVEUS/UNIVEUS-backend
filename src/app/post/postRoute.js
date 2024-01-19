@@ -1,23 +1,26 @@
 import express from "express"
 import {handleMulterErrors, uploadImage} from '../../../config/imageUploader';
-import {getPost, postPost, patchPost, deletePost, patchLike, postParticipant,
-    getParticipant, patchParticipant, deleteParticipant, patchStatus,postOneDayAlarm, participateUniveus,
-    cancelParticipant, postImage, validateOpentChatLink} from "./postController";
+import {
+    getPost, postPost, patchPost, deletePost, patchLike, requestParticipant,
+    patchParticipant, deleteParticipant, patchStatus, postOneDayAlarm, participateUniveus,
+    cancelParticipant, postImage, validateOpentChatLink, patchLikeCancel
+} from "./postController";
 import { jwtMiddleware } from "../../../config/jwtMiddleWare";
 import {wrapAsync} from "../../../config/errorhandler";
-import {adminMiddleware} from "../../../config/adminMiddleware" 
+import {adminMiddlewar} from "../../../config/adminMiddleware"
 
 const postRouter = express.Router();
 
 postRouter.get('/:post_id',jwtMiddleware, wrapAsync(getPost)); // 게시글(+참여자 목록) 조회 API
-postRouter.post('/', wrapAsync(postPost)); // 게시글 작성 API ( axios에러 땜시 jwt미들웨어, admin 미들웨어 일단 없앰)
+postRouter.post('/', jwtMiddleware, wrapAsync(postPost)); // 게시글 작성 API ( axios에러 땜시 jwt미들웨어, admin 미들웨어 일단 없앰)
 postRouter.post('/image/upload',jwtMiddleware, uploadImage.array('image', 4), handleMulterErrors, postImage);
-postRouter.patch('/:post_id', wrapAsync(patchPost)); // 게시글 수정 API
+postRouter.patch('/:post_id', jwtMiddleware, wrapAsync(patchPost)); // 게시글 수정 API
 postRouter.delete('/:post_id', jwtMiddleware, wrapAsync(deletePost)); // 게시글 삭제 API
 postRouter.patch('/:post_id/like', jwtMiddleware, wrapAsync(patchLike)); // 게시글 좋아요 API
-postRouter.get('/:post_id/participant', jwtMiddleware, wrapAsync(getParticipant)); // 게시글 참여자 신청 내역 조회 API
-postRouter.post('/:post_id/participant/apply', jwtMiddleware, adminMiddleware, wrapAsync(postParticipant)); // 게시글 참여 신청 API + 참여 신청 알람(to 작성자) API
-postRouter.patch('/:post_id/participant/register', jwtMiddleware, adminMiddleware, wrapAsync(patchParticipant)); // 게시글 참여 승인 API + 참여 승인 알람(to 참여자) API
+postRouter.patch('/:post_id/like/cancel', jwtMiddleware, wrapAsync(patchLikeCancel)); // 게시글 좋아요 취소 API
+
+postRouter.post('/:post_id/participant/request', jwtMiddleware, wrapAsync(requestParticipant)); // 게시글 참여 신청 API + 참여 신청 알람(to 작성자) API
+postRouter.patch('/:post_id/participant/register', jwtMiddleware, wrapAsync(patchParticipant)); // 게시글 참여 승인 API + 참여 승인 알람(to 참여자) API
 postRouter.delete('/:post_id/participant/refuse', jwtMiddleware, wrapAsync(deleteParticipant)); // 게시글 참여 거절 API + 참여 거절 알람(to 참여자) API
 postRouter.patch('/:post_id/status', jwtMiddleware, wrapAsync(patchStatus)); // 모집 마감으로 상태 변경 API
 postRouter.post('/:post_id/participant/onedayalarm', wrapAsync(postOneDayAlarm)); // 게시글 모임 1일 전 알림 API

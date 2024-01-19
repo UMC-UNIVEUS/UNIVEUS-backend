@@ -32,7 +32,7 @@ export const selectParticipant = async(connection, post_id)=>{ // 참여자 목�
 };
 
 
-export const insertPost = async(connection, insertPostParams)=>{ // 게시글 생성 + 게시글 참여자 테이블 생성
+export const insertPost = async(connection, insertPostParams)=>{ // 게시글 생성
     const postPostQuery = `
         INSERT INTO post(
             user_id, category, limit_gender, limit_people, participation_method, 
@@ -40,7 +40,7 @@ export const insertPost = async(connection, insertPostParams)=>{ // 게시글 �
             title, contents, main_img, 
             current_people, created_at, post_status
         )
-        VALUES (?,?,?,?,?, ?,?,?, ?,?,?, 1,now(),"recruiting");
+        VALUES (?,?,?,?,?, ?,?,?, ?,?,?, 1,now(),"RECRUITING");
     `;
 
     const insertPostRow = await connection.query(postPostQuery, insertPostParams); //insertPostRow.insertId는 생성된 post의 post_id
@@ -50,7 +50,7 @@ export const insertPost = async(connection, insertPostParams)=>{ // 게시글 �
 export const insertPostImages = async(connection, insertPostImagesParams)=>{// 게시글 이미지 저장
 
     const postPostImagesQuery = `
-            INSERT INTO post_img(img_url, post_id) 
+            INSERT INTO post_img(image_url, post_id) 
             VALUES (?,?);
         `;
     for(var i =0; i<insertPostImagesParams[0].length ;i++){
@@ -65,7 +65,7 @@ export const updatePostImages = async(connection, updatePostImagesParams)=>{// �
     `;
 
     const postPostImagesQuery = `
-    INSERT INTO post_img(img_url, post_id) 
+    INSERT INTO post_img(image_url, post_id) 
     VALUES (?,?);
     `;
     
@@ -88,9 +88,9 @@ export const updatePost = async(connection, updatePostParams)=>{// 게시글 수
         end_datetime =?,
         title =?, 
         contents =?, 
-        main_img = ?
+        main_img = ?,
         updated_at = now()
-        WHERE post_id =?;
+        WHERE id =?;
     `;
     const updatePostRow = await connection.query(patchPostQuery, updatePostParams);
 };
@@ -113,33 +113,40 @@ export const insertLike = async(connection, post_id)=>{// 게시글 좋아요
     const insertLikeRow = await connection.query(addLikeQuery, post_id);
 };
 
-export const insertParticipant = async(connection, insertParticipantParams)=>{// 게시글 참여 신청 + 참여 신청 알람(to 작성자)
+export const deleteLike = async(connection, post_id)=>{
+    const deleteLikeQuery = `
+        UPDATE post 
+        SET likes = likes - 1
+        WHERE id = ?;
+    `;
+    const deleteLikeRow = await connection.query(deleteLikeQuery, post_id);
+}
+
+export const insertAlarm = async (connection, sendAlarmParams, type)=>{
+
+    let insertAlarmQuery; // type에 따라 쿼리문이 달라짐
+    if(type === 1){ // 참여 신청 알람(to 작성자)
+        insertAlarmQuery = `
+        INSERT INTO alarm(post_id, receiver_id, type)
+        VALUES (?,?,"PROPOSE_ALARM");
+    `;
+    }else if(type === 2){ // 참여 승인 알람(to 참여자)
+        insertAlarmQuery = `
+        INSERT INTO alarm(post_id, receiver_id, type)
+        VALUES (?,?,"APPROVAL_ALARM");
+    `;
+    }
+    const insertAlarmRow = await connection.query(insertAlarmQuery, sendAlarmParams);
+}
+
+export const insertParticipant = async(connection, insertParticipantParams)=>{// 게시글 참여 신청
     const postParticipantQuery = `
-        INSERT INTO participant_users(post_id, user_id) 
-        VALUES (?,?);
+        INSERT INTO participant_user(post_id, user_id, status) 
+        VALUES (?,?, "WAITING");
     `;
-
-    const applyParticipantAlarmQuery = `
-        INSERT INTO alarm(post_id, participant_id, user_id, alarm_type) 
-        VALUES (?,?,?,"application_alarm");
-    `;
-
     const postParticipantRow = await connection.query(postParticipantQuery, insertParticipantParams);
-    const applyParticipantAlarmRow = await connection.query(applyParticipantAlarmQuery, insertParticipantParams);
 };
 
-export const selectParticipantList = async(connection, post_id)=>{ //참여자 신청 내역 조회
-    const selectParticipantListQuery = `
-        SELECT participant_users.participant_id, user.user_id, user.gender, 
-        user.nickname, user.major, user.class_of, participant_users.status
-        FROM participant_users
-        INNER JOIN user
-        ON participant_users.user_id = user.user_id
-        WHERE post_id = ? AND status= "waiting";
-    `;
-    const [selectParticipantListRow] = await connection.query(selectParticipantListQuery, post_id);
-    return selectParticipantListRow;
-};
 
 export const updateParticipant = async(connection, insertParticipantParams)=>{// 게시글 참여자 승인 + 참여 승인 알람(to 참여자)
     const approveParticipantQuery = `
@@ -186,22 +193,22 @@ export const updateStatus = async(connection, post_id)=>{// 게시글 모집 마
     const updateStatusRow = await connection.query(updateStatusQuery, post_id);
 };
 
-export const insertUniveus = async(connection, insertParticipantParams)=>{// 유니버스 참여 (축제용), post_id, participant_id
+export const insertUniveus = async(connection, insertParticipantParams)=>{// 유니버스 참여 완료로 변경, post_id, participant_id
      
     const postUniveusQuery = `
-        INSERT INTO participant_users(post_id, user_id, status) 
-        VALUES (?,?, "participate_complete");
+        INSERT INTO participant_user(post_id, user_id, status) 
+        VALUES (?,?, "PARTICIPATE_COMPLETE");
     `;
 
     const addCurrentPeopleQuery = `
         UPDATE post 
         SET current_people = current_people + 1
-        WHERE post_id = ?;
+        WHERE id = ?;
     `;
 
     const applyParticipantAlarmQuery = `
-        INSERT INTO alarm(post_id, user_id, alarm_type) 
-        VALUES (?, ?,"participate_complete_alarm");
+        INSERT INTO alarm(post_id, receiver_id, type) 
+        VALUES (?, ?,"PARTICIPATE_COMPLETE_ALARM");
     `;
 
     const postUniveusRow = await connection.query(postUniveusQuery, insertParticipantParams);
@@ -292,3 +299,13 @@ export const updateCurrentPeople = async (connection, current_people, post_id) =
 
     const [updateCurrentPeopleRow] = await connection.query(updateCurrentPeopleQuery);
 }
+
+export const selectWaiterNum = async(connection, post_id)=>{ //게시글에 참여 신청한 대기자 인원수 조회
+    const selectWaiterNumQuery = `
+        SELECT COUNT(*) num
+        FROM participant_user
+        WHERE status = 'WAITING';
+    `;
+    const [WaiterNumRow] = await connection.query(selectWaiterNumQuery, post_id);
+    return WaiterNumRow;
+};

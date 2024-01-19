@@ -1,10 +1,28 @@
 import dotenv from "dotenv";
 import {baseResponse, response, errResponse} from "../../../config/response";
-import { retrievePost, retrieveParticipant, retrievePostImages, retrieveParticipantList, formatingEndDate, formatingMeetingDate, formatingCreatedAt, isValidOpenChat} from "./postProvider";
-import { createPost, createPostImage, editPost,patchPostImage, removePost, addLike,
-    applyParticipant, registerParticipant, refuseParticipant,
-    addOneDayAlarm, applyUniveus,closeUniveus, inviteOneParticipant
-    ,changePostStatus, removeParticipant,changeStatus, changeCurrentPeople } from "./postService";
+import {retrievePost, retrieveParticipant, retrievePostImages, isValidOpenChat, getWaiterNum} from "./postProvider";
+import {
+    createPost,
+    createPostImage,
+    editPost,
+    patchPostImage,
+    removePost,
+    addLike,
+    applyParticipant,
+    registerParticipant,
+    refuseParticipant,
+    applyUniveus,
+    closeUniveus,
+    inviteOneParticipant
+    ,
+    changePostStatus,
+    removeParticipant,
+    changeStatus,
+    changeCurrentPeople,
+    removePostParticipants,
+    cancelLike,
+    sendAlarm
+} from "./postService";
 import {
     getUserIdByEmail,
     getUserByNickName,
@@ -24,13 +42,13 @@ dotenv.config();
  */
 export const getPost = async(req, res) => {
 	
-    const {post_id} = req.params;
+    const {postId} = req.params;
     const userIdFromJWT = req.verifiedToken.userId;
-    const Post = await retrievePost(post_id);
+    const Post = await retrievePost(postId);
 
     if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // 게시글이 존재하지 않는다면
 
-        const Participant = await retrieveParticipant(post_id);
+        const Participant = await retrieveParticipant(postId);
 
         const Writer = Participant[0];
         const changeStudentId = Math.floor(Writer.student_id / 100000 % 100);
@@ -41,14 +59,15 @@ export const getPost = async(req, res) => {
             ParticipantList.push(Participant[i]);
         }
 
-        const PostImages = await retrievePostImages(post_id);
-        let connectedUserStatus = await getUserParticipateStatusById(userIdFromJWT, post_id);
+        const PostImages = await retrievePostImages(postId);
+        let connectedUserStatus = await getUserParticipateStatusById(userIdFromJWT, postId);
 
-        if(connectedUserStatus === null){ // 여기 테스트 해봐야 함
+        if(connectedUserStatus === null){
             connectedUserStatus = "PERSON";
         }
         
-        const connectedUser = { // 여기 테스트 해봐야 함
+        const connectedUser = {
+            "user_id": userIdFromJWT,
             "status": connectedUserStatus
         }
 
@@ -62,7 +81,6 @@ export const getPost = async(req, res) => {
 export const postPost = async(req, res) => { // 일단 나는 Controller에서 에러 핸들링을 함
 
     const userIdFromJWT = req.verifiedToken.userId; // 이 부분에서 userId를 못 찾는 에러가 발생함
-    console.log(userIdFromJWT);
 
     const end_datetime = new Date(req.body.meeting_datetime);
     end_datetime.setHours(end_datetime.getHours() + 9 - 2); // UTC >> KST로 바꿔주고, 2시간 전으로 지정
@@ -95,15 +113,16 @@ export const postPost = async(req, res) => { // 일단 나는 Controller에서 �
     if(body.title.length > 48){
         return res.send(errResponse(baseResponse.POST_TITLE_LENGTH));
     }
-    if(body.contents.length > 500){ // 축제용 조건문
+    if(body.contents.length > 500){
         return res.send(errResponse(baseResponse.POST_CONTENT_LENGTH));
     }
 
     const Post = await createPost(userIdFromJWT, body);
+    const Writer = await applyUniveus(Post.insertId,userIdFromJWT);
 
     if(typeof body.images != "undefined") await createPostImage(body.images,Post.insertId);
 
-    return res.send(response(baseResponse.SUCCESS, postPostResponseDTO(Post)));
+    return res.send(response(baseResponse.SUCCESS, postPostResponseDTO(Post, userIdFromJWT)));
 }
 
 /**
@@ -118,8 +137,11 @@ export const patchPost =  async(req, res) => {
     const Post = await retrievePost(post_id);
     if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
 
+    const end_datetime = new Date(req.body.meeting_datetime);
+    end_datetime.setHours(end_datetime.getHours() + 9 - 2); // UTC >> KST로 바꿔주고, 2시간 전으로 지정
+
     const body = {
-        "user_id": Post.user_id,
+        "post_id": post_id,
         "category": req.body.category,
         "limit_gender": req.body.limit_gender,
         "limit_people": req.body.limit_people,
@@ -140,8 +162,7 @@ export const patchPost =  async(req, res) => {
             return res.send(errResponse(baseResponse.POST_INFORMATION_EMPTY));
         }
     }
-
-    if (body.user_id !== userIdFromJWT) return res.send(errResponse(baseResponse.USER_USERID_USERIDFROMJWT_NOT_MATCH)); //접속한 유저가 작성자가 아니라면
+    if (Post.user_id !== userIdFromJWT) return res.send(errResponse(baseResponse.USER_USERID_JWT_NOT_MATCH)); //접속한 유저가 작성자가 아니라면
 
     const patchPostResult = await editPost(body);
 
@@ -161,11 +182,10 @@ export const deletePost =  async(req, res) => {
 
     const Post = await retrievePost(post_id);
     if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
-    if (Post.post_status === "END") return res.send(errResponse(baseResponse.POST_MATCHED_CANT_DELETE));
 
     if (Post.user_id !== userIdFromJWT) return res.send(errResponse(baseResponse.USER_USERID_JWT_NOT_MATCH)); //접속한 유저가 작성자가 아니라면
 
-    const deletePostResult = await removePost(post_id); // post 하나가 지워지면 participant_user 테이블도 따라서 지워지는 cascade 설정해줘야 함.
+    const deletePostResult = await removePost(post_id);
    
     return res.send(response(baseResponse.SUCCESS, deletePostResult));
 };
@@ -189,52 +209,56 @@ export const patchLike = async(req, res) => {
 };
 
 /**
- * API name : 게시글 참여 신청 + 참여 신청 알람(to 작성자)
- * POST: /post/{post_id}/participant/apply
+ * API name : 게시글 좋아요 취소
+ * PATCH: /post/{post_id}/like/cancel
  */
-export const postParticipant = async(req, res) => {
+export const patchLikeCancel = async(req,res)=>{
 
-    
     const {post_id} = req.params;
-    const {user_id} = req.body;// 작성자 ID
-    const userEmail = req.verifiedToken.userEmail;
-    const userIdFromJWT = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID (신청자 ID 여야 함)
-    
-    const Post = await retrievePost(post_id); 
-    
-    if(Post){ // Post가 존재한다면 
-        const postParticipantResult = await applyParticipant(post_id, userIdFromJWT, user_id);
-        return res.send(response(baseResponse.SUCCESS, postParticipantResult));
-    } 
-    else{ 
-        return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST))
-    }
-};
+    const Post = await retrievePost(post_id);
 
-/**
- * API name  게시글 참여자 신청 내역 조회 
- * GET: /post/{post_id}/participant
- */
-export const getParticipant = async(req, res) => {
-	
-    const {post_id} = req.params;
-    const {user_id} = req.body; // 작성자 ID
-    const userEmail = req.verifiedToken.userEmail;
-    const userIdFromJWT = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID (작성자 ID 여야 함)
-    
-    if(user_id == userIdFromJWT){ //접속한 유저가 작성자라면
-        const Post = await retrievePost(post_id); 
-
-        if(Post){ 
-            const getParticipantList = await retrieveParticipantList(post_id); 
-            return res.send(response(baseResponse.SUCCESS, getParticipantList));
-        } 
-        else{ 
-            return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
-        }  
+    if(Post){
+        const cancelLikeResult = await cancelLike(post_id);
+        return res.send(response(baseResponse.SUCCESS, cancelLikeResult));
     }
     else{
-        return res.send(errResponse(baseResponse.USER_USERID_USERIDFROMJWT_NOT_MATCH));
+        return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
+    }
+}
+/**
+ * API name : 게시글 참여 신청 + 참여 신청 알람(to 작성자)
+ * POST: /post/{post_id}/participant/request
+ */
+export const requestParticipant = async(req, res) => {
+
+    const {post_id} = req.params;
+    const userIdFromJWT = req.verifiedToken.userId;
+
+    const Post = await retrievePost(post_id);
+    const User = await getUserById(userIdFromJWT);
+
+    if(!Post) return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // Post가 존재하는지
+
+    if(Post.limit_gender !== "all" && User.gender !== Post.limit_gender) return res.send(errResponse(baseResponse.POST_GENDER_LIMIT));
+    // 성별 제한에 걸리는지
+
+    const participateWaiterNum = await getWaiterNum(post_id);
+    if(participateWaiterNum.num >= 10) return res.send(errResponse(baseResponse.POST_WAITER_LIMIT));
+
+
+
+    if(Post){ // Post가 존재한다면
+        if(Post.limit_gender === "all" || User.gender === Post.limit_gender){  // 성별 제한에 걸리지 않는다면
+            const requestParticipantResult = await applyParticipant(post_id, userIdFromJWT);
+            const sendAlarmToWriter = await sendAlarm(post_id, Post.user_id, 1);
+            return res.send(response(baseResponse.SUCCESS, requestParticipantResult));
+        }
+        else{
+            return res.send(errResponse(baseResponse.POST_GENDER_LIMIT));
+        }
+    } 
+    else{ 
+        return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
     }
 };
 
@@ -243,11 +267,10 @@ export const getParticipant = async(req, res) => {
  * PATCH: /post/{post_id}/participant/register
  */
 export const patchParticipant = async(req, res) => {
-    
-    const {post_id} = req.params;
+
     const {participant_id, user_id} = req.body;// 참여 테이블 ID, 작성자의 ID
-    const userEmail = req.verifiedToken.userEmail;
-    const userIdFromJWT = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID (작성자 ID 여야 함)
+    const {post_id} = req.params;
+    const userIdFromJWT = req.verifiedToken.userId;
     
     if(user_id == userIdFromJWT){
         const Post = await retrievePost(post_id); 
@@ -509,7 +532,7 @@ export const cancelParticipant = async(req, res) => {
             if(Post.post_status =="end"){// 모집 마감이라면
                 await changePostStatus(post_id);// 모집 중으로 변경
             }
-            const removeParticipantResult = await removeParticipant(post_id, userIdFromJWT, user_id);// 유니버스 참여 취소 
+            const removeParticipantResult = await removeParticipant(post_id, userIdFromJWT, user_id);// 유니버스 참여 취소
             await sendCancelMessageAlarm(user_id, userIdFromJWT); // 참여 취소 알림 (to 작성자)
             return res.send(response(baseResponse.SUCCESS, removeParticipantResult));
         }

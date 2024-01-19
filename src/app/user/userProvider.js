@@ -31,10 +31,10 @@ export const getUserNickNameById = async(user_id) => {// id로 유저 닉네임 
     return UserNickName.nickname;
 };
 
-export const getUserById = async(user_id) => {// id로 유저 전체 조회
+export const getUserById = async(userId) => {// id로 유저 전체 조회
 
     const connection = await pool.getConnection(async (conn) => conn);
-    const User = await selectUserById(connection, user_id);
+    const User = await selectUserById(connection, userId);
     connection.release();
     return User;
 };

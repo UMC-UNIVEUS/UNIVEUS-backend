@@ -2,12 +2,14 @@
 (CRUD에 해당하는 서버 로직 처리) */
 
 import pool from "../../../config/database";
-import { insertPost, insertPostImages, updatePost, updatePostImages, erasePost, insertLike,
-     insertParticipant, updateParticipant,deleteParticipant, insertUniveus, 
-     addParticipant,blockUniveus, switchPostStatus, eraseParticipant,
-     updateStatus, updateCurrentPeople } from "./postDao";
+import {
+    insertPost, insertPostImages, updatePost, updatePostImages, erasePost, insertLike,
+    insertParticipant, updateParticipant, deleteParticipant, insertUniveus,
+    addParticipant, blockUniveus, switchPostStatus, eraseParticipant,
+    updateStatus, updateCurrentPeople, erasePostParticipants, deleteLike, insertAlarm
+} from "./postDao";
 
-export const createPost = async(userIdFromJWT, body) =>{
+export const createPost = async(userIdFromJWT, body) =>{ // 게시글 생성
  
     const insertPostParams =[
         userIdFromJWT, body.category, body.limit_gender, body.limit_people, body.participation_method,
@@ -43,7 +45,7 @@ export const patchPostImage = async(images, post_id) =>{ //게시글 이미지 �
     return editPostImagesResult;
 };
 
-export const editPost = async(body)=>{
+export const editPost = async(body)=>{ // 게시글 수정
   
     const updatePostParams =[
         body.category, body.limit_gender, body.limit_people, body.participation_method,
@@ -71,15 +73,31 @@ export const addLike = async(post_id)=>{// 게시글 좋아요
     connection.release();
 };
 
-export const applyParticipant = async(post_id, userIdFromJWT, user_id) =>{// 게시글 참여 신청 + 참여 신청 알람(to 작성자)
+export const cancelLike = async(post_id) =>{ // 게시글 좋아요 취소
 
-    const insertParticipantParams =[post_id, userIdFromJWT, user_id]; 
+    const connection = await pool.getConnection(async conn => conn);
+    const deleteLikeResult = await deleteLike(connection,post_id);
+    connection.release();
+}
+
+export const sendAlarm = async(post_id,user_id, type)=>{ // 알림 보내기, type(int)은 알람 type을 정해준다.(ex: 참여 신청, 참여 완료)
+
+    const sendAlarmParams =[post_id, user_id];
+
+    const connection = await pool.getConnection(async conn => conn);
+    const insertAlarmResult = await insertAlarm(connection,sendAlarmParams,type);
+    connection.release();
+}
+
+
+export const applyParticipant = async(post_id, userIdFromJWT) =>{// 게시글 참여 신청
+
+    const insertParticipantParams =[post_id, userIdFromJWT];
 
     const connection = await pool.getConnection(async conn => conn);
     const applyParticipantResult = await insertParticipant(connection,insertParticipantParams);
     connection.release();
 };
-
 
 export const registerParticipant = async(post_id, participant_id) =>{// 게시글 참여자 등록 + 참여 승인 알람(to 참여자)
 
@@ -106,7 +124,7 @@ export const changeStatus = async(post_id)=>{// 게시글 모집 마감으로 �
     connection.release();
 };
 
-export const applyUniveus = async(post_id, participant_id) =>{// 유니버스 참여  (축제용)
+export const applyUniveus = async(post_id, participant_id) =>{// 유니버스 참여
 
     const applyUniveusParams =[post_id, participant_id]; 
 
