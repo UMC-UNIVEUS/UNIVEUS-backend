@@ -245,21 +245,10 @@ export const requestParticipant = async(req, res) => {
     const participateWaiterNum = await getWaiterNum(post_id);
     if(participateWaiterNum.num >= 10) return res.send(errResponse(baseResponse.POST_WAITER_LIMIT));
 
+    const requestParticipantResult = await applyParticipant(post_id, userIdFromJWT);
+    const sendAlarmToWriter = await sendAlarm(post_id, Post.user_id, 1);
+    return res.send(response(baseResponse.SUCCESS, requestParticipantResult));
 
-
-    if(Post){ // Post가 존재한다면
-        if(Post.limit_gender === "all" || User.gender === Post.limit_gender){  // 성별 제한에 걸리지 않는다면
-            const requestParticipantResult = await applyParticipant(post_id, userIdFromJWT);
-            const sendAlarmToWriter = await sendAlarm(post_id, Post.user_id, 1);
-            return res.send(response(baseResponse.SUCCESS, requestParticipantResult));
-        }
-        else{
-            return res.send(errResponse(baseResponse.POST_GENDER_LIMIT));
-        }
-    } 
-    else{ 
-        return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
-    }
 };
 
 /**
