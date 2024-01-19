@@ -79,10 +79,3 @@ export const increaseUserReportedNum = async(userId) => {
     const connection = await pool.getConnection(async conn => conn);
     const increaseUserReportedNumResult = await updateUserReportedNum(connection , userId); 
 }
-
-/** 축제용 : 유저의 참여가능 횟수 제한 */
-export const changeParticipateAvailable = async(userId) => {
-    const connection = await pool.getConnection(async conn => conn);
-    const updateParticipateAvailbleResult = await updateParticipateAvailable(connection, userId);
-    connection.release();
-}

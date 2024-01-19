@@ -1,7 +1,7 @@
 import express from "express"
 import {handleMulterErrors, uploadImage} from '../../../config/imageUploader';
-import {getPost, postPost, patchPost, deletePost, patchLike, requestParticipation,
-    patchParticipant, patchStatus, postOneDayAlarm, participateUniveus,
+import {getPost, postPost, patchPost, deletePost, patchLike,
+    requestParticipation,patchParticipant, patchStatus, postOneDayAlarm,
     cancelParticipant, postImage, patchLikeCancel} from "./postController";
 import { jwtMiddleware } from "../../../config/jwtMiddleWare";
 import {wrapAsync} from "../../../config/errorhandler";
@@ -21,7 +21,6 @@ postRouter.patch('/:post_id/participant/register', jwtMiddleware, wrapAsync(patc
 
 postRouter.patch('/:post_id/status', jwtMiddleware, wrapAsync(patchStatus)); // 모집 마감으로 상태 변경 API
 postRouter.post('/:post_id/participant/onedayalarm', wrapAsync(postOneDayAlarm)); // 게시글 모임 1일 전 알림 API
-postRouter.post('/:post_id/participant', jwtMiddleware, wrapAsync(participateUniveus)); // 유니버스 참여 + 자동 모집 마감 API (축제용)
 postRouter.delete('/:post_id/participant/cancel', jwtMiddleware, wrapAsync(cancelParticipant)); // 유니버스 참여 취소 API
 
 export default postRouter;

@@ -230,20 +230,14 @@ export const addParticipant = async(connection, askParticipantParams)=>{// 유�
     const inviteParticipantAlarmRow = await connection.query(inviteParticipantAlarmQuery, askParticipantParams);
 };
 
-export const blockUniveus = async(connection, closeUniveusParams)=>{ // 모집 마감
-    const blockUniveusQuery = `
+export const finishPost = async(connection, post_id)=>{ // 모집 마감
+    const finishPostQuery = `
         UPDATE post 
-        SET post_status = "end"
-        WHERE post_id = ?;
+        SET post_status = "END"
+        WHERE id = ?;
     `;
 
-    const closeUniveusAlarmQuery = `
-        INSERT INTO alarm(post_id, user_id, alarm_type) 
-        VALUES (?,?,"end_alarm");
-    `;
-
-    const blockUniveusRow = await connection.query(blockUniveusQuery, closeUniveusParams[0]);
-    const closeUniveusAlarmRow = await connection.query(closeUniveusAlarmQuery, closeUniveusParams);
+    const finishPostRow = await connection.query(finishPostQuery, post_id);
 };
 
 export const selectUniveUsNameById = async(connection, post_id)=>{ // post_id로 유니버스 제목 가져오기
@@ -285,12 +279,6 @@ export const eraseParticipant = async(connection, removeParticipantParams)=>{ //
     const [deleteParticipantAlarmRow] = await connection.query(deleteParticipantAlarmQuery, removeParticipantParams);
     const [deleteCurrentPeopleRow] = await connection.query(deleteCurrentPeopleQuery, removeParticipantParams[0]);
 };
-
-export const updateCurrentPeople = async (connection, current_people, post_id) => {
-    const updateCurrentPeopleQuery = `UPDATE post SET current_people = ${current_people} WHERE post_id = ${post_id};`;
-
-    const [updateCurrentPeopleRow] = await connection.query(updateCurrentPeopleQuery);
-}
 
 export const selectWaiterNum = async(connection, post_id)=>{ //게시글에 참여 신청한 대기자 인원수 조회
     const selectWaiterNumQuery = `

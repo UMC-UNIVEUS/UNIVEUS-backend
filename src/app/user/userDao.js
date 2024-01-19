@@ -161,11 +161,6 @@ export const selectUserAccountStatus = async(connection, userEmail) => {
     return selectUserAccountStatusRow;
 }
 
-export const updateParticipateAvailable = async(connection, userId) => {
-    const updateParticipateAvailableQuery = `UPDATE user SET participate_available = 0 WHERE user_id = ${userId};`;
-    const updateParticipateAvailableRow = await connection.query(updateParticipateAvailableQuery);
-}
-
 export const selectUserParticipateStatusById = async(connection, selectUserParticipateStatusParams ) =>{
     const selectUserParticipateStatusByIdQuery = `
         SELECT status

@@ -5,7 +5,7 @@ import pool from "../../../config/database";
 import {
     insertPost, insertPostImages, updatePost, updatePostImages, erasePost, insertLike,
     askParticipation, updateParticipant, addParticipant, blockUniveus, switchPostStatus,
-    eraseParticipant, updateStatus, updateCurrentPeople, deleteLike, insertAlarm, acceptParticipation
+    eraseParticipant, updateStatus, updateCurrentPeople, deleteLike, insertAlarm, acceptParticipation, finishPost
 } from "./postDao";
 
 export const createPost = async(userIdFromJWT, body) =>{ // 게시글 생성
@@ -132,12 +132,10 @@ export const inviteOneParticipant = async(post_id, participant_userID, user_id) 
     connection.release();
 }; 
 
-export const closeUniveus = async(post_id,user_id) =>{// 게시글 모집 마감 (축제용)
-
-    const closeUniveusParams =[post_id, user_id]; 
+export const closePost = async(post_id) =>{// 게시글 모집 마감
 
     const connection = await pool.getConnection(async conn => conn);
-    const closeUniveusResult = await blockUniveus(connection,closeUniveusParams);
+    const closeUniveusResult = await finishPost(connection,post_id);
     connection.release();
 }; 
 
@@ -155,11 +153,4 @@ export const removeParticipant = async(post_id, userIdFromJWT, user_id) =>{// �
     const connection = await pool.getConnection(async conn => conn);
     const eraseParticipantResult = await eraseParticipant(connection,removeParticipantParams);
     connection.release();
-}; 
-
-export const changeCurrentPeople = async(current_people, post_id) => {
-
-    const connection = await pool.getConnection(async conn => conn);
-    const updateCurrentPeopleResult = await updateCurrentPeople(connection, current_people, post_id);
-    connection.release();
-}
+};

@@ -3,12 +3,10 @@ import {baseResponse, response, errResponse} from "../../../config/response";
 import {retrievePost, retrieveParticipant, retrievePostImages, getWaiterNum} from "./postProvider";
 import {
     createPost, createPostImage, editPost, patchPostImage, removePost, addLike,
-    proposeParticipation, registerParticipant, applyUniveus, closeUniveus, changePostStatus,
-    removeParticipant, changeStatus, changeCurrentPeople, cancelLike, sendAlarm, approveParticipation
-} from "./postService";
-import {getUserByNickName,getUserById,getParticipateAvailable,getUserParticipateStatusById} from "../user/userProvider";
-import { sendParticipantMessageAlarm, sendCancelMessageAlarm} from "../user/userController"
-import { changeParticipateAvailable } from "../user/userService";
+    proposeParticipation, registerParticipant, changePostStatus,
+    removeParticipant, changeStatus, cancelLike, sendAlarm} from "./postService";
+import {getUserById,getUserParticipateStatusById} from "../user/userProvider";
+import { sendCancelMessageAlarm} from "../user/userController"
 import {postPostResponseDTO} from "./postDto";
 dotenv.config();
 
@@ -300,148 +298,6 @@ export const postOneDayAlarm = async(req, res) => {
     else{ 
         return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
     }
-};
-
-/**
- * API name : 유니버스 참여 + 모집 자동 마감 + 알림 >> 축제용 API
- * POST: /post/{post_id}/participant
- */
-export const participateUniveus = async(req, res) => {
-    
-    const {post_id} = req.params;
-    const writer_id = req.body.user_id; 
-    const {participant_userIDsFromDB, invited_userNickNamesFromAPI} = req.body;
-    const userEmail = req.verifiedToken.userEmail;
-    const userIdFromJWT = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID (신청자 ID)
-    
-    const Post = await retrievePost(post_id); 
-    const Writer = await getUserById(writer_id); 
-    const Invitee = await getUserById(userIdFromJWT); 
-
-
-    if (typeof Post == "undefined")return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));     
-
-    if (invited_userNickNamesFromAPI.length == 0) return res.send(errResponse(baseResponse.POST_INVITE_EMPTY)); 
-
-    if(Post.limit_people == 4){
-            
-        if (invited_userNickNamesFromAPI[0] == "") return res.send(errResponse(baseResponse.POST_INVITE_EMPTY));
-
-        if (invited_userNickNamesFromAPI[0] == " ") return res.send(errResponse(baseResponse.POST_INVITE_EMPTY)); 
-
-
-        if (typeof guest == "undefined") return res.send(errResponse(baseResponse.POST_PARTICIPANT_NOT_EXIST));
-
-        if (Invitee.user_id == guest.user_id) return res.send(errResponse(baseResponse.POST_PARTICIPANT_INVITEE_OVERLAP));
-
-        if(Writer.user_id == guest.user_id) return res.send(errResponse(baseResponse.POST_WRITER_GUEST_DUPLICATE));
-               
-        const isParticipate = (participant_userIDsFromDB.includes(userIdFromJWT) || participant_userIDsFromDB.includes(guest.user_id));
-
-        if(isParticipate) return res.send(errResponse(baseResponse.POST_PARTICIPATION_OVERLAP)); // 이미 참여한 유저가 있다면
-
-        if(Post.limit_people <= Post.current_people) return res.send(errResponse(baseResponse.POST_PARTICIPATION_CLOSE)); // 모집 마감이라면
-
-        const genderAllowed = Post.limit_gender == 0 || (Post.limit_gender == Invitee.gender && Post.limit_gender == guest.gender);
-
-        if(!genderAllowed) return res.send(errResponse(baseResponse.POST_GENDER_LIMIT));
-                            
-            // 정상적인 참여
-        const alreadyParticipant = await getUserById(participant_userIDsFromDB[0]); 
-
-        await applyUniveus(post_id, userIdFromJWT); // 초대자 참여
-
-        await applyUniveus(post_id, guest.user_id); // 초대받은 사람 참여
-
-        await closeUniveus(post_id,writer_id); // 게시글의 상태를 모집 마감으로 업데이트
-
-        await changeCurrentPeople(4, post_id);
-
-        // TODO :  user 테이블의 participate-available 0으로 만들어주기
-
-        await changeParticipateAvailable(guest.user_id);
-
-        await changeParticipateAvailable(userIdFromJWT);
-
-        const MessageAlarmList = [Writer, [alreadyParticipant], Invitee, [guest]];
-        await sendParticipantMessageAlarm(post_id, MessageAlarmList); //게시글 참여 시 문자 알림 (to old 참여자, new 참여자)
-        return res.send(response(baseResponse.SUCCESS));          
-    }  
-
-    else if(Post.limit_people == 6){
-
-        if (invited_userNickNamesFromAPI.length != 2) return res.send(errResponse(baseResponse.POST_INVITE_EMPTY));
-
-        if (invited_userNickNamesFromAPI[0] == "") return res.send(errResponse(baseResponse.POST_INVITE_EMPTY));
-
-        if (invited_userNickNamesFromAPI[1] == "") return res.send(errResponse(baseResponse.POST_INVITE_EMPTY));
-
-        if (invited_userNickNamesFromAPI[0] == " ") return res.send(errResponse(baseResponse.POST_INVITE_EMPTY));
-
-        if (invited_userNickNamesFromAPI[1] == " ") return res.send(errResponse(baseResponse.POST_INVITE_EMPTY));
-
-        const guest1 = await getUserByNickName(invited_userNickNamesFromAPI[0]); 
-
-        if (typeof guest1 == "undefined") return res.send(errResponse(baseResponse.USER_FIRST_NOT_EXIST));
-        
-        if(Writer.user_id == guest1.user_id) return res.send(errResponse(baseResponse.POST_WRITER_GUEST_DUPLICATE));
-
-        const guest2 = await getUserByNickName(invited_userNickNamesFromAPI[1]); 
-                
-        if(typeof guest2 == "undefined") return res.send(errResponse(baseResponse.USER_SECOND_NOT_EXIST));
-
-        if(Writer.user_id == guest2.user_id) return res.send(errResponse(baseResponse.POST_WRITER_GUEST_DUPLICATE));
-
-        if(Invitee.user_id == guest1.user_id || Invitee.user_id == guest2.user_id) return res.send(errResponse(baseResponse.POST_PARTICIPANT_INVITEE_OVERLAP));
- 
-        if(guest1.user_id == guest2.user_id) return res.send(errResponse(baseResponse.POST_PARTICIPANT_NOT_OVERLAP));
-
-        const isParticipate = (participant_userIDsFromDB.includes(userIdFromJWT) || participant_userIDsFromDB.includes(guest1.user_id) || participant_userIDsFromDB.includes(guest2.user_id));
-                    
-        if(isParticipate) return res.send(errResponse(baseResponse.POST_PARTICIPATION_OVERLAP)); // 이미 참여한 유저가 있다면
-
-        if(Post.limit_people <= Post.current_people) return res.send(errResponse(baseResponse.POST_PARTICIPATION_CLOSE)); // 모집 마감이라면
-        
-        const genderAllowed = Post.limit_gender == 0 || (Post.limit_gender == Invitee.gender && Post.limit_gender == guest1.gender && Post.limit_gender == guest2.gender);
-        
-        if(!genderAllowed) return res.send(errResponse(baseResponse.POST_GENDER_LIMIT));
-
-        if (await getParticipateAvailable(userIdFromJWT) == 0) return res.send(errResponse(baseResponse.USER_ALREADY_PARTICIPATE));
-
-        if (await getParticipateAvailable(guest1.user_id) == 0) return res.send(errResponse(baseResponse.USER_ALREADY_PARTICIPATE));
-
-        if (await getParticipateAvailable(guest2.user_id) == 0) return res.send(errResponse(baseResponse.USER_ALREADY_PARTICIPATE));
-
-        // 정상적인 참여
-        const alreadyParticipant1 = await getUserById(participant_userIDsFromDB[0]); 
-
-        const alreadyParticipant2 = await getUserById(participant_userIDsFromDB[1]); 
-
-        await applyUniveus(post_id, userIdFromJWT); // 초대자 참여
-
-        await applyUniveus(post_id, guest1.user_id); // 초대받은 사람 참여
-
-        await applyUniveus(post_id, guest2.user_id); // 초대받은 사람 참여
-
-        await changeCurrentPeople(6, post_id);
-
-        await closeUniveus(post_id,writer_id); // 게시글의 상태를 모집 마감으로 업데이트
-        
-        await changeParticipateAvailable(guest1.user_id);
-
-        await changeParticipateAvailable(guest2.user_id);
-
-        await changeParticipateAvailable(userIdFromJWT);
-
-        const MessageAlarmList = [Writer, [alreadyParticipant1, alreadyParticipant2], Invitee, [guest1, guest2]];
-        await sendParticipantMessageAlarm(post_id, MessageAlarmList); //게시글 참여 시 문자 알림 (to old 참여자, new 참여자)
-
-        return res.send(response(baseResponse.SUCCESS));
-        }  
-
-        else {
-                return res.send(errResponse(baseResponse.SERVER_ERROR));
-        }
 };
 
 /**
