@@ -133,12 +133,12 @@ export const insertAlarm = async (connection, sendAlarmParams, type)=>{
     if(type === 1){ // 참여 신청 알람(to 작성자)
         insertAlarmQuery = `
         INSERT INTO alarm(post_id, receiver_id, type)
-        VALUES (?,?,"PROPOSE_ALARM");
+        VALUES (?,?,"PARTICIPATION_PROPOSE_ALARM");
     `;
     }else if(type === 2){ // 참여 승인 알람(to 참여자)
         insertAlarmQuery = `
         INSERT INTO alarm(post_id, receiver_id, type)
-        VALUES (?,?,"APPROVAL_ALARM");
+        VALUES (?,?,"PARTICIPATION_APPROVAL_ALARM");
     `;
     }
     const insertAlarmRow = await connection.query(insertAlarmQuery, sendAlarmParams);
@@ -150,38 +150,6 @@ export const askParticipation = async(connection, insertParticipantParams)=>{// 
         VALUES (?,?, "WAITING");
     `;
     const askParticipationRow = await connection.query(askParticipationQuery, insertParticipantParams);
-};
-
-
-export const updateParticipant = async(connection, insertParticipantParams)=>{// 게시글 참여자 승인 + 참여 승인 알람(to 참여자)
-    const approveParticipantQuery = `
-        UPDATE participant_users
-        SET status = "approval"
-        WHERE participant_id= ?;
-    `;
-    
-    const addCurrentPeopleQuery = `
-        UPDATE post 
-        SET current_people = current_people + 1
-        WHERE post_id = ?;
-    `;
-
-    const addParticipantAlarmQuery = `
-        INSERT INTO alarm(post_id, user_id, alarm_type) 
-        VALUES (?,(SELECT user_id FROM participant_users WHERE participant_id = ?),"approval_alarm");
-    `;
-    const approveParticipantRow = await connection.query(approveParticipantQuery, insertParticipantParams[1]);
-    const addCurrentPeopleRow = await connection.query(addCurrentPeopleQuery, insertParticipantParams[0]);
-    const addParticipantAlarmRow = await connection.query(addParticipantAlarmQuery, insertParticipantParams);
-};
-
-export const updateStatus = async(connection, post_id)=>{// 게시글 모집 마감으로 벼경
-    const updateStatusQuery = `
-        UPDATE post 
-        SET post_status = 'end'
-        WHERE post_id = ?;
-    `;
-    const updateStatusRow = await connection.query(updateStatusQuery, post_id);
 };
 
 export const acceptParticipation = async(connection, insertParticipantParams)=>{// 게시글 참여 신청 승인
@@ -198,39 +166,11 @@ export const acceptParticipation = async(connection, insertParticipantParams)=>{
         WHERE id = ?;
     `;
 
-    const acceptParticipationAlarmQuery = `
-        INSERT INTO alarm(post_id, receiver_id, type) 
-        VALUES (?, ?,"PARTICIPATION_COMPLETE_ALARM");
-    `;
-
     const postUniveusRow = await connection.query(acceptParticipationQuery, insertParticipantParams);
     const addCurrentPeopleRow = await connection.query(addCurrentPeopleQuery, insertParticipantParams[0]);
-    const applyParticipantAlarmRow = await connection.query(acceptParticipationAlarmQuery, insertParticipantParams);
 };
 
-export const addParticipant = async(connection, askParticipantParams)=>{// 유니버스 초대 (언젠간 쓰일 예정...)
-    const postParticipantQuery = `
-        INSERT INTO participant_users(post_id, user_id, status) 
-        VALUES (?,?, "complete(invite)");
-    `;
-
-    const addCurrentPeopleQuery = `
-        UPDATE post 
-        SET current_people = current_people + 1
-        WHERE post_id = ?;
-    `;
-
-    const inviteParticipantAlarmQuery = `
-        INSERT INTO alarm(post_id, participant_id, user_id, alarm_type) 
-        VALUES (?,?,?,"invite_alarm");
-    `;
-
-    const postParticipantRow = await connection.query(postParticipantQuery, askParticipantParams);
-    const addCurrentPeopleRow = await connection.query(addCurrentPeopleQuery, askParticipantParams[0]);
-    const inviteParticipantAlarmRow = await connection.query(inviteParticipantAlarmQuery, askParticipantParams);
-};
-
-export const finishPost = async(connection, post_id)=>{ // 모집 마감
+export const finishPostStatus = async(connection, post_id)=>{ // 모집 마감
     const finishPostQuery = `
         UPDATE post 
         SET post_status = "END"

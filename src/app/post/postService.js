@@ -4,9 +4,8 @@
 import pool from "../../../config/database";
 import {
     insertPost, insertPostImages, updatePost, updatePostImages, erasePost, insertLike,
-    askParticipation, updateParticipant, addParticipant, blockUniveus, switchPostStatus,
-    eraseParticipant, updateStatus, updateCurrentPeople, deleteLike, insertAlarm, acceptParticipation, finishPost
-} from "./postDao";
+    askParticipation, switchPostStatus, eraseParticipant,
+    deleteLike, insertAlarm, acceptParticipation, finishPostStatus} from "./postDao";
 
 export const createPost = async(userIdFromJWT, body) =>{ // 게시글 생성
  
@@ -98,22 +97,6 @@ export const proposeParticipation = async(post_id, userIdFromJWT) =>{// 게시�
     connection.release();
 };
 
-export const registerParticipant = async(post_id, participant_id) =>{// 게시글 참여자 등록 + 참여 승인 알람(to 참여자)
-
-    const updateParticipantParams =[post_id, participant_id]; 
-
-    const connection = await pool.getConnection(async conn => conn);
-    const registerParticipantResult = await updateParticipant(connection,updateParticipantParams);
-    connection.release();
-};
-
-export const changeStatus = async(post_id)=>{// 게시글 모집 마감으로 변경
-
-    const connection = await pool.getConnection(async conn => conn);
-    const updateStatusResult = await updateStatus(connection,post_id); 
-    connection.release();
-};
-
 export const approveParticipation = async(postId, userId) =>{// 게시글 참여 신청 승인
 
     const approveParticipationParams =[postId, userId];
@@ -123,19 +106,10 @@ export const approveParticipation = async(postId, userId) =>{// 게시글 참여
     connection.release();
 };
 
-export const inviteOneParticipant = async(post_id, participant_userID, user_id) =>{// 유니버스 초대 (축제용)
-
-    const askParticipantParams =[post_id,participant_userID, user_id]; 
+export const closePostStatus = async(post_id) =>{// 게시글 모집 마감
 
     const connection = await pool.getConnection(async conn => conn);
-    const askParticipantResult = await addParticipant(connection,askParticipantParams);
-    connection.release();
-}; 
-
-export const closePost = async(post_id) =>{// 게시글 모집 마감
-
-    const connection = await pool.getConnection(async conn => conn);
-    const closeUniveusResult = await finishPost(connection,post_id);
+    const closeUniveusResult = await finishPostStatus(connection,post_id);
     connection.release();
 }; 
 

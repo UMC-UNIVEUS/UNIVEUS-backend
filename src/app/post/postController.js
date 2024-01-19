@@ -3,8 +3,8 @@ import {baseResponse, response, errResponse} from "../../../config/response";
 import {retrievePost, retrieveParticipant, retrievePostImages, getWaiterNum} from "./postProvider";
 import {
     createPost, createPostImage, editPost, patchPostImage, removePost, addLike,
-    proposeParticipation, registerParticipant, changePostStatus,
-    removeParticipant, changeStatus, cancelLike, sendAlarm} from "./postService";
+    proposeParticipation, changePostStatus,removeParticipant, cancelLike,
+    sendAlarm, closePostStatus, approveParticipation} from "./postService";
 import {getUserById,getUserParticipateStatusById} from "../user/userProvider";
 import { sendCancelMessageAlarm} from "../user/userController"
 import {postPostResponseDTO} from "./postDto";
@@ -211,7 +211,7 @@ export const requestParticipation = async(req, res) => {
     const User = await getUserById(userIdFromJWT);
 
     if(!Post) return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // Post가 존재하는지
-
+    
     if(Post.limit_gender !== "all" && User.gender !== Post.limit_gender) return res.send(errResponse(baseResponse.POST_GENDER_LIMIT));
     // 성별 제한에 걸리는지
 
@@ -220,65 +220,51 @@ export const requestParticipation = async(req, res) => {
 
     const requestParticipationResult = await proposeParticipation(post_id, userIdFromJWT);
     const sendAlarmToWriter = await sendAlarm(post_id, Post.user_id, 1);
-    return res.send(response(baseResponse.SUCCESS, requestParticipationResult));
 
+    return res.send(response(baseResponse.SUCCESS, requestParticipationResult));
 };
 
 /**
  * API name : 게시글 참여자 승인 + 참여 승인 알람(to 참여자)
- * PATCH: /post/{post_id}/participant/register
+ * PATCH: /post/{post_id}/participant/agree
  */
-export const patchParticipant = async(req, res) => {
+export const agreeParticipation = async(req, res) => {
 
-    const {participant_id, user_id} = req.body;// 참여 테이블 ID, 작성자의 ID
+    const participant_id = req.body.user_id; // 참여 승인을 당한 유저
     const {post_id} = req.params;
     const userIdFromJWT = req.verifiedToken.userId;
-    
-    if(user_id == userIdFromJWT){
-        const Post = await retrievePost(post_id); 
-        if(Post){
-            const patchParticipantResult = await registerParticipant(post_id, participant_id);
-            return res.send(response(baseResponse.SUCCESS, patchParticipantResult));
-        } 
-        else{ 
-            return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
-        }
-    }
-    else{
-        return res.send(errResponse(baseResponse.USER_USERID_USERIDFROMJWT_NOT_MATCH));
-    }
+
+    const Post = await retrievePost(post_id);
+    if(!Post) return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // Post가 존재하는지
+    if(Post.post_status === "END")return res.send(errResponse(baseResponse.POST_PARTICIPATE_ALREADY_CLOSE)); // 이미 마감했는지
+
+    if (Post.user_id !== userIdFromJWT) return res.send(errResponse(baseResponse.USER_USERID_JWT_NOT_MATCH)); //접속한 유저가 작성자가 아니라면
+   
+    if ( (Post.current_people + 1) === Post.limit_people ) await closePostStatus(post_id); // 참여 인원수 = 제한 인원수 라면
+
+    const approveParticipationResult = await approveParticipation(post_id, participant_id);
+    const sendAlarmToParticipant = await sendAlarm(post_id, participant_id, 2);
+
+    return res.send(response(baseResponse.SUCCESS, approveParticipationResult));
 };
 
 /**
  * API name : 모집 마감으로 상태 변경
- * PATCH: post/{post_id}/status
+ * PATCH: post/{post_id}/end
  */
-export const patchStatus = async(req, res) => {
+export const patchPostStatus = async(req, res) => {
 
     const {post_id} = req.params;
-    const {user_id} = req.body; // 작성자 ID
-    const userEmail = req.verifiedToken.userEmail;
-    const userIdFromJWT = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID (작성자 ID 여야 함)
-    const Post = await retrievePost(post_id); 
-   
-    if(user_id == userIdFromJWT){
-        if(Post){ // Post가 존재한다면
-            if(Post.post_status == 'end'){
-                return res.status(errResponse(baseResponse.POST_PARTICIPATE_ALREADY_CLOSE))
-            }
-            else{
-                const changeStatusResult = await changeStatus(post_id);   
-                return res.send(response(baseResponse.SUCCESS, changeStatusResult));
-            }
-        } 
-        else{ 
-            return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST))
-        } 
-    }
-    else{
-        return res.send(errResponse(baseResponse.USER_USERID_USERIDFROMJWT_NOT_MATCH));
-    }
-};
+    const userIdFromJWT = req.verifiedToken.userId;
+    
+    const Post = await retrievePost(post_id);
+    if(!Post) return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // Post가 존재하는지
+    if (Post.user_id !== userIdFromJWT) return res.send(errResponse(baseResponse.USER_USERID_JWT_NOT_MATCH)); //접속한 유저가 작성자인지
+    if(Post.post_status === "END")return res.send(errResponse(baseResponse.POST_PARTICIPATE_ALREADY_CLOSE)); // 이미 마감했는지
+
+    const patchPostStatusResult = await closePostStatus(post_id);
+    return res.send(response(baseResponse.SUCCESS, patchPostStatusResult));
+};7
 
 /**
  * API name : 게시글 모임 1일 전 알림 
