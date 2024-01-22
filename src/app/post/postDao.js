@@ -73,7 +73,7 @@ export const updatePostImages = async(connection, updatePostImagesParams)=>{// �
         INSERT INTO post_img(image_url, post_id) 
         VALUES (?,?);
     `;
-    
+
     const deletePostImageRow = await connection.query(deletePostImageQuery, [updatePostImagesParams[1]]);
 
     for(var i =0; i<updatePostImagesParams[0].length ;i++){
@@ -159,7 +159,7 @@ export const askParticipation = async(connection, insertParticipantParams)=>{// 
 };
 
 export const acceptParticipation = async(connection, insertParticipantParams)=>{// 게시글 참여 신청 승인
-     
+
     const acceptParticipationQuery = `
         UPDATE participant_user
         SET status = 'PARTICIPATING'

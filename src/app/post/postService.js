@@ -1,11 +1,9 @@
 /*데이터베이스와 상호작용하여 사용자 관련 기능을 수행
 (CRUD에 해당하는 서버 로직 처리) */
-
 import pool from "../../../config/database";
 import {
     insertPost, insertPostImages, updatePost, updatePostImages, erasePost, insertLike,
-    askParticipation, switchPostStatus, eraseParticipant,
-    deleteLike, insertAlarm, acceptParticipation, finishPostStatus, eraseParticipation, deleteParticipation
+    askParticipation, deleteLike, insertAlarm, acceptParticipation, finishPostStatus, deleteParticipation
 } from "./postDao";
 
 export const createPost = async(userIdFromJWT, body) =>{ // 게시글 생성
@@ -114,11 +112,11 @@ export const closePostStatus = async(post_id) =>{// 게시글 모집 마감
     connection.release();
 };
 
-export const removeParticipation = async(post_id, userIdFromJWT) =>{// 게시글 참여 신청 취소
+export const removeParticipation = async(post_id, userIdFromJWT) => {// 게시글 참여 신청 취소
 
-    const removeParticipationParams =[post_id, userIdFromJWT];
+    const removeParticipationParams = [post_id, userIdFromJWT];
 
     const connection = await pool.getConnection(async conn => conn);
-    const eraseParticipationResult = await deleteParticipation(connection,removeParticipationParams);
+    const eraseParticipationResult = await deleteParticipation(connection, removeParticipationParams);
     connection.release();
-};
+}

@@ -1,58 +1,51 @@
 import dotenv from "dotenv";
 import {baseResponse, response, errResponse} from "../../../config/response";
 import {
-    retrievePost,
-    retrieveParticipant,
-    retrievePostImages,
-    getWaiterNum,
-    getParticiaptionStatus
-} from "./postProvider";
+    retrievePost, retrieveParticipant,retrievePostImages,getWaiterNum, getParticiaptionStatus} from "./postProvider";
 import {
     createPost, createPostImage, editPost, patchPostImage, removePost, addLike,
-    proposeParticipation, changePostStatus, removeParticipant, cancelLike,
-    sendAlarm, closePostStatus, approveParticipation, removeParticipantation, removeParticipation
+    proposeParticipation, cancelLike,sendAlarm, closePostStatus, approveParticipation, removeParticipation
 } from "./postService";
-import {getUserById,getUserParticipateStatusById} from "../user/userProvider";
-import { sendCancelMessageAlarm} from "../user/userController"
 import {postPostResponseDTO} from "./postDto";
 dotenv.config();
+
 
 /**
  * API name : 게시글 조회(게시글 + 참여자 목록)
  * GET: /post/{post_id}
  */
 export const getPost = async(req, res) => {
-	
+
     const {postId} = req.params;
     const userIdFromJWT = req.verifiedToken.userId;
     const Post = await retrievePost(postId);
 
-    if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // 게시글이 존재하지 않는다면
+    if (typeof post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // 게시글이 존재하지 않는다면
 
-        const Participant = await retrieveParticipant(postId);
+    const Participant = await retrieveParticipant(postId);
 
-        const Writer = Participant[0];
-        const changeStudentId = Math.floor(Writer.student_id / 100000 % 100);
-        Writer.student_id = changeStudentId + "학번";
+    const Writer = Participant[0];
+    const changeStudentId = Math.floor(Writer.student_id / 100000 % 100);
+    Writer.student_id = changeStudentId + "학번";
 
-        const ParticipantList = [];
-        for(let i = 1; i < Participant.length; i++){
-            ParticipantList.push(Participant[i]);
-        }
+    const ParticipantList = [];
+    for(let i = 1; i < Participant.length; i++){
+        ParticipantList.push(Participant[i]);
+    }
 
-        const PostImages = await retrievePostImages(postId);
-        let connectedUserStatus = await getUserParticipateStatusById(userIdFromJWT, postId);
+    const PostImages = await retrievePostImages(postId);
+    let connectedUserStatus = await getUserParticipateStatusById(userIdFromJWT, postId);
 
-        if(connectedUserStatus === null){
-            connectedUserStatus = "PERSON";
-        }
-        
-        const connectedUser = {
-            "user_id": userIdFromJWT,
-            "status": connectedUserStatus
-        }
+    if(connectedUserStatus === null){
+        connectedUserStatus = "PERSON";
+    }
 
-        return res.send(response(baseResponse.SUCCESS, {connectedUser, Writer, Post, PostImages, ParticipantList}));
+    const connectedUser = {
+        "user_id": userIdFromJWT,
+        "status": connectedUserStatus
+    }
+
+    return res.send(response(baseResponse.SUCCESS, {connectedUser, Writer, Post, PostImages, ParticipantList}));
 };
 
 /**
@@ -82,10 +75,11 @@ export const postPost = async(req, res) => {
     const notUndefined = [body.category, body.limit_gender, body.limit_people, body.participation_method,
         body.meeting_datetime, body.location, body.title, body.contents]; // 빠지면 안될 정보들
 
+
     for(let i = 0; i < notUndefined.length; i++){
         if(notUndefined[i] == null){
             return res.send(errResponse(baseResponse.POST_INFORMATION_EMPTY));
-        } 
+        }
     }
 
     if(body.location.length > 24){
@@ -104,6 +98,7 @@ export const postPost = async(req, res) => {
 
     return res.send(response(baseResponse.SUCCESS, postPostResponseDTO(Post, userIdFromJWT)));
 }
+
 
 /**
  * API name : 게시글 수정
@@ -149,7 +144,7 @@ export const patchPost =  async(req, res) => {
     if(typeof body.images != "undefined") await patchPostImage(body.images,body.post_id);
 
     return res.send(response(baseResponse.SUCCESS, patchPostResult));
-    } 
+}
 
 /**
  * API name : 게시글 삭제
@@ -332,3 +327,4 @@ export const postImage = async(req, res) => {
     if (!fileResponse) return res.send(errResponse(baseResponse.S3_ERROR));
     return res.send(response(baseResponse.SUCCESS, fileResponse));
 };
+
