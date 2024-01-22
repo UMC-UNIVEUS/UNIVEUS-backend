@@ -130,6 +130,7 @@ export const deleteLike = async(connection, post_id)=>{
 export const insertAlarm = async (connection, sendAlarmParams, type)=>{
 
     let insertAlarmQuery; // type에 따라 쿼리문이 달라짐
+
     if(type === 1){ // 참여 신청 알람(to 작성자)
         insertAlarmQuery = `
         INSERT INTO alarm(post_id, receiver_id, type)
@@ -139,6 +140,11 @@ export const insertAlarm = async (connection, sendAlarmParams, type)=>{
         insertAlarmQuery = `
         INSERT INTO alarm(post_id, receiver_id, type)
         VALUES (?,?,"PARTICIPATION_APPROVAL_ALARM");
+    `;
+    }else if(type ===3){ // 참여 취소 알람(to 작성자)
+        insertAlarmQuery = `
+        INSERT INTO alarm(post_id, receiver_id, type)
+        VALUES (?,?,"PARTICIPATION_CANCEL_ALARM");
     `;
     }
     const insertAlarmRow = await connection.query(insertAlarmQuery, sendAlarmParams);
@@ -170,6 +176,15 @@ export const acceptParticipation = async(connection, insertParticipantParams)=>{
     const addCurrentPeopleRow = await connection.query(addCurrentPeopleQuery, insertParticipantParams[0]);
 };
 
+export const deleteParticipation = async(connection, removeParticipationParams)=>{ // 게시글 참여 신청 취소
+    const deleteParticipationQuery = `
+        DELETE FROM participant_user
+        WHERE post_id= ? AND user_id =?;
+    `;
+
+    const [switchPostStatusRow] = await connection.query(deleteParticipationQuery, removeParticipationParams);
+};
+
 export const finishPostStatus = async(connection, post_id)=>{ // 모집 마감
     const finishPostQuery = `
         UPDATE post 
@@ -180,45 +195,6 @@ export const finishPostStatus = async(connection, post_id)=>{ // 모집 마감
     const finishPostRow = await connection.query(finishPostQuery, post_id);
 };
 
-export const selectUniveUsNameById = async(connection, post_id)=>{ // post_id로 유니버스 제목 가져오기
-    const selectUniveUsNameByIdQuery = `
-        SELECT title
-        FROM post
-        WHERE post_id = ?;
-    `;
-    const [PostRow] = await connection.query(selectUniveUsNameByIdQuery, post_id);
-    return PostRow[0].title;
-};
-
-export const switchPostStatus = async(connection, post_id)=>{ // 게시글 모집 상태 변경 (모집 마감 >> 모집 중으로 변경) (축제용)
-    const switchPostStatusQuery = `
-        UPDATE post 
-        SET post_status = "recruiting"
-        WHERE post_id = ?;
-    `;
-    const [switchPostStatusRow] = await connection.query(switchPostStatusQuery, post_id);
-};
-
-export const eraseParticipant = async(connection, removeParticipantParams)=>{ // 게시글 참여 취소 (언젠간 쓰일 예정...)
-    const deleteParticipantQuery = `
-        DELETE FROM participant_users
-        WHERE post_id= ? AND user_id =?;
-    `;
-
-    const deleteCurrentPeopleQuery = `
-        UPDATE post 
-        SET current_people = current_people - 1
-        WHERE post_id = ?;
-    `;
-
-    const deleteParticipantAlarmQuery = `
-        INSERT INTO alarm(post_id, participant_id, user_id, alarm_type) 
-        VALUES (?,?,?,"cancel_alarm");
-    `;
-    const [switchPostStatusRow] = await connection.query(deleteParticipantQuery, [removeParticipantParams[0],removeParticipantParams[1]]);
-    const [deleteParticipantAlarmRow] = await connection.query(deleteParticipantAlarmQuery, removeParticipantParams);
-    const [deleteCurrentPeopleRow] = await connection.query(deleteCurrentPeopleQuery, removeParticipantParams[0]);
-};
 
 export const selectWaiterNum = async(connection, post_id)=>{ //게시글에 참여 신청한 대기자 인원수 조회
     const selectWaiterNumQuery = `

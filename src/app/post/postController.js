@@ -3,8 +3,9 @@ import {baseResponse, response, errResponse} from "../../../config/response";
 import {retrievePost, retrieveParticipant, retrievePostImages, getWaiterNum} from "./postProvider";
 import {
     createPost, createPostImage, editPost, patchPostImage, removePost, addLike,
-    proposeParticipation, changePostStatus,removeParticipant, cancelLike,
-    sendAlarm, closePostStatus, approveParticipation} from "./postService";
+    proposeParticipation, changePostStatus, removeParticipant, cancelLike,
+    sendAlarm, closePostStatus, approveParticipation, removeParticipantation, removeParticipation
+} from "./postService";
 import {getUserById,getUserParticipateStatusById} from "../user/userProvider";
 import { sendCancelMessageAlarm} from "../user/userController"
 import {postPostResponseDTO} from "./postDto";
@@ -219,7 +220,7 @@ export const requestParticipation = async(req, res) => {
     if(participateWaiterNum.num >= 10) return res.send(errResponse(baseResponse.POST_WAITER_LIMIT));
 
     const requestParticipationResult = await proposeParticipation(post_id, userIdFromJWT);
-    const sendAlarmToWriter = await sendAlarm(post_id, Post.user_id, 1);
+    const sendRequestAlarmToWriter = await sendAlarm(post_id, Post.user_id, 1);
 
     return res.send(response(baseResponse.SUCCESS, requestParticipationResult));
 };
@@ -243,9 +244,31 @@ export const agreeParticipation = async(req, res) => {
     if ( (Post.current_people + 1) === Post.limit_people ) await closePostStatus(post_id); // 참여 인원수 = 제한 인원수 라면
 
     const approveParticipationResult = await approveParticipation(post_id, participant_id);
-    const sendAlarmToParticipant = await sendAlarm(post_id, participant_id, 2);
+    const sendAgreeAlarmToParticipant = await sendAlarm(post_id, participant_id, 2);
 
     return res.send(response(baseResponse.SUCCESS, approveParticipationResult));
+};
+
+/**
+ * API name : 게시글 참여 신청 취소
+ * DELETE: /post/{post_id}/participant/cancel
+ */
+export const cancelParticipation = async(req, res) => {
+
+    const {post_id} = req.params;
+    const {waitingUsers} = req.body; // 참여 대기 상태인 유저들 리스트
+    const userIdFromJWT = req.verifiedToken.userId;
+
+    const Post = await retrievePost(post_id);
+
+    if(!Post) return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // Post가 존재하는지
+    if(Post.post_status === "END")return res.send(errResponse(baseResponse.POST_PARTICIPATE_ALREADY_CLOSE)); // 이미 마감했는지
+    if(!waitingUsers.includes(userIdFromJWT)) return res.send(errResponse(baseResponse.POST_PARTICIPATION_NOT_MATCH)); // 접속한 유저가 참여 대기중인지
+
+    const removeParticipationResult = await removeParticipation(post_id, userIdFromJWT);// 유니버스 참여 신청 취소
+    const sendCancelAlarmToWriter = await sendAlarm(post_id, Post.user_id, 2);
+
+    return res.send(response(baseResponse.SUCCESS, removeParticipationResult));
 };
 
 /**
@@ -280,38 +303,6 @@ export const postOneDayAlarm = async(req, res) => {
     if(Post){ 
         const postOneDayAlarmResult = await addOneDayAlarm(post_id, user_id);
         return res.send(response(baseResponse.SUCCESS, postOneDayAlarmResult));
-    } 
-    else{ 
-        return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));
-    }
-};
-
-/**
- * API name : 유니버스 참여 취소 (축제 때는 불가능함)
- * DELETE: /post/{post_id}/participant/cancel
- */
-export const cancelParticipant = async(req, res) => {
-    
-    const {post_id} = req.params;
-    const {user_id,participant_userIDsFromDB} = req.body;// 작성자 ID, 참여한 유저 ID들
-    const userEmail = req.verifiedToken.userEmail;
-    const userIdFromJWT = await getUserIdByEmail(userEmail); // 토큰을 통해 얻은 유저 ID (신청자 ID 여야 함)
-    
-    const Post = await retrievePost(post_id); 
-    
-    if(Post){ // Post가 존재한다면 
-        if(participant_userIDsFromDB.includes(userIdFromJWT)){ // 참여를 했던 유저라면
-
-            if(Post.post_status =="end"){// 모집 마감이라면
-                await changePostStatus(post_id);// 모집 중으로 변경
-            }
-            const removeParticipantResult = await removeParticipant(post_id, userIdFromJWT, user_id);// 유니버스 참여 취소
-            await sendCancelMessageAlarm(user_id, userIdFromJWT); // 참여 취소 알림 (to 작성자)
-            return res.send(response(baseResponse.SUCCESS, removeParticipantResult));
-        }
-        else{ // 참여를 하지 않았던 유저라면 
-            return res.send(errResponse(baseResponse.POST_PARTICIPATION_NOT_MATCH));
-        }
     } 
     else{ 
         return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST));

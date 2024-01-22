@@ -5,7 +5,8 @@ import pool from "../../../config/database";
 import {
     insertPost, insertPostImages, updatePost, updatePostImages, erasePost, insertLike,
     askParticipation, switchPostStatus, eraseParticipant,
-    deleteLike, insertAlarm, acceptParticipation, finishPostStatus} from "./postDao";
+    deleteLike, insertAlarm, acceptParticipation, finishPostStatus, eraseParticipation, deleteParticipation
+} from "./postDao";
 
 export const createPost = async(userIdFromJWT, body) =>{ // 게시글 생성
  
@@ -111,20 +112,13 @@ export const closePostStatus = async(post_id) =>{// 게시글 모집 마감
     const connection = await pool.getConnection(async conn => conn);
     const closeUniveusResult = await finishPostStatus(connection,post_id);
     connection.release();
-}; 
+};
 
-export const changePostStatus = async(post_id) =>{// 게시글 모집 상태 변경 (모집 마감 >> 모집 중) (축제용) 
+export const removeParticipation = async(post_id, userIdFromJWT) =>{// 게시글 참여 신청 취소
 
-    const connection = await pool.getConnection(async conn => conn);
-    const changePostStatusResult = await switchPostStatus(connection,post_id);
-    connection.release();
-}; 
-
-export const removeParticipant = async(post_id, userIdFromJWT, user_id) =>{// 게시글 참여 취소 (축제용)
-
-    const removeParticipantParams =[post_id, userIdFromJWT, user_id];
+    const removeParticipationParams =[post_id, userIdFromJWT];
 
     const connection = await pool.getConnection(async conn => conn);
-    const eraseParticipantResult = await eraseParticipant(connection,removeParticipantParams);
+    const eraseParticipationResult = await deleteParticipation(connection,removeParticipationParams);
     connection.release();
 };

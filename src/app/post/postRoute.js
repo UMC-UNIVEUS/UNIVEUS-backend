@@ -1,8 +1,8 @@
 import express from "express"
 import {handleMulterErrors, uploadImage} from '../../../config/imageUploader';
 import {getPost, postPost, patchPost, deletePost, patchLike,
-    requestParticipation,agreeParticipation, patchPostStatus, postOneDayAlarm,
-    cancelParticipant, postImage, patchLikeCancel} from "./postController";
+    requestParticipation, agreeParticipation, patchPostStatus, postOneDayAlarm,
+    postImage, patchLikeCancel, cancelParticipation} from "./postController";
 import { jwtMiddleware } from "../../../config/jwtMiddleWare";
 import {wrapAsync} from "../../../config/errorhandler";
 
@@ -18,9 +18,9 @@ postRouter.patch('/:post_id/like/cancel', jwtMiddleware, wrapAsync(patchLikeCanc
 
 postRouter.post('/:post_id/participant/request', jwtMiddleware, wrapAsync(requestParticipation)); // 게시글 참여 신청 + 참여 신청 알람(to 작성자)
 postRouter.patch('/:post_id/participant/agree', jwtMiddleware, wrapAsync(agreeParticipation)); // 게시글 참여 승인 + 참여 승인 알람(to 참여자)
+postRouter.delete('/:post_id/participant/cancel', jwtMiddleware, wrapAsync(cancelParticipation)); // 게시글 참여 취소 + 참여 신청 취소 알람(to 작성장)
 
 postRouter.patch('/:post_id/end', jwtMiddleware, wrapAsync(patchPostStatus)); // 모집 마감으로 상태 변경 API
 postRouter.post('/:post_id/participant/onedayalarm', wrapAsync(postOneDayAlarm)); // 게시글 모임 1일 전 알림 API
-postRouter.delete('/:post_id/participant/cancel', jwtMiddleware, wrapAsync(cancelParticipant)); // 유니버스 참여 취소 API
 
 export default postRouter;
