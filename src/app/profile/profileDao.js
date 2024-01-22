@@ -88,3 +88,13 @@ export const selectUserProfilebyId = async (connection, user_id) => {
     const [row] = await connection.query(selectUserProfilebyIdQuery, user_id);
     return row;
 }
+
+export const createIntroduction = async(connection, params) => {
+    console.log(params);
+    const createIntroductionQuery = `
+    INSERT into user_introduction(user_id, Q1, Q2, Q3, Q4, Q5, Q6)
+    VALUES (?, ?, ?, ?, ?, ?, ?) ;`;
+
+    const [row] = await connection.query(createIntroductionQuery, params);
+    return row;
+}

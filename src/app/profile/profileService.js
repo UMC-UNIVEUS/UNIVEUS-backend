@@ -3,7 +3,8 @@ import { response, errResponse, baseResponse } from "../../../config/response";
 import {
     userIdCheck
 } from "./profileProvider";
-import {modifyProfilebyId, selectUserProfilebyId} from "./profileDao";
+import {createIntroduction, modifyProfilebyId, selectUserProfilebyId} from "./profileDao";
+import {userIntroductionBodyReformattingDTO} from "./profileRequestDTO";
 
 
 // 기존에 있던 프로필 소개 정보를 수정하는 API
@@ -30,4 +31,14 @@ export const ModifyIntroProfile = async (defaultInfo, detailInfo, user_id) => {
 
 export const modifyUserProfile = async(user_id) => {
 
+
+}
+
+
+export const createUserIntroduction = async(userId, body) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const createUserIntroductionResult = await createIntroduction(connection,
+        await userIntroductionBodyReformattingDTO(userId, body));
+    connection.release();
+    return true;
 }

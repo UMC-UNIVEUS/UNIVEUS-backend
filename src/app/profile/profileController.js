@@ -10,12 +10,18 @@ import {
     showUserProfile
 } from './profileProvider';
 import {
+    createUserIntroduction,
     ModifyIntroProfile, modifyUserProfile
 } from "./profileService";
 import {getUserIdByEmail} from "../user/userProvider";
 import {userEmailIdCheckDTO} from "./profile_check_dto";
-import {userProfileDTO} from "./profileResponseDTO";
+import {userIntroductionDTO, userProfileDTO} from "./profileResponseDTO";
 
+
+/* N문 N답 생성 API */
+export const postUserIntroduction = async (req, res) => {
+    return res.send(await userIntroductionDTO(await createUserIntroduction(req.verifiedToken.userId, req.body)));
+}
 
 //24.01.08 추가해야 할 부분
 /*
