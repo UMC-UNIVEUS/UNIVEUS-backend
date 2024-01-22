@@ -1,4 +1,19 @@
-# 협업 규칙
+<h2> 축제용에서 개선된 사항 </h2>
+<details>
+<summary>JavaScript >> TypeScript 로 변경 예정 </summary>
+</details>
+
+<details>
+<summary>SQL문 >> ORM 사용 예정 </summary>
+</details>
+
+<details>
+<summary>DTO 사용 예정 </summary>
+</details>
+
+
+<details>
+<summary><h3>협업 규칙</h3> </summary>
 
 archivvonjang님의 [블로그](https://velog.io/@archivvonjang/Git-Commit-Message-Convention) 를 참고하여 정리하였습니다.
 <br/>
@@ -77,6 +92,7 @@ Modified --> Modify
 <br/>
 
 ### 6. Example
+
 ```
 Ex1)
 Feat: 회원 가입 기능 구현 ---> Commit Type
@@ -93,6 +109,17 @@ Ex2)
 게시글 작성 시 참여자 초대의 ~~ 부분에서 프론트에 데이터를 정확하게 응답하기 위해 ~~한 부분을  ~~하게끔 변경한다.
 ```
 <br/>
+
+커밋 메시지를 여러 줄 입력하려면??
+```
+git commit -m "커밋메시지 입력
+~~~
+~~~
+```
+위처럼 따옴표를 닫지 않고 계속 입력하면 된다.
+
+<br/>
+
 
 그 외 자주 쓰이는 예시
 ```
@@ -182,3 +209,6 @@ Ex2)
 🏦	일반 데이터베이스 별 (마이그레이션, 스크립트, 확장명 등)<br/>
 🐳	도커 구성<br/>
 🤝	파일을 병합 할 때
+</details>
+
+

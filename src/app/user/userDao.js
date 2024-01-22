@@ -1,15 +1,9 @@
-/** user에 Email Id insert */
-export const insertUserEmailId = async(connection, email_id) => {
-    const insertUserQuery = `INSERT INTO user (email_id) VALUES ('${email_id}');`;
-    const insertUserRow = await connection.query(insertUserQuery);
-    return insertUserRow
-}
+/** user에 Email insert 후 id 반환 */
+export const insertUserEmail = async(connection, userEmail) => {
+    const insertUserQuery = `INSERT INTO user (email) VALUES ('${userEmail}');`;
+    const [insertUserRow] = await connection.query(insertUserQuery);
 
-export const selectUser = async(connection, email_id) => {
-
-    const selectUserQuery = `SELECT email_id FROM user WHERE email_id = '${email_id}'`;
-    const selectUserRow = await connection.query(selectUserQuery);
-    return selectUserRow[0];
+    return insertUserRow.insertId
 }
 
 export const selectUserByNickname = async(connection, nickname) => {
@@ -20,31 +14,16 @@ export const selectUserByNickname = async(connection, nickname) => {
 }
 
 /** 본인인증 후 userInfo update */
-export const updateUserProfileInfo = async(connection, updateUserParams) => {
+export const updateUserAffiliation = async(connection, updateUserParams) => {
     const userInfo = updateUserParams;
 
-    console.log(updateUserParams)
-
     const updateUserQuery = 
-    `
-        UPDATE user
-        SET 
-        nickname = ?,
-        gender = ?,
-        major = ?,
-        class_of = ?,
-        auth_status = 1,
-        participate_available = 1
-
-        WHERE email_id = ?;
-    `;
+    `UPDATE user SET major = ?, student_id = ? WHERE id = ?;`;
 
     const values = [  
-      userInfo.nickname,  
-      userInfo.gender,      
       userInfo.major,       
       userInfo.studentId,    
-      userInfo.userEmail
+      userInfo.userId
     ];
   
     const updateUserRow = await connection.query(updateUserQuery, values);
@@ -53,22 +32,12 @@ export const updateUserProfileInfo = async(connection, updateUserParams) => {
 
 export const selectUserIdByEmail = async(connection,email_id) => {// 이메일로 유저 id 조회
     const selectUserIdQuery = `
-        SELECT user_id
+        SELECT id
         FROM user
-        WHERE email_id = ?;
+        WHERE email = ?;
     `;
     const selectUserIdRow = await connection.query(selectUserIdQuery,email_id);
     return selectUserIdRow[0];
-};
-
-export const selectUserNickNameById = async(connection,user_id) => {// user_id로 유저 닉네임 조회
-    const selectUserNickNameByIdQuery = `
-        SELECT nickname
-        FROM user
-        WHERE user_id = ?;
-    `;
-    const [UserNickNameByIdRow] = await connection.query(selectUserNickNameByIdQuery,user_id);
-    return UserNickNameByIdRow[0];
 };
 
 export const selectUserById = async(connection,user_id) => {// id로 유저 전체 조회
@@ -81,25 +50,6 @@ export const selectUserById = async(connection,user_id) => {// id로 유저 전�
     return UserByIdRow[0];
 };
 
-export const selectIsParticipateOtherById = async(connection,user_id) => {// id로 다른 게시글에 참여했는지 
-    const selectIsParticipateOtherByIdQuery = `
-        SELECT *
-        FROM participant_users
-        WHERE user_id = ?;
-    `;
-    const [IsParticipateOtherByIdRow] = await connection.query(selectIsParticipateOtherByIdQuery,user_id);
-    return IsParticipateOtherByIdRow[0];
-};
-
-export const selectUserByNickName = async(connection,nickname) => {// 닉네임으로 유저 전체 조회
-    const selectUserByNickNameQuery = `
-        SELECT *
-        FROM user
-        WHERE nickname = ?;
-    `;
-    const [UserByNickNameRow] = await connection.query(selectUserByNickNameQuery,nickname);
-    return UserByNickNameRow[0];
-};
 
 export const selectAlarms = async(connection, userIdFromJWT) => {// 알림 내역 조회
     const selectAlarmsQuery = `
@@ -123,23 +73,23 @@ export const updateAlarms = async(connection, alarm_id) => {// 알림 확인
 
 /** user의 phone 번호 update */
 export const updateUserPhoneNumber = async(connection, userPhoneNumber, userId) => {
-    const updateUserQuery = `UPDATE user SET phone = '${userPhoneNumber}' WHERE user_id = ${userId};`;
+    const updateUserQuery = `UPDATE user SET phone = '${userPhoneNumber}' WHERE id = ${userId};`;
     const updateUserRow = await connection.query(updateUserQuery);
     return updateUserRow;
 }
 
 /** user의 phone 번호 조회 */
-export const selectPhoneByEmail = async(connection, userEmail) => {
-    const selectPhoneByEmailQuery = `SELECT phone FROM user WHERE email_id = '${userEmail}';`;
+export const selectPhoneById = async(connection, userId) => {
+    const selectPhoneByEmailQuery = `SELECT phone FROM user WHERE id = '${ userId }';`;
     const selectPhoneByEmailRow = await connection.query(selectPhoneByEmailQuery);
     return selectPhoneByEmailRow;
 }
 
-/**user의 auth_status를 검색 */
-export const selectAuthStatusByEmail = async(connection, userEmail) => {
-    const selectAuthStatusByEmailQuery = `SELECT auth_status FROM user WHERE email_id = '${userEmail}';`;
-    const selectAuthStatusByEmailRow = await connection.query(selectAuthStatusByEmailQuery);
-    return selectAuthStatusByEmailRow;
+/**user의 본인인증 정보를 검색 */
+export const selectAuthInfoByUserId = async(connection, userId) => {
+    const selectAuthInfoByEmailQuery = `SELECT major, student_id FROM user WHERE id = '${userId}';`;
+    const [selectAuthInfoByEmailRow] = await connection.query(selectAuthInfoByEmailQuery);
+    return selectAuthInfoByEmailRow[0];
 }
 
 /** 임의 user를 insert */
@@ -151,7 +101,7 @@ export const insertUser = async (connection, userInfoParams) => {
 
 /** 약관 동의 insert */
 export const insertAgreementTerms = async(connection, userId, agreementParam) => {
-    const insertAgreementTermsQuery = `INSERT INTO term_agreement(user_id, term_agreement_name_id, created_at) VALUES(${userId}, ${agreementParam}, now());`;
+    const insertAgreementTermsQuery = `INSERT INTO user_agree(user_id, terms_id, created_at) VALUES(${userId}, ${agreementParam}, now());`;
     const insertAgreementTermsRow = await connection.query(insertAgreementTermsQuery);
 }
 
@@ -181,19 +131,16 @@ export const selectUserAccountStatus = async(connection, userEmail) => {
     return selectUserAccountStatusRow;
 }
 
-export const updateParticipateAvailable = async(connection, userId) => {
-    const updateParticipateAvailableQuery = `UPDATE user SET participate_available = 0 WHERE user_id = ${userId};`;
-    const updateParticipateAvailableRow = await connection.query(updateParticipateAvailableQuery);
+/**user 약관 동의 조회 */
+export const selectUserAgreeById = async(connection, userId) => {
+    const selectUserAgreeQuery = `SELECT * FROM user_agree WHERE user_id = ${userId}`;
+    const [selectUserAgreeRow] = await connection.query(selectUserAgreeQuery);
+    return selectUserAgreeRow.length;
 }
 
-/** 참여가능 횟수 조회 */
-export const selectParticipateAvailalble = async(connection, userId) => {
-    const selectParticipateAvailalbleQuery = `SELECT participate_available FROM user WHERE user_id = ${userId};`;
-    const [selectParticipateAvailalbleRow] = await connection.query(selectParticipateAvailalbleQuery);
-    return selectParticipateAvailalbleRow[0].participate_available;
-}
-
-export const updateParticipateAvailableReturn = async(connection, userId) => {
-    const updateParticipateAvailableQuery = `UPDATE user SET participate_available = 1 WHERE user_id = ${userId};`;
-    const updateParticipateAvailableRow = await connection.query(updateParticipateAvailableQuery);
+/** userProfile 업데이트 */
+export const updateNicknameAndGender = async(connection, userId, userProfile) => {
+    const updateUserProfileQuery = `UPDATE user SET nickname = ?, gender = ? WHERE id = ?;`
+    const updateUserParams = [userProfile.nickname, userProfile.gender, userId]
+    const [updateUserProfileRow] = await connection.query(updateUserProfileQuery, updateUserParams)
 }
