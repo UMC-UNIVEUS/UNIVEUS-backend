@@ -1,5 +1,7 @@
 /*Profile 관련 데이터베이스, Query가 작성되어 있는 곳*/
 
+import {connect} from "pm2";
+
 export const selectUserbyId = async (connetion, user_id) => {
     const selectUserbyIdQuery = `
   SELECT * FROM user WHERE user_id = ?;`;
@@ -90,11 +92,19 @@ export const selectUserProfilebyId = async (connection, user_id) => {
 }
 
 export const createIntroduction = async(connection, params) => {
-    console.log(params);
     const createIntroductionQuery = `
     INSERT into user_introduction(user_id, Q1, Q2, Q3, Q4, Q5, Q6)
     VALUES (?, ?, ?, ?, ?, ?, ?) ;`;
 
     const [row] = await connection.query(createIntroductionQuery, params);
+    return row;
+}
+
+export const deleteIntroduction = async(connection, userId) => {
+    const deleteIntroductionQuery = `
+    DELETE FROM user_introduction
+    WHERE user_id = ?;`;
+
+    const [row] = await connection.query(deleteIntroductionQuery, userId);
     return row;
 }

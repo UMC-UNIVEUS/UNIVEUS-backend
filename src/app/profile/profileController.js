@@ -11,16 +11,27 @@ import {
 } from './profileProvider';
 import {
     createUserIntroduction,
-    ModifyIntroProfile, modifyUserProfile
+    ModifyIntroProfile, modifyUserIntroduction, modifyUserProfile
 } from "./profileService";
 import {getUserIdByEmail} from "../user/userProvider";
 import {userIntroductionDTO, userProfileDTO} from "./profileResponseDTO";
 
 
 /* N문 N답 생성 API */
-export const postUserIntroduction = async (req, res) => {
-    return res.send(await userIntroductionDTO(await createUserIntroduction(req.verifiedToken.userId, req.body)));
+export const postUserIntroduction = async (req, res) => { //아직 추가는 못했지만, 나중에 이미 생성 데이터가 존재하면 생성하지 않는 예외처리 해줘야함.
+    return res.send(await userIntroductionDTO("create", await createUserIntroduction(req.verifiedToken.userId, req.body)));
 }
+
+/* N문 N답 수정 API */
+export const putUserIntroduction = async (req, res) => {
+    return res.send(await userIntroductionDTO("modify", await modifyUserIntroduction(req.verifiedToken.userId, req.body)));
+}
+
+/* N문 N답 조회 API */
+export const getUserIntroduction = async (req, res) => {
+    return res.send(await userIntroductionDTO("retrieve", await retrieveUserIntroduction(req.verifiedToken.userId)));
+}
+
 
 //24.01.08 추가해야 할 부분
 /*

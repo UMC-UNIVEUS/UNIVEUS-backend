@@ -8,8 +8,15 @@ export const userProfileDTO = async(UserProfileResponse, user_id) => {
     return Response;
 }
 
-export const userIntroductionDTO = async(userIntroductionResponse) => {
-    console.log(userIntroductionResponse);
-    if(userIntroductionResponse)
+export const userIntroductionDTO = async(type, userIntroductionResponse) => {
+
+    if(type === "create" && userIntroductionResponse === true) // 생성
         return response(baseResponse.SUCCESS);
+    if(type === "modify" && userIntroductionResponse === true) // 수정
+        return response(baseResponse.SUCCESS);
+    else if(type === "retrieve" && userIntroductionResponse != null)  // 조회시엔 조회 결과를 같이 주도록
+        return response(baseResponse.SUCCESS, userIntroductionResponse);
+    else // 여긴 예외처리.
+        return errResponse(baseResponse.SERVER_ERROR);
+
 }

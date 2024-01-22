@@ -165,3 +165,8 @@ export const showUserProfile = async(profile_id) => {
     connection.release();
     return showUserProfileResult[0];
 };
+
+export const retrieveUserIntroduction = async(userId) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+
+}
