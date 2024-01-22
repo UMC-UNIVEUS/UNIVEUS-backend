@@ -14,7 +14,6 @@ import {
     ModifyIntroProfile, modifyUserProfile
 } from "./profileService";
 import {getUserIdByEmail} from "../user/userProvider";
-import {userEmailIdCheckDTO} from "./profile_check_dto";
 import {userIntroductionDTO, userProfileDTO} from "./profileResponseDTO";
 
 
