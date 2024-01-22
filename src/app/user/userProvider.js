@@ -1,6 +1,8 @@
-import { selectUserByNickname, selectUserIdByEmail, selectAlarms,
-    selectUserById, selectPhoneById,selectAuthInfoByUserId, selectUserReportedNum,
-    selectUserAccountStatus,selectUserAgreeById } from "./userDao"
+import {
+    selectUserByNickname, selectUserIdByEmail, selectAlarms,
+    selectUserById, selectPhoneById, selectAuthInfoByUserId, selectUserReportedNum,
+    selectUserAccountStatus, selectUserAgreeById, selectUserParticipateStatusById
+} from "./userDao"
 import pool from "../../../config/database"
 
 /** 회원인지 확인 */
@@ -114,4 +116,16 @@ export const isUserAgree = async (userId) => {
     const userAgree = await selectUserAgreeById(connection, userId);
     connection.release();
     return userAgree
+}
+
+/** 특정 게시글에 대한 유저의 상태(작성자 or 참여자 or 일반 유저) */
+export const getUserParticipateStatusById = async (userId, post_id) =>{
+
+    const selectUserParticipateStatusParams =[userId, post_id];
+
+    const connection = await pool.getConnection(async (conn) => conn);
+    const UserParticipateStatus = await selectUserParticipateStatusById(connection, selectUserParticipateStatusParams);
+    connection.release();
+
+    return UserParticipateStatus;
 }

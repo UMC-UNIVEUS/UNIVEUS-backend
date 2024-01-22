@@ -144,3 +144,15 @@ export const updateNicknameAndGender = async(connection, userId, userProfile) =>
     const updateUserParams = [userProfile.nickname, userProfile.gender, userId]
     const [updateUserProfileRow] = await connection.query(updateUserProfileQuery, updateUserParams)
 }
+
+/** 특정 게시글에 대한 유저의 상태(작성자 or 참여자 or 일반 유저) */
+export const selectUserParticipateStatusById = async(connection, selectUserParticipateStatusParams ) =>{
+    const selectUserParticipateStatusByIdQuery = `
+        SELECT status
+        FROM participant_user
+        WHERE user_id = ? AND post_id = ?;
+    `;
+    const [userParticipateStatusRow] = await connection.query(selectUserParticipateStatusByIdQuery,selectUserParticipateStatusParams);
+    return userParticipateStatusRow[0];
+
+}
