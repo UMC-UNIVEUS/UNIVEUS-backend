@@ -38,14 +38,12 @@ export const baseResponse = {
     POST_LOCATION_LENGTH : { "isSuccess": false, "code": "POST0003", "message": "모임장소는 최대 24자리를 입력해주세요." },
     POST_INFORMATION_EMPTY : { "isSuccess": false, "code": "POST0004", "message": "미입력된 항목이 있습니다." },
     POST_CONTENT_LENGTH : { "isSuccess": false, "code": "POST0005", "message": "소개글은 최대 500자리를 입력해주세요." },
-    POST_PARTICIPATION_CLOSE : { "isSuccess": false, "code": "POST0006", "message": "모집이 마감되었습니다." },
-    POST_PARTICIPATION_NOT_MATCH : { "isSuccess": false, "code": "POST0008", "message": "참여를 하지 않았으므로 참여 취소를 할 수 없습니다." },
-    POST_PARTICIPATION_CLOSE_NOW : { "isSuccess": true, "code": "POST0009", "message": "현재 참여한 인원 덕분에 모집 마감되었습니다!" },
-    POST_PARTICIPATE_ALREADY_CLOSE : { "isSuccess": false, "code": "POST0010", "message": "이미 모집 마감됐습니다." },
-    POST_IMAGE_LIMIT: { "isSuccess": false, "code": "POST0011", "message": "이미지는 최대 4개까지 업로드할 수 있습니다." },
-    POST_GENDER_LIMIT: { "isSuccess": false, "code": "POST0012", "message": "성별 제한이 있습니다. 확인해 주세요." },
-    UPLOADED_FILE_SIZE_EXCEED_LIMIT: { "isSuccess": false, "code": "POST0014", "message": "업로드한 이미지의 용량이 너무 큽니다." },
-    POST_WAITER_LIMIT: { "isSuccess": false, "code": "POST0015", "message": "대기 인원이 다 찼습니다." },
+    POST_PARTICIPATION_AGREE_OR_ALREADY_REQUEST : { "isSuccess": false, "code": "POST0006", "message": "참여 완료이거나 이미 참여 신청을 했으므로 참여 신청을 할 수 없습니다." },
+    POST_PARTICIPATION_AGREE_OR_NOT_REQUEST : { "isSuccess": false, "code": "POST0007", "message": "참여 완료이거나 참여 신청을 하지 않았으므로 참여 취소를 할 수 없습니다." },
+    POST_PARTICIPATE_ALREADY_CLOSE : { "isSuccess": false, "code": "POST0008", "message": "이미 모집 마감됐습니다." },
+    POST_GENDER_LIMIT: { "isSuccess": false, "code": "POST0009", "message": "성별 제한이 있습니다. 확인해 주세요." },
+    UPLOADED_FILE_SIZE_EXCEED_LIMIT: { "isSuccess": false, "code": "POST0010", "message": "업로드한 이미지의 용량이 너무 큽니다." },
+    POST_WAITER_LIMIT: { "isSuccess": false, "code": "POST0011", "message": "대기 인원이 다 찼습니다." },
 
 
     // 토큰 오류
@@ -66,13 +64,6 @@ export const baseResponse = {
     /** 검색 관련 응답 */
     SEARCH_KEYWORD_NULL : {"isSuccess" : false, "code" : 7000, "message" : "검색 키워드를 입력하지 않았습니다."},
     SEARCH_RESULT_NULL : {"isSuccess" : false, "code" : 7001, "message" : "찾으시는 검색 결과가 없습니다."},
-
-
-    //Connection, Transaction 등의 서버 오류
-    DB_ERROR : { "isSuccess": false, "code": 4000, "message": "데이터 베이스 에러"},
-    SERVER_ERROR : { "isSuccess": false, "code": 4001, "message": "서버 에러"},
-    INVALID_FILE_PATH : { "isSuccess": false, "code": 4002, "message": "잘못된 파일 경로입니다."},
-
 };
 
 

@@ -55,9 +55,9 @@ export const insertPost = async(connection, insertPostParams)=>{ // 게시글 �
 export const insertPostImages = async(connection, insertPostImagesParams)=>{// 게시글 이미지 저장
 
     const postPostImagesQuery = `
-            INSERT INTO post_img(image_url, post_id) 
-            VALUES (?,?);
-        `;
+        INSERT INTO post_img(image_url, post_id) 
+        VALUES (?,?);
+    `;
     for(var i =0; i<insertPostImagesParams[0].length ;i++){
         const insertPostImagesRow = await connection.query(postPostImagesQuery, [insertPostImagesParams[0][i],insertPostImagesParams[1]]);
     }
@@ -70,8 +70,8 @@ export const updatePostImages = async(connection, updatePostImagesParams)=>{// �
     `;
 
     const postPostImagesQuery = `
-    INSERT INTO post_img(image_url, post_id) 
-    VALUES (?,?);
+        INSERT INTO post_img(image_url, post_id) 
+        VALUES (?,?);
     `;
     
     const deletePostImageRow = await connection.query(deletePostImageQuery, [updatePostImagesParams[1]]);
@@ -203,5 +203,15 @@ export const selectWaiterNum = async(connection, post_id)=>{ //게시글에 참�
         WHERE status = 'WAITING';
     `;
     const [WaiterNumRow] = await connection.query(selectWaiterNumQuery, post_id);
-    return WaiterNumRow;
+    return WaiterNumRow[0].num;
 };
+
+export const selectParticiaptionStatus = async(connection, ParticiaptionStatusParams) =>{
+    const selectParticiaptionStatusQuery = `
+        SELECT status
+        FROM participant_user
+        WHERE post_id = ? AND user_id = ?;
+    `;
+    const [ParticiaptionStatusRow] = await connection.query(selectParticiaptionStatusQuery, ParticiaptionStatusParams);
+    return ParticiaptionStatusRow[0].status;
+}

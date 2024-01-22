@@ -1,6 +1,12 @@
 import dotenv from "dotenv";
 import {baseResponse, response, errResponse} from "../../../config/response";
-import {retrievePost, retrieveParticipant, retrievePostImages, getWaiterNum} from "./postProvider";
+import {
+    retrievePost,
+    retrieveParticipant,
+    retrievePostImages,
+    getWaiterNum,
+    getParticiaptionStatus
+} from "./postProvider";
 import {
     createPost, createPostImage, editPost, patchPostImage, removePost, addLike,
     proposeParticipation, changePostStatus, removeParticipant, cancelLike,
@@ -210,19 +216,26 @@ export const requestParticipation = async(req, res) => {
 
     const Post = await retrievePost(post_id);
     const User = await getUserById(userIdFromJWT);
-
-    if(!Post) return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // Post가 존재하는지
     
-    if(Post.limit_gender !== "all" && User.gender !== Post.limit_gender) return res.send(errResponse(baseResponse.POST_GENDER_LIMIT));
-    // 성별 제한에 걸리는지
+    if(!Post) return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // Post가 존재하는지
 
-    const participateWaiterNum = await getWaiterNum(post_id);
-    if(participateWaiterNum.num >= 10) return res.send(errResponse(baseResponse.POST_WAITER_LIMIT));
+    try{
+        if(await getParticiaptionStatus(post_id,userIdFromJWT)) return res.send(errResponse(baseResponse.POST_PARTICIPATION_AGREE_OR_ALREADY_REQUEST));
+        //이미 참여 완료이거나 참여 신청을 했는지
 
-    const requestParticipationResult = await proposeParticipation(post_id, userIdFromJWT);
-    const sendRequestAlarmToWriter = await sendAlarm(post_id, Post.user_id, 1);
+    }catch (TypeError) { // typeError가 난 경우는 status가 존재하지 않다는 것. 따라서 접속자는 아무런 행위도 하지 않은 지나가는 아무개다.
 
-    return res.send(response(baseResponse.SUCCESS, requestParticipationResult));
+        if(Post.limit_gender !== "all" && User.gender !== Post.limit_gender) return res.send(errResponse(baseResponse.POST_GENDER_LIMIT));
+        // 성별 제한에 걸리는지
+
+        const participateWaiterNum = await getWaiterNum(post_id);
+        if(participateWaiterNum >= 10) return res.send(errResponse(baseResponse.POST_WAITER_LIMIT));
+
+        const requestParticipationResult = await proposeParticipation(post_id, userIdFromJWT);
+        const sendRequestAlarmToWriter = await sendAlarm(post_id, Post.user_id, 1);
+
+        return res.send(response(baseResponse.SUCCESS, requestParticipationResult));
+    }
 };
 
 /**
@@ -263,7 +276,8 @@ export const cancelParticipation = async(req, res) => {
 
     if(!Post) return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // Post가 존재하는지
     if(Post.post_status === "END")return res.send(errResponse(baseResponse.POST_PARTICIPATE_ALREADY_CLOSE)); // 이미 마감했는지
-    if(!waitingUsers.includes(userIdFromJWT)) return res.send(errResponse(baseResponse.POST_PARTICIPATION_NOT_MATCH)); // 접속한 유저가 참여 대기중인지
+    if(!waitingUsers.includes(userIdFromJWT)) return res.send(errResponse(baseResponse.POST_PARTICIPATION_AGREE_OR_NOT_REQUEST));
+    // 접속한 유저가 참여 완료이거나 대기중인지
 
     const removeParticipationResult = await removeParticipation(post_id, userIdFromJWT);// 유니버스 참여 신청 취소
     const sendCancelAlarmToWriter = await sendAlarm(post_id, Post.user_id, 2);

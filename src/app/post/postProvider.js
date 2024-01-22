@@ -1,5 +1,5 @@
 import pool from "../../../config/database"
-import {selectPost, selectParticipant, selectPostImages, selectWaiterNum} from "./postDao";
+import {selectPost, selectParticipant, selectPostImages, selectWaiterNum, selectParticiaptionStatus} from "./postDao";
 import dayjs from 'dayjs';
 
 export const retrievePost = async(post_id) =>{
@@ -49,24 +49,6 @@ export const formatingMeetingDate = (post) => {
     Object.assign(post, datetime);
 }
 
-/** end_date 포맷팅 */
-export const formatingEndDate = (post) => {
-    const date = dayjs(post.end_date);
-    const end_year = date.year();
-    const end_month = date.month() < 10 ? "0" + (date.month() + 1)  : ""+(date.month() + 1);
-    const end_date = date.date() < 10 ? "0" + date.date() : ""+date.date();
-    const end_time = (date.hour() < 10 ? "0" + date.hour() : ""+date.hour()) + ":" + (date.minute() < 10 ? "0" + date.minute() : ""+date.minute());
-    delete post.end_date;
-
-    const datetime = {
-        "end_year":end_year,
-        "end_month":end_month,
-        "end_date":end_date,
-        "end_time":end_time,
-    }
-   
-    Object.assign(post, datetime);
-}
 
 /** 게시글에 참여 신청한 대기자 인원수 조회*/
 export const getWaiterNum = async(post_id) =>{
@@ -75,5 +57,17 @@ export const getWaiterNum = async(post_id) =>{
     const waiterNumResult = await selectWaiterNum(connection,post_id);
     connection.release();
 
-    return waiterNumResult[0];
+    return waiterNumResult;
 };
+
+/** 특정 게시글에 대한 유저의 참여 상태 조회*/
+export const getParticiaptionStatus = async(post_id, userIdFromJWT)=>{
+
+    const ParticiaptionStatusParams = [post_id, userIdFromJWT];
+
+    const connection = await pool.getConnection(async conn => conn);
+    const ParticiaptionStatusResult = await selectParticiaptionStatus(connection,ParticiaptionStatusParams);
+    connection.release();
+
+    return ParticiaptionStatusResult;
+}
