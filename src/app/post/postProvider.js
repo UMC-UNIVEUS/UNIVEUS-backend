@@ -1,5 +1,5 @@
 import pool from "../../../config/database"
-import { selectPost, selectParticipant, selectPostImages, selectParticipantList } from "./postDao";
+import {selectPost, selectParticipant, selectPostImages, selectWaiterNum, selectParticiaptionStatus} from "./postDao";
 import dayjs from 'dayjs';
 
 export const retrievePost = async(post_id) =>{
@@ -9,7 +9,6 @@ export const retrievePost = async(post_id) =>{
     connection.release();
 
     return postResult[0];
-
 };
 
 export const retrievePostImages = async(post_id) =>{
@@ -25,15 +24,6 @@ export const retrieveParticipant = async(post_id)=>{
   
     const connection = await pool.getConnection(async conn => conn);
     const participantResult = await selectParticipant(connection,post_id);
-    connection.release();
-
-    return participantResult;
-};
-
-export const retrieveParticipantList = async(post_id)=>{ //게시글 참여자 신청 내역 조회 
-  
-    const connection = await pool.getConnection(async conn => conn);
-    const participantResult = await selectParticipantList(connection,post_id);
     connection.release();
 
     return participantResult;
@@ -59,46 +49,25 @@ export const formatingMeetingDate = (post) => {
     Object.assign(post, datetime);
 }
 
-/** end_date 포맷팅 */
-export const formatingEndDate = (post) => {
-    const date = dayjs(post.end_date);
-    const end_year = date.year();
-    const end_month = date.month() < 10 ? "0" + (date.month() + 1)  : ""+(date.month() + 1);
-    const end_date = date.date() < 10 ? "0" + date.date() : ""+date.date();
-    const end_time = (date.hour() < 10 ? "0" + date.hour() : ""+date.hour()) + ":" + (date.minute() < 10 ? "0" + date.minute() : ""+date.minute());
-    delete post.end_date;
 
-    const datetime = {
-        "end_year":end_year,
-        "end_month":end_month,
-        "end_date":end_date,
-        "end_time":end_time,
-    }
-   
-    Object.assign(post, datetime);
-}
+/** 게시글에 참여 신청한 대기자 인원수 조회*/
+export const getWaiterNum = async(post_id) =>{
 
-/** created_date 포맷팅 */
-export const formatingCreatedAt = (post) => {
-    const date = dayjs(post.created_at);
-    const created_month = date.month() < 10 ? "0" + (date.month() + 1)  : ""+(date.month() + 1);
-    const created_date = date.date() < 10 ? "0" + date.date() : ""+date.date();
-    const created_time = (date.hour() < 10 ? "0" + date.hour() : ""+date.hour()) + ":" + (date.minute() < 10 ? "0" + date.minute() : ""+date.minute());
-    delete post.created_at;
+    const connection = await pool.getConnection(async conn => conn);
+    const waiterNumResult = await selectWaiterNum(connection,post_id);
+    connection.release();
 
-    const datetime = {
-        "created_month":created_month,
-        "created_date":created_date,
-        "created_time":created_time,
-    }
-   
-    Object.assign(post, datetime);
-}
+    return waiterNumResult;
+};
 
-/** kakao 유효성 검사 */
-export const isValidOpenChat = (openChaturi) => {
-    
-    if (openChaturi.startsWith("https://open.kakao.com/")) return true;
+/** 특정 게시글에 대한 유저의 참여 상태 조회*/
+export const getParticiaptionStatus = async(post_id, userIdFromJWT)=>{
 
-    return false;
+    const ParticiaptionStatusParams = [post_id, userIdFromJWT];
+
+    const connection = await pool.getConnection(async conn => conn);
+    const ParticiaptionStatusResult = await selectParticiaptionStatus(connection,ParticiaptionStatusParams);
+    connection.release();
+
+    return ParticiaptionStatusResult;
 }

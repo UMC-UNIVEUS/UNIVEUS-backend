@@ -3,15 +3,13 @@ import axios from "axios";
 import { addUserAffiliation, isKyonggiEmail, createAuthNum, checkAlarms,
     createUser, addUserPhoneNumber, addAgreementTerms, addUserProfile } from "./userService";
 import { isUser, isNicknameDuplicate, retrieveAlarms, getUserIdByEmail,
-    getUserNickNameById, isAuthNumber, isAuthUser,
+    isAuthNumber, isAuthUser,
     getUserById, getUserPhoneNumber, removeEmojisAndSpace,
     isProfileExist, isUserAgree } from "./userProvider";
-import { retrievePost } from "../post/postProvider";
 import jwt from "jsonwebtoken";
 import { sendSMS } from "../../../config/naverCloudClient";
 import { naverCloudSensSecret } from "../../../config/configs";
 import NodeCache from "node-cache";
-import dayjs from 'dayjs';
 
 const cache = new NodeCache();
 

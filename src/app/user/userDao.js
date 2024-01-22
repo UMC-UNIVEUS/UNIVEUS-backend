@@ -17,18 +17,18 @@ export const selectUserByNickname = async(connection, nickname) => {
 export const updateUserAffiliation = async(connection, updateUserParams) => {
     const userInfo = updateUserParams;
 
-    const updateUserQuery = 
-    `UPDATE user SET major = ?, student_id = ? WHERE id = ?;`;
+    const updateUserQuery =
+        `UPDATE user SET major = ?, student_id = ? WHERE id = ?;`;
 
-    const values = [  
-      userInfo.major,       
-      userInfo.studentId,    
-      userInfo.userId
+    const values = [
+        userInfo.major,
+        userInfo.studentId,
+        userInfo.userId
     ];
-  
+
     const updateUserRow = await connection.query(updateUserQuery, values);
     return updateUserRow;
-  };
+};
 
 export const selectUserIdByEmail = async(connection,email_id) => {// 이메일로 유저 id 조회
     const selectUserIdQuery = `
@@ -61,7 +61,7 @@ export const selectAlarms = async(connection, userIdFromJWT) => {// 알림 내�
     return selectAlarmsRow;
 };
 
-export const updateAlarms = async(connection, alarm_id) => {// 알림 확인 
+export const updateAlarms = async(connection, alarm_id) => {// 알림 확인
     const updateAlarmsQuery = `
         UPDATE alarm
         SET ischecked = 1
@@ -143,4 +143,16 @@ export const updateNicknameAndGender = async(connection, userId, userProfile) =>
     const updateUserProfileQuery = `UPDATE user SET nickname = ?, gender = ? WHERE id = ?;`
     const updateUserParams = [userProfile.nickname, userProfile.gender, userId]
     const [updateUserProfileRow] = await connection.query(updateUserProfileQuery, updateUserParams)
+}
+
+/** 특정 게시글에 대한 유저의 상태(작성자 or 참여자 or 일반 유저) */
+export const selectUserParticipateStatusById = async(connection, selectUserParticipateStatusParams ) =>{
+    const selectUserParticipateStatusByIdQuery = `
+        SELECT status
+        FROM participant_user
+        WHERE user_id = ? AND post_id = ?;
+    `;
+    const [userParticipateStatusRow] = await connection.query(selectUserParticipateStatusByIdQuery,selectUserParticipateStatusParams);
+    return userParticipateStatusRow[0];
+
 }

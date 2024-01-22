@@ -1,14 +1,14 @@
-import { updateUserAffiliation, updateAlarms, insertUserEmail, 
-    updateUserPhoneNumber, insertAgreementTerms, updateAccountStatus, 
+import { updateUserAffiliation, updateAlarms, insertUserEmail,
+    updateUserPhoneNumber, insertAgreementTerms, updateAccountStatus,
     updateUserReportedNum,updateNicknameAndGender } from "./userDao"
 import pool from "../../../config/database"
 
 /** 유저 생성 - 프로필 등록, 번호인증 전 user */
 export const createUser = async(userEmail) => {
-        const connection = await pool.getConnection(async conn => conn);
-        const createUserResult = await insertUserEmail(connection, userEmail);
-        connection.release();
-        return createUserResult; 
+    const connection = await pool.getConnection(async conn => conn);
+    const createUserResult = await insertUserEmail(connection, userEmail);
+    connection.release();
+    return createUserResult;
 }
 
 /** 경기대 이메일인지 확인 */
@@ -24,10 +24,10 @@ export const createAuthNum = () => {
 
 /** 소속등록 */
 export const addUserAffiliation = async(userInfo) => {
-        const connection = await pool.getConn
+    const connection = await pool.getConn
     ection(async conn => conn);
-        const affiliationUserResult = await updateUserAffiliation(connection, userInfo);
-        connection.release();
+    const affiliationUserResult = await updateUserAffiliation(connection, userInfo);
+    connection.release();
 };
 
 export const checkAlarms = async(alarm_id) =>{// 알림 확인 
@@ -66,9 +66,9 @@ export const addAgreementTerms = async(userId, agreementParams) => {
 export const changeUserStatus = async(userId, userStatus) => {
     const connection = await pool.getConnection(async conn => conn);
     const changeUserStatusResult = await updateAccountStatus(connection, userId, userStatus);
-   
+
     connection.release();
-} 
+}
 
 /** user의 reported_num 증가 */
 export const increaseUserReportedNum = async(userId) => {
