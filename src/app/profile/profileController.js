@@ -4,18 +4,14 @@ import { response, errResponse, baseResponse } from "../../../config/response";
 
 import {
     retrieveUserIntroduction,
-    showUserDefaultProfile,
-    showUserIntroProfile,
-    showUserMyUnive,
-    showUserParticipate,
-    showUserProfile
 } from './profileProvider';
 import {
     createUserIntroduction,
-    ModifyIntroProfile, modifyUserIntroduction, modifyUserProfile
+    modifyUserIntroduction
 } from "./profileService";
-import {getUserIdByEmail} from "../user/userProvider";
-import {userIntroductionDTO, userProfileDTO} from "./profileResponseDTO";
+import {
+    userIntroductionDTO
+} from "./profileResponseDTO";
 
 
 /* N문 N답 생성 API */
