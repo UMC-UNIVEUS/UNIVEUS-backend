@@ -8,6 +8,8 @@ export const userIntroductionBodyReformattingDTO = async(userId, body) => {
         q6: universityLife // 대학생활동안 제일 해보고 싶은 건
     } = body;
 
+    //이거 그냥 body.personallity, body.food 이렇게 넘겨줘도 될 거 같긴 함.
+
     return [
         userId,
         personality,
