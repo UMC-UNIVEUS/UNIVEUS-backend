@@ -91,6 +91,8 @@ export const selectUserProfilebyId = async (connection, user_id) => {
     return row;
 }
 
+// 여기서부터 새롭게 작성하는 부분
+
 export const createIntroduction = async(connection, params) => {
     const createIntroductionQuery = `
     INSERT into user_introduction(user_id, Q1, Q2, Q3, Q4, Q5, Q6)

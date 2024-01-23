@@ -34,6 +34,8 @@ export const modifyUserProfile = async(user_id) => {
 
 }
 
+//여기서부터 새로 작성한 부분
+
 /* N문 N답 생성 */
 export const createUserIntroduction = async(userId, body) => {
     const connection = await pool.getConnection(async (conn) => conn);

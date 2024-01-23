@@ -166,6 +166,8 @@ export const showUserProfile = async(profile_id) => {
     return showUserProfileResult[0];
 };
 
+
+//여기서 부터 새로 작성한 부분
 export const retrieveUserIntroduction = async(userId) => {
     const connection = await pool.getConnection(async (conn) => conn);
     const retrieveUserIntroductionResult = await selectUserIntroduction(connection, userId);

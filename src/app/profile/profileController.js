@@ -3,6 +3,7 @@
 import { response, errResponse, baseResponse } from "../../../config/response";
 
 import {
+    retrieveUserIntroduction,
     showUserDefaultProfile,
     showUserIntroProfile,
     showUserMyUnive,
