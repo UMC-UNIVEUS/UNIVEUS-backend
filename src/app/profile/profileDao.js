@@ -108,3 +108,13 @@ export const deleteIntroduction = async(connection, userId) => {
     const [row] = await connection.query(deleteIntroductionQuery, userId);
     return row;
 }
+
+export const selectUserIntroduction = async(connection, userId) => {
+    const selectUserIntroductionQuery = ` 
+    SELECT *
+    FROM user_introduction
+    WHERE user_id = ?;`;
+
+    const [row] = await connection.query(electUserIntroductionQuery, userId);
+    return row;
+}

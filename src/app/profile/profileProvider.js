@@ -7,7 +7,7 @@ import {
     selectUserMyUnivebyId,
     selectUserParticipatebyId,
     selectPostbyId,
-    selectUserProfilebyId
+    selectUserProfilebyId, selectUserIntroduction
 } from './profileDao';
 import {baseResponse, response, errResponse} from "../../../config/response";
 import dayjs from 'dayjs';
@@ -168,5 +168,7 @@ export const showUserProfile = async(profile_id) => {
 
 export const retrieveUserIntroduction = async(userId) => {
     const connection = await pool.getConnection(async (conn) => conn);
-
+    const retrieveUserIntroductionResult = await selectUserIntroduction(connection, userId);
+    connection.release();
+    return retrieveUserIntroductionResult;
 }
