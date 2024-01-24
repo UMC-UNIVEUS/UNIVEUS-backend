@@ -1,11 +1,27 @@
 <h2> 축제용에서 개선된 사항 </h2>
 
 <details>
-<summary>코드 리펙토링 </summary>
+<summary>협업 방식 </summary>
+    1. issue 명칭을 더 깔끔하고 세세하게 작성
+    </br>
+    2. PR을 날리면 팀원이 무조건 리뷰
+    </br>
+    3. 커밋 메세지를 세세하게 작성
 </details>
 
 <details>
-<summary>DTO 사용 예정 </summary>
+<summary>코드 리펙토링 </summary>
+    1. 축제용 코드 포함 불필요한(반복되거나 비효율적인) 코드 삭제
+    </br>
+    2. 함수명을 다른 팀원도 잘 이해하도록 변경
+    </br>
+    3. 카멜 표기법 사용
+    </br>
+    4. DB 수정에 따른 SQL문 수정
+</details>
+
+<details>
+<summary>DTO 사용 </summary>
 </details>
 
 ## 커밋 컨벤션
