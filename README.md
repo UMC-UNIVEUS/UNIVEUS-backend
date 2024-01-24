@@ -1,26 +1,32 @@
 <h2> 축제용에서 개선된 사항 </h2>
 
 <details>
-<summary>SQL문 >> ORM 사용 예정 </summary>
+<summary>협업 방식 </summary>
+    1. issue 명칭을 더 깔끔하고 세세하게 작성
+    </br>
+    2. PR을 날리면 팀원이 무조건 리뷰
+    </br>
+    3. 커밋 메세지를 세세하게 작성
 </details>
 
 <details>
-<summary>DTO 사용 예정 </summary>
-</details>
-
-
-<h3>ERD</h3>
-
-<details>
-<summary>ERD</summary>    
-
-![294210307-4daa9a3f-fffa-4143-a812-ceab46d8201e](https://github.com/UMC-UNIVEUS/UNIVEUS-backend/assets/131960164/d3b0d8c6-d890-4d67-a152-0ea99302fab8)
-
-
+<summary>코드 리펙토링 </summary>
+    1. 축제용 코드 포함 불필요한(반복되거나 비효율적인) 코드 삭제
+    </br>
+    2. 함수명을 다른 팀원도 잘 이해하도록 변경
+    </br>
+    3. 카멜 표기법 사용
+    </br>
+    4. DB 수정에 따른 SQL문 수정
 </details>
 
 <details>
-<summary><h3>협업 규칙</h3> </summary>
+<summary>DTO 사용 </summary>
+</details>
+
+## 커밋 컨벤션
+<details>
+<summary><h3> 규칙</h3> </summary>
 
 archivvonjang님의 [블로그](https://velog.io/@archivvonjang/Git-Commit-Message-Convention) 를 참고하여 정리하였습니다.
 <br/>
@@ -34,10 +40,7 @@ archivvonjang님의 [블로그](https://velog.io/@archivvonjang/Git-Commit-Messa
 
     ```
       제목 (Type: Subject)
-      (한줄 띄어 분리)
       본문 (Body)
-      (한줄 띄어 분리)
-      꼬리말 (Footer)
     ```
 
 ### 2. Commit Type
@@ -51,24 +54,17 @@ archivvonjang님의 [블로그](https://velog.io/@archivvonjang/Git-Commit-Messa
     
     |Tag Name|Description|
     |:--:|:--:|
-    |Feat|새로운 기능을 추가|
-    |Fix|버그 수정|
-    |!BREAKING CHANGE|커다란 API 변경의 경우|
-    |!HOTFIX|급하게 치명적인 버그를 고쳐야하는 경우|
-    |Style|코드 포맷 변경, 세미 콜론 누락, 코드 수정이 없는 경우|
-    |Refactor|Production Code(실제 사용하는 코드) 리팩토링|
-    |Comment|필요한 주석 추가 및 변경|
-    |Docs|문서 수정|
-    |Test|테스트 코드 추가, Production Code(실제 사용하는 코드) 변경 없음|
-    |Chore|빌드 업무 수정, 패키지 매니저 수정, 패키지 관리자 구성 등 업데이트, Production Code 변경 없음|
-    |Rename|파일 혹은 폴더명을 수정하거나 옮기는 작업만인 경우|
-    |Remove|파일을 삭제하는 작업만 수행한 경우|
+    |Feature|새로운 기능을 추가|
+    |Bug Fix|버그를 고쳐야하는 경우|
+    |Refactoring|Production Code(실제 사용하는 코드) 리팩토링|
+    |Update|코드 혹은 파일을 업데이트하는 작업만 수행한 경우 (리펙토링을 제외한 모든 경우)|
+    |Delete|코드 혹은 파일을 삭제하는 작업만 수행한 경우|
     <br/>
 
     추가적인 문맥 정보를 제공하기 위한 목적으로 괄호 안에 적을 수도 있다.
     ```
-      Feat(navigation)
-      Fix(DB)
+      [Feature(navigation)]:
+      [Bug Fix(DB)]:
     ```
 
 ### 3. Subject
@@ -82,9 +78,7 @@ archivvonjang님의 [블로그](https://velog.io/@archivvonjang/Git-Commit-Messa
 
 ```
 EX)
-Fixed --> Fix
-Added --> Add
-Modified --> Modify
+Bug Fixed --> Bug Fix
 ```
 
 ### 4. Body
@@ -93,27 +87,17 @@ Modified --> Modify
 -  어떻게 변경했는지보다 무엇을, 왜 변경했는지 작성한다.
 <br/>
 
-### 5. Footer
--  선택사항
--  자세한 건 블로그 참고
-<br/>
-
-### 6. Example
+### 5. Example
 
 ```
 Ex1)
-Feat: 회원 가입 기능 구현 ---> Commit Type
+[Feature]: 회원 가입 기능 구현 
+SMS, 이메일 중복확인 API 개발 
 
-SMS, 이메일 중복확인 API 개발 ---> Body
-
-Resolves: #123 ---> Footer (선택 사항항)
-Ref: #456
-Related to: #48, #45
 
 Ex2)
-!BREAKING CHANGE: 게시글 작성 API 변경
-
-게시글 작성 시 참여자 초대의 ~~ 부분에서 프론트에 데이터를 정확하게 응답하기 위해 ~~한 부분을  ~~하게끔 변경한다.
+[Refectoring]: 게시글 작성 API 변경 
+게시글 작성 시 참여자 초대의 ~~ 부분에서 프론트에 데이터를 정확하게 응답하기 위해 ~~한 부분을  ~~하게끔 변경한다. 
 ```
 <br/>
 
@@ -130,92 +114,10 @@ git commit -m "커밋메시지 입력
 
 그 외 자주 쓰이는 예시
 ```
-  Fix : 버그 수정                                                   ---> Commit Type
-  Fix my test                                                       ---> Body
+  [Bug Fix]: 게시글 유저 인증 버그 수정                                                  
+  Fix my test                                                       
   Fix typo in style.css
   Fix my test to return undefined
-  Fix error when using my function
-
-  Update : Fix와 달리 원래 정상적으로 동작했지만 보완의 개념       ---> Commit Type
-  Update harry-server.js to use HTTPS                             ---> Body
-
-  Add                                                             ---> Commit Type
-  Add documentation for the defaultPort option                     ---> Body
-  Add example for setting Vary: Accept-Encoding header in zlib.md
-
-  Remove(Clean이나 Eliminate) : ‘unnecessary’, ‘useless’, ‘unneeded’, ‘unused’, ‘duplicated’가 붙는 경우가 많음 ---> Commit Type
-  Remove fallback cache                                                                                       ---> Body
-  Remove unnecessary italics from child_process.md
-
-  Refactor : 리팩토링                                                   ---> Commit Type
-
-  Simplify : Refactor와 유사하지만 약한 수정, 코드 단순화                 ---> Commit Type
-
-  Improve : 호환성, 테스트 커버리지, 성능, 검증 기능, 접근성 등의 향상     ---> Commit Type
-  Improve iOS's accessibilityLabel performance by up to 20%               ---> Body
-
-  Implement : 코드 추가보다 큰 단위의 구현                                 ---> Commit Type
-  Implement bundle sync status                                             ---> Body
-
-  Correct : 주로 문법의 오류나 타입의 변경, 이름 변경 등에 사용             ---> Commit Type
-  Correct grammatical error in BUILDING.md                                 ---> Body
-
-  Prevent                                                                 ---> Commit Type
-  Prevent hello handler from saying Hi in hi.js                           ---> Body
-
-  Avoid : Prevent는 못하게 막지만, Avoid는 회피(if 등)                     ---> Commit Type
-  Avoid flusing uninitialized traces                                       ---> Body
-
-  Move : 코드나 파일의 이동                                                 ---> Commit Type
-  Move function from header to source file                                 ---> Body
-
-  Rename : 이름 변경                                                       ---> Commit Type
-  Rename node-report to report                                             ---> Body
 ```
 
-### 7. Emoji
--    이슈를 파고, 글 내용에다가 아래의 이모지와 함께 어떤 것을 할지 자세히 적는다.
-<br/>
-🎨	코드의 형식 / 구조를 개선 할 때<br/>
-📰	새 파일을 만들 때<br/>
-📝	사소한 코드 또는 언어를 변경할 때<br/>
-🐎	성능을 향상시킬 때<br/>
-📚	문서를 쓸 때<br/>
-🐛	버그 reporting할 때, @FIXME 주석 태그 삽입<br/>
-🚑	버그를 고칠 때<br/>
-🐧	리눅스에서 무언가를 고칠 때<br/>
-🍎	Mac OS에서 무언가를 고칠 때<br/>
-🏁	Windows에서 무언가를 고칠 때<br/>
-🔥	코드 또는 파일 제거할 때 , @CHANGED주석 태그와 함께<br/>
-🚜	파일 구조를 변경할 때 . 🎨과 함께 사용<br/>
-🔨	코드를 리팩토링 할 때<br/>
-☔️	테스트를 추가 할 때<br/>
-🔬	코드 범위를 추가 할 때<br/>
-💚	CI 빌드를 고칠 때<br/>
-🔒	보안을 다룰 때<br/>
-⬆️	종속성을 업그레이드 할 때<br/>
-⬇️	종속성을 다운 그레이드 할 때<br/>
-⏩	이전 버전 / 지점에서 기능을 전달할 때<br/>
-⏪	최신 버전 / 지점에서 기능을 백 포트 할 때<br/>
-👕	linter / strict / deprecation 경고를 제거 할 때<br/>
-💄	UI / style 개선시<br/>
-♿️	접근성을 향상시킬 때<br/>
-🚧	WIP (진행중인 작업)에 커밋, @REVIEW주석 태그와 함께 사용<br/>
-💎	New Release<br/>
-🔖	버전 태그<br/>
-🎉	Initial Commit<br/>
-🔈	로깅을 추가 할 때<br/>
-🔇	로깅을 줄일 때<br/>
-✨	새로운 기능을 소개 할 때<br/>
-⚡️	도입 할 때 이전 버전과 호환되지 않는 특징, @CHANGED주석 태그 사용<br/>
-💡	새로운 아이디어, @IDEA주석 태그<br/>
-🚀	배포 / 개발 작업 과 관련된 모든 것<br/>
-🐘	PostgreSQL 데이터베이스 별 (마이그레이션, 스크립트, 확장 등)<br/>
-🐬	MySQL 데이터베이스 특정 (마이그레이션, 스크립트, 확장 등)<br/>
-🍃	MongoDB 데이터베이스 특정 (마이그레이션, 스크립트, 확장 등)<br/>
-🏦	일반 데이터베이스 별 (마이그레이션, 스크립트, 확장명 등)<br/>
-🐳	도커 구성<br/>
-🤝	파일을 병합 할 때
 </details>
-
-
