@@ -78,6 +78,17 @@ export const updateUserPhoneNumber = async(connection, userPhoneNumber, userId) 
     return updateUserRow;
 }
 
+export const selectUserNickNameById = async(connection, userId) => {// user_id로 유저 닉네임 조회
+    const selectUserNickNameByIdQuery = `
+        SELECT nickname
+        FROM user
+        WHERE id = ?;
+    `;
+    const [userNickNameByIdRow] = await connection.query(selectUserNickNameByIdQuery, userId);
+
+    return userNickNameByIdRow[0];
+};
+
 /** user의 phone 번호 조회 */
 export const selectPhoneById = async(connection, userId) => {
     const selectPhoneByEmailQuery = `SELECT phone FROM user WHERE id = '${ userId }';`;
@@ -154,5 +165,4 @@ export const selectUserParticipateStatusById = async(connection, selectUserParti
     `;
     const [userParticipateStatusRow] = await connection.query(selectUserParticipateStatusByIdQuery,selectUserParticipateStatusParams);
     return userParticipateStatusRow[0];
-
 }

@@ -1,7 +1,7 @@
 import {
     selectUserByNickname, selectUserIdByEmail, selectAlarms,
     selectUserById, selectPhoneById, selectAuthInfoByUserId, selectUserReportedNum,
-    selectUserAccountStatus, selectUserAgreeById, selectUserParticipateStatusById
+    selectUserAccountStatus, selectUserAgreeById, selectUserParticipateStatusById, selectUserNickNameById
 } from "./userDao"
 import pool from "../../../config/database"
 
