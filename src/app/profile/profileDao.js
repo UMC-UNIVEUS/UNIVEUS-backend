@@ -29,6 +29,6 @@ export const selectUserIntroduction = async(connection, userId) => {
     FROM user_introduction
     WHERE user_id = ?;`;
 
-    const [row] = await connection.query(electUserIntroductionQuery, userId);
+    const [row] = await connection.query(selectUserIntroductionQuery, userId);
     return row;
 }
