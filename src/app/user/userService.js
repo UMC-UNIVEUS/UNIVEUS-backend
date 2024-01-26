@@ -24,8 +24,7 @@ export const createAuthNum = () => {
 
 /** 소속등록 */
 export const addUserAffiliation = async(userInfo) => {
-    const connection = await pool.getConn
-    ection(async conn => conn);
+    const connection = await pool.getConnection(async conn => conn);
     const affiliationUserResult = await updateUserAffiliation(connection, userInfo);
     connection.release();
 };
