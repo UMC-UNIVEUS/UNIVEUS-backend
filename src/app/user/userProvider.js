@@ -126,6 +126,5 @@ export const getUserParticipateStatusById = async (userId, post_id) =>{
     const connection = await pool.getConnection(async (conn) => conn);
     const UserParticipateStatus = await selectUserParticipateStatusById(connection, selectUserParticipateStatusParams);
     connection.release();
-
     return UserParticipateStatus;
 }
