@@ -17,13 +17,13 @@ dotenv.config();
  */
 export const getPost = async(req, res) => {
 
-    const {postId} = req.params;
+    const {post_id} = req.params;
     const userIdFromJWT = req.verifiedToken.userId;
-    const Post = await retrievePost(postId);
+    const Post = await retrievePost(post_id);
 
-    if (typeof post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // 게시글이 존재하지 않는다면
+    if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // 게시글이 존재하지 않는다면
 
-    const Participant = await retrieveParticipant(postId);
+    const Participant = await retrieveParticipant(post_id);
 
     const Writer = Participant[0];
     const changeStudentId = Math.floor(Writer.student_id / 100000 % 100);
@@ -34,16 +34,21 @@ export const getPost = async(req, res) => {
         ParticipantList.push(Participant[i]);
     }
 
-    const PostImages = await retrievePostImages(postId);
-    let connectedUserStatus = await getUserParticipateStatusById(userIdFromJWT, postId);
+    const PostImages = await retrievePostImages(post_id);
+    const connectedUserStatus = await getUserParticipateStatusById(userIdFromJWT, post_id); // 접속한 유저의 상태를 객체로 저장함
 
-    if(connectedUserStatus === null){
-        connectedUserStatus = "PERSON";
+    let status; // 프론트에 응답해줄 변수
+
+    if(connectedUserStatus === undefined){ // 접속한 유저가 아무 행동도 안했다면
+        status = "PERSON";
+    }
+    else{
+        status = connectedUserStatus.status;
     }
 
     const connectedUser = {
         "user_id": userIdFromJWT,
-        "status": connectedUserStatus
+        "status": status
     }
 
     return res.send(response(baseResponse.SUCCESS, {connectedUser, Writer, Post, PostImages, ParticipantList}));
