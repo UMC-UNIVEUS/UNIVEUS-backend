@@ -21,7 +21,7 @@ const allowedExtensions = ['.png', '.jpg', '.jpeg', '.bmp', '.webp'];
 export const uploadImage = multer({
     storage: multerS3({
         s3: s3,
-        bucket: 'univeus-bucket',
+        bucket: 'univeus-bucket1',
         key: (req, file, callback) => {
             const extension = path.extname(file.originalname);
             if (!allowedExtensions.includes(extension)) {
