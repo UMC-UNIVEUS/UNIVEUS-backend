@@ -7,9 +7,8 @@ import {wrapAsync} from "../../../config/errorhandler";
 const reportRouter = express.Router();
 
 reportRouter.use(jwtMiddleware);
-// reportRouter.use(accountStatusMiddleware);
 
-reportRouter.post("/user", wrapAsync(reportUser));
+reportRouter.post("/user", reportUser);
 reportRouter.post("/post", wrapAsync(reportPost));
 
 export default reportRouter;
