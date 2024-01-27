@@ -1,16 +1,15 @@
 /** 유저 신고 insert */
 export const insertUserReport = async(connection, insertUserReportParams) => {
-    const insertUserReportQuery =  `INSERT INTO user_reports (reported_by, reason_text, 
-        report_user_id, report_status, reported_at, reason_category1, reason_category2
-        , reason_category3, reason_category4, reason_category5) VALUES (?, ?, ?, 0, now(), ?, ?, ?, ?, ?);`;
+    const insertUserReportQuery =  `INSERT INTO user_report (reported_user, 
+        reporter, report_status) VALUES (?, ?, ?);`;
     const [insertUserReportRow] = await connection.query(insertUserReportQuery, insertUserReportParams);
+    return insertUserReportRow.insertId;
 }
 
 /** 유저 신고 사유 insert */
 export const insertUserReportReason = async(connection, insertUserReportReasonParams) => {
-    const insertUserReportReasonQuery = `INSERT INTO user_report_reasons (report_reason, user_report_id) VALUES (?, ?)`;
+    const insertUserReportReasonQuery = `INSERT INTO user_report_reason (reason_id, report_id, additional_text) VALUES (?, ?, ?)`;
     const insertUserReportReasonRow = await connection.query(insertUserReportReasonQuery, insertUserReportReasonParams);
-    return insertUserReportReasonRow;
 }
 
 /** 게시글 신고 insert */

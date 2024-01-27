@@ -131,17 +131,6 @@ export const verifyNumber = async(req, res) => {
     return res.send(errResponse(baseResponse.VERIFY_NUMBER_FAIL));
 }
 
-/** 유저 신고 관련 알림 (to 관리자) */
-export const sendUserReportAlarm = async(reportedBy,reportedUser) =>{
-
-    const to = "01092185178"; // 일단 내번호로....
-    const content = `[UNIVEUS 유저 신고] user_id = '${reportedBy}' >> user_id = '${reportedUser}'을 신고했습니다.`;
-
-    const { success } = await sendSMS(naverCloudSensSecret, { to, content });
-    if (!success) { return false}
-    else { return true}
-};
-
 /** 게시글 신고 관련 알림 (to 관리자) */
 export const sendPostReportAlarm = async(reportedBy, reportedPost) =>{
 
