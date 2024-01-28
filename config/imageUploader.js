@@ -23,11 +23,12 @@ export const uploadImage = multer({
         s3: s3,
         bucket: 'univeus-bucket1',
         key: (req, file, callback) => {
+            const uploadDirectory = req.query.directory ?? '';
             const extension = path.extname(file.originalname);
             if (!allowedExtensions.includes(extension)) {
                 return callback(new Error('wrong extension'));
             }
-            callback(null, `${Date.now()}_${uuid4()}${extension}`);
+            callback(null, `${uploadDirectory}/${Date.now()}_${uuid4()}${extension}`); //uploadDiredctory는 post 또는 profile.
         },
         acl: 'public-read-write',
     }),
