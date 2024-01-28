@@ -8,6 +8,7 @@ export const userProfileDTO = async(UserProfileResponse, user_id) => {
 
 export const userIntroductionDTO = async(type, userIntroductionResponse) => {
 
+    // 정상 처리
     if(type === "create" && userIntroductionResponse === true) // 생성
         return response(baseResponse.SUCCESS);
     if(type === "modify" && userIntroductionResponse === true) // 수정
@@ -16,5 +17,20 @@ export const userIntroductionDTO = async(type, userIntroductionResponse) => {
         delete userIntroductionResponse[0].id;
         return response(baseResponse.SUCCESS, userIntroductionResponse);
     }
+
+    //예외 처리
+    if(userIntroductionResponse == null) {
+        if (type === "retrieve") // 조회 시 유저 N문 N답 데이터 누락
+            return errResponse(baseResponse.PROFILE_USER_INTRODUCTION_NOT_EXIST);
+    }
+    if(type === "create") // 생성 시 알 수 없는 오류로 N문 N답 데이터 생성이 정상적으로 처리되지 않음.
+        return errResponse(baseResponse.PROFILE_USER_INTRODUCTION_CREATING_DENY_CAUSE_BY_UNKNOWN_ERROR);
+    if(type === "modify") // 수정 시 알 수 없는 오류로 N문 N답 데이터 수정이 정상적으로 처리되지 않음.
+        return errResponse(baseResponse.PROFILE_USER_INTRODUCTION_MODIFYING_DENY_CAUSE_BY_UNKNOWN_ERROR);
+
+    if(type === "retrieve" && userIntroductionResponse == null)
+
+
+    // 알 수 없는 예외
     return errResponse(baseResponse.SERVER_ERROR); // 여긴 예외처리.
 }

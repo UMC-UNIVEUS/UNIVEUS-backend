@@ -25,6 +25,7 @@ export const uploadImage = multer({
         key: (req, file, callback) => {
             const uploadDirectory = req.query.directory ?? '';
             const extension = path.extname(file.originalname);
+            console.log(extension);
             if (!allowedExtensions.includes(extension)) {
                 return callback(new Error('wrong extension'));
             }

@@ -37,6 +37,8 @@ export const selectUserInfo = async(connection, userId) => {
     const selectUserInfoQuery = `
     SELECT *
     FROM user
-    WHERE 
-    `
+    WHERE user_id = ?;`;
+
+    const [row] = await connection.query(selectUserInfoQuery, userId);
+    return row;
 }
