@@ -19,10 +19,7 @@ dayjs.extend(duration);
 export const retrieveUserIntroduction = async(userId) => {
     const connection = await pool.getConnection(async (conn) => conn);
     const retrieveUserInfoResult = await selectUserInfo(connection, userId);
-    if(retrieveUserInfoResult == null)
-        const retrieveUserIntroductionResult = null;
-    else
-        const retrieveUserIntroductionResult = await selectUserIntroduction(connection, userId);
+    const retrieveUserIntroductionResult = await selectUserIntroduction(connection, userId);
     connection.release();
     return {retrieveUserInfoResult, retrieveUserIntroductionResult};
 }
