@@ -11,7 +11,7 @@ export const selectPost = async(connection, post_id)=>{ // 게시글 조회
 
 export const selectPostImages = async(connection, post_id)=>{ // 게시글 이미지 조회
     const selectPostImagesQuery = `
-        SELECT *
+        SELECT id, image_url
         FROM post_img
         WHERE post_id = ?;
     `;
@@ -21,7 +21,8 @@ export const selectPostImages = async(connection, post_id)=>{ // 게시글 이�
 
 export const selectParticipant = async(connection, post_id)=>{ // 참여자 목록 조회 (작성자 제외)
     const selectParticipantQuery = `
-        SELECT participant_user.user_id, user.gender, user.nickname, user.student_id, user.major, participant_user.status
+        SELECT participant_user.user_id, user.gender, user.nickname, user.student_id, user.major, participant_user.status,
+                 user.mebership, user.user_img
         FROM participant_user
         INNER JOIN user
         ON participant_user.user_id = user.id
