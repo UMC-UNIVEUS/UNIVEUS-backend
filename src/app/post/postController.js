@@ -7,7 +7,7 @@ import {
     proposeParticipation, cancelLike,sendAlarm, closePostStatus, approveParticipation, removeParticipation
 } from "./postService";
 import {postPostResponseDTO} from "./postDto";
-import {getUserParticipateStatusById} from "../user/userProvider";
+import {getUserById, getUserParticipateStatusById} from "../user/userProvider";
 dotenv.config();
 
 
