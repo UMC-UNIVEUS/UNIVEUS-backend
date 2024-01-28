@@ -68,6 +68,7 @@ export const baseResponse = {
     PROFILE_USER_INTRODUCTION_NOT_EXIST : { "isSuccess": false, "code": "PROFILE0001", "message": "유저 N문 N답 데이터가 존재하지 않습니다." },
     PROFILE_USER_INTRODUCTION_CREATING_DENY_CAUSE_BY_UNKNOWN_ERROR : { "isSuccess": false, "code": "PROFILE0002", "message": "유저 N문 N답 생성 중 알 수 없는 오류가 발생했습니다." },
     PROFILE_USER_INTRODUCTION_MODIFYING_DENY_CAUSE_BY_UNKNOWN_ERROR : { "isSuccess": false, "code": "PROFILE0003", "message": "유저 N문 N답 수정 중 알 수 없는 오류가 발생했습니다." },
+    PROFILE_UNKNOWN_ERROR : { "isSuccess": false, "code": "PROFILE0999", "message": "알 수 없는 에러입니다. 관리자에게 문의해주세요" },
 
     /** 신고 관련 MSG */
     REPORT_SUCCESS : {"isSuccess" : true, "code" : 6000, "message" : "신고가 접수되었습니다."},

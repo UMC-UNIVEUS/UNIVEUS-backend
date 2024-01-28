@@ -1,5 +1,6 @@
 import pool from '../../../config/database';
 import {
+    selectUserInfo,
     selectUserIntroduction
 } from './profileDao';
 import {baseResponse, response, errResponse} from "../../../config/response";
@@ -18,8 +19,8 @@ dayjs.extend(duration);
 //여기서 부터 새로 작성한 부분
 export const retrieveUserIntroduction = async(userId) => {
     const connection = await pool.getConnection(async (conn) => conn);
-    const retrieveUserInfoResult = await selectUserInfo(connection, userId);
-    const retrieveUserIntroductionResult = await selectUserIntroduction(connection, userId);
+    const userInfo = await selectUserInfo(connection, userId);
+    const userIntroduction = await selectUserIntroduction(connection, userId);
     connection.release();
-    return {retrieveUserInfoResult, retrieveUserIntroductionResult};
+    return {userInfo, userIntroduction};
 }
