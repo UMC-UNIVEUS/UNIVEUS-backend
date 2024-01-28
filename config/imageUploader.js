@@ -16,7 +16,7 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 
-const allowedExtensions = ['.png', '.jpg', '.jpeg', '.bmp', '.webp'];
+const allowedExtensions = ['.png', '.jpg', '.jpeg', '.bmp', '.webp', '.PNG', '.JPG', '.JPEG', '.BMP', '.WEBP'];
 
 export const uploadImage = multer({
     storage: multerS3({
@@ -25,6 +25,7 @@ export const uploadImage = multer({
         key: (req, file, callback) => {
             const uploadDirectory = req.query.directory ?? '';
             const extension = path.extname(file.originalname);
+            console.log(extension);
             if (!allowedExtensions.includes(extension)) {
                 return callback(new Error('wrong extension'));
             }
