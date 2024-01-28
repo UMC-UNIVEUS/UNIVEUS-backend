@@ -24,11 +24,19 @@ export const deleteIntroduction = async(connection, userId) => {
 }
 
 export const selectUserIntroduction = async(connection, userId) => {
-    const selectUserIntroductionQuery = ` 
+    const selectUserIntroductionQuery = `  
     SELECT *
     FROM user_introduction
     WHERE user_id = ?;`;
 
     const [row] = await connection.query(selectUserIntroductionQuery, userId);
     return row;
+}
+
+export const selectUserInfo = async(connection, userId) => {
+    const selectUserInfoQuery = `
+    SELECT *
+    FROM user
+    WHERE 
+    `
 }

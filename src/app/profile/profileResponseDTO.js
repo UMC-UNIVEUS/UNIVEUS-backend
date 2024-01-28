@@ -13,7 +13,7 @@ export const userIntroductionDTO = async(type, userIntroductionResponse) => {
     if(type === "modify" && userIntroductionResponse === true) // 수정
         return response(baseResponse.SUCCESS);
     if(type === "retrieve" && userIntroductionResponse != null)  { // 조회시엔 조회 결과를 같이 주도록
-        delete userIntroductionResponse.id;
+        delete userIntroductionResponse[0].id;
         return response(baseResponse.SUCCESS, userIntroductionResponse);
     }
     return errResponse(baseResponse.SERVER_ERROR); // 여긴 예외처리.
