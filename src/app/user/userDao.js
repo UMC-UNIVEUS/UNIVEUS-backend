@@ -44,7 +44,7 @@ export const selectUserById = async(connection,user_id) => {// id로 유저 전�
     const selectUserByIdQuery = `
         SELECT *
         FROM user
-        WHERE user_id = ?;
+        WHERE id = ?;
     `;
     const [UserByIdRow] = await connection.query(selectUserByIdQuery,user_id);
     return UserByIdRow[0];

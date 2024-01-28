@@ -150,12 +150,12 @@ export const insertAlarm = async (connection, sendAlarmParams, type)=>{
     const insertAlarmRow = await connection.query(insertAlarmQuery, sendAlarmParams);
 }
 
-export const askParticipation = async(connection, insertParticipantParams)=>{// 게시글 참여 신청
+export const askParticipation = async(connection, proposeParticipationParams)=>{// 게시글 참여 신청
     const askParticipationQuery = `
         INSERT INTO participant_user(post_id, user_id, status) 
         VALUES (?,?, "WAITING");
     `;
-    const askParticipationRow = await connection.query(askParticipationQuery, insertParticipantParams);
+    const askParticipationRow = await connection.query(askParticipationQuery, proposeParticipationParams);
 };
 
 export const acceptParticipation = async(connection, insertParticipantParams)=>{// 게시글 참여 신청 승인
