@@ -26,11 +26,12 @@ export const getPost = async(req, res) => {
     const Participant = await retrieveParticipant(post_id);
 
     const Writer = Participant[0];
-    const changeStudentId = Math.floor(Writer.student_id / 100000 % 100);
-    Writer.student_id = changeStudentId + "학번";
+    Writer.student_id = Math.floor(Writer.student_id / 100000 % 100) + "학번";
 
     const ParticipantList = [];
     for(let i = 1; i < Participant.length; i++){
+        Participant[i].student_id = Math.floor(Participant[i].student_id / 100000 % 100) +"학번";
+
         ParticipantList.push(Participant[i]);
     }
 

@@ -11,7 +11,7 @@ export const selectPost = async(connection, post_id)=>{ // 게시글 조회
 
 export const selectPostImages = async(connection, post_id)=>{ // 게시글 이미지 조회
     const selectPostImagesQuery = `
-        SELECT *
+        SELECT id, image_url
         FROM post_img
         WHERE post_id = ?;
     `;
