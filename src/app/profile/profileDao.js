@@ -42,3 +42,23 @@ export const selectUserInfo = async(connection, userId) => {
     const [row] = await connection.query(selectUserInfoQuery, userId);
     return row;
 }
+
+export const selectUserParticipantInfo = async(connection, userId) => {
+    const selectUserParticipantInfoQuery = `
+    SELECT COUNT(*) AS value
+    FROM participant_user
+    WHERE status = "PARTICIPATE_COMPLETE" and user_id = ?;`;
+
+    const [row] = await connection.query(selectUserParticipantInfoQuery, userId);
+    return row[0].value;
+}
+
+export const selectUserMakingInfo = async(connection, userId) => {
+    const selectUserMakingInfoQuery = `
+    SELECT COUNT(*) AS value
+    FROM participant_user
+    WHERE status = "WRITER" and user_id = ?;`;
+
+    const [row] = await connection.query(selectUserMakingInfoQuery, userId);
+    return row[0].value;
+}

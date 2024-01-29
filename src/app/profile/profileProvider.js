@@ -1,7 +1,7 @@
 import pool from '../../../config/database';
 import {
     selectUserInfo,
-    selectUserIntroduction
+    selectUserIntroduction, selectUserMakingInfo, selectUserParticipantInfo
 } from './profileDao';
 import {baseResponse, response, errResponse} from "../../../config/response";
 import dayjs from 'dayjs';
@@ -20,7 +20,9 @@ dayjs.extend(duration);
 export const retrieveUserIntroduction = async(userId) => {
     const connection = await pool.getConnection(async (conn) => conn);
     const userInfo = await selectUserInfo(connection, userId);
+    const userMakingNumInfo = await selectUserMakingInfo(connection, userId);
+    const userParticipantNumInfo = await selectUserParticipantInfo(connection, userId);
     const userIntroduction = await selectUserIntroduction(connection, userId);
     connection.release();
-    return {userInfo, userIntroduction};
+    return {userInfo, userIntroduction, userMakingNumInfo, userParticipantNumInfo};
 }
