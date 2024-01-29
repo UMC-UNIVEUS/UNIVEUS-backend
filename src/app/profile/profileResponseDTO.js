@@ -1,7 +1,8 @@
 import { response, errResponse, baseResponse } from "../../../config/response";
 
+/** 학번 계산(ex. 202011234 -> 20학번 */
 export const calculateStudentId = async(value) => {
-    return Math.floor(value / 100000 % 100);
+    return Math.floor(value / 100000 % 100)+"학번";
 }
 
 
