@@ -1,4 +1,4 @@
-export const userIntroductionBodyReformattingDTO = async(userId, body) => {
+export const userIntroductionBodyReformattingDTO = async(userId, body, type) => {
     const {
         q1 : personality, // 나의 MBTI는?
         q2 : food, // 나의 최애 음식은?
@@ -10,14 +10,26 @@ export const userIntroductionBodyReformattingDTO = async(userId, body) => {
 
     //이거 그냥 body.personallity, body.food 이렇게 넘겨줘도 될 거 같긴 함.
 
-    return [
-        userId,
+    if(type === 1) { // type 1. 생성 시
+        return [
+            userId,
+            personality,
+            food,
+            song,
+            interest,
+            fit,
+            universityLife
+        ];
+    }
+
+    return [ // type 2. 수정 시
         personality,
         food,
         song,
         interest,
         fit,
-        universityLife
+        universityLife,
+        userId
     ];
 }
 

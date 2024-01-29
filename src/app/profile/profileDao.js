@@ -14,6 +14,18 @@ export const createIntroduction = async(connection, params) => {
     return row;
 }
 
+export const updateIntroduction = async(connection, params) => {
+    const temp = params;
+
+    const updateIntroductionQuery = `
+    UPDATE user_introduction
+    SET q1 = ? , q2 = ?, q3 = ?, q4 = ?, q5 = ?, q6 = ?
+    WHERE user_id = ?;`;
+
+    const [row] = await connection.query(updateIntroductionQuery, params);
+    return row;
+}
+
 export const deleteIntroduction = async(connection, userId) => {
     const deleteIntroductionQuery = `
     DELETE FROM user_introduction
