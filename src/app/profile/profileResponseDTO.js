@@ -6,6 +6,8 @@ export const userProfileDTO = async(UserProfileResponse, user_id) => {
     return response(baseResponse.SUCCESS, UserProfileResponse);
 }
 
+
+
 export const userIntroductionDTO = async(type, userIntroductionResponse) => {
 
     /** 정상 처리 */
@@ -13,8 +15,7 @@ export const userIntroductionDTO = async(type, userIntroductionResponse) => {
         return response(baseResponse.SUCCESS);
     if(type === "modify" && userIntroductionResponse === true) // 수정
         return response(baseResponse.SUCCESS);
-    if(type === "retrieve" && userIntroductionResponse.userMakingNumInfo != null && userIntroductionResponse.userParticipantNumInfo != null && userIntroductionResponse.userInfo != null)  { // 조회시엔 조회 결과를 같이 주도록
-        console.log(userIntroductionResponse.userInfo[0]);
+    if(type === "retrieve" && userIntroductionResponse.userMakingNumInfo != null && userIntroductionResponse.userParticipantNumInfo != null && userIntroductionResponse.userInfo[0] != null)  { // 조회시엔 조회 결과를 같이 주도록
 
         //생성 횟수, 참여 횟수 userInfo에 합치기
         userIntroductionResponse.userInfo[0].making = userIntroductionResponse.userMakingNumInfo;
@@ -34,6 +35,10 @@ export const userIntroductionDTO = async(type, userIntroductionResponse) => {
         delete userIntroductionResponse.userInfo[0].created_at;
         delete userIntroductionResponse.userInfo[0].updated_at;
 
+        //userInfo 학번 계산
+        const changeClassof = Math.floor(userIntroductionResponse.userInfo[0].student_id / 100000 % 100);
+        userIntroductionResponse.userInfo[0].student_id = changeClassof + "학번"
+
         //N문 N답 정보가 있다면, 필요없는 데이터 제거하고 아니면 패스함
         if(userIntroductionResponse.userIntroduction[0]) {
             delete userIntroductionResponse.userIntroduction[0].id;
@@ -49,11 +54,12 @@ export const userIntroductionDTO = async(type, userIntroductionResponse) => {
         return errResponse(baseResponse.PROFILE_USER_INTRODUCTION_CREATING_DENY_CAUSE_BY_UNKNOWN_ERROR);
     if(type === "modify") // 수정 시 알 수 없는 오류로 N문 N답 데이터 수정이 정상적으로 처리되지 않음.
         return errResponse(baseResponse.PROFILE_USER_INTRODUCTION_MODIFYING_DENY_CAUSE_BY_UNKNOWN_ERROR);
-    if(type === "retrieve" && userIntroductionResponse.userInfo == null || userIntroductionResponse.userParticipantNumInfo == null || userIntroductionResponse.userMakingNumInfo == null) // 조회 시 유저 N문 N답의 유저 정보 누락
-        return errResponse(baseResponse.PROFILE_USER_INFORMATION_NOT_EXIST);
-
-
-
+    // if(type === "retrieve" && userIntroductionResponse === "exception01")
+    //     return errResponse(baseResponse.PROFILE_USER_INTRODUCTION_NOT_GET_USER_ID);
+    if(type === "retrieve") {// 조회 시 유저 N문 N답의 유저 정보 누락
+        if (userIntroductionResponse.userInfo[0] == null || userIntroductionResponse.userParticipantNumInfo == null || userIntroductionResponse.userMakingNumInfo == null)
+            return errResponse(baseResponse.PROFILE_USER_INFORMATION_NOT_EXIST);
+    }
     // 알 수 없는 예외
     return errResponse(baseResponse.PROFILE_UNKNOWN_ERROR);
 }
