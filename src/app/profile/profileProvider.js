@@ -1,11 +1,13 @@
 import pool from '../../../config/database';
 import {
-    selectUserIntroduction
+    selectUserInfo,
+    selectUserIntroduction, selectUserMakingInfo, selectUserParticipantInfo
 } from './profileDao';
 import {baseResponse, response, errResponse} from "../../../config/response";
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration'
 import { formatingMeetingDate } from '../post/postProvider'
+import {userProfileCheckIdExist} from "./profileRequestDTO";
 
 const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
@@ -16,10 +18,15 @@ dayjs.extend(duration);
 
 
 //여기서 부터 새로 작성한 부분
-export const retrieveUserIntroduction = async(userId) => {
+export const retrieveUserIntroduction = async(userId, unnecessaryId) => {
+    // if(await userProfileCheckIdExist(userId) === false)
+    //     userId = "exception01";
+    //     return userId;
     const connection = await pool.getConnection(async (conn) => conn);
-    const retrieveUserInfoResult = await selectUserInfo(connection, userId);
-    const retrieveUserIntroductionResult = await selectUserIntroduction(connection, userId);
+    const userInfo = await selectUserInfo(connection, userId);
+    const userMakingNumInfo = await selectUserMakingInfo(connection, userId);
+    const userParticipantNumInfo = await selectUserParticipantInfo(connection, userId);
+    const userIntroduction = await selectUserIntroduction(connection, userId);
     connection.release();
-    return {retrieveUserInfoResult, retrieveUserIntroductionResult};
+    return {userInfo, userIntroduction, userMakingNumInfo, userParticipantNumInfo};
 }
