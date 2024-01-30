@@ -20,3 +20,9 @@ export const userIntroductionBodyReformattingDTO = async(userId, body) => {
         universityLife
     ];
 }
+
+export const userProfileCheckIdExist = async(userId) => {
+    if(!userId)
+        userId = false;
+    return userId;
+}

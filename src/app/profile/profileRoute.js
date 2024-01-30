@@ -9,8 +9,8 @@ import { jwtMiddleware } from "../../../config/jwtMiddleWare";
 import {wrapAsync} from "../../../config/errorhandler";
 const profileRouter = express.Router();
 
+profileRouter.get('/introduction/:id',jwtMiddleware , getUserIntroduction);
 profileRouter.post('/introduction',jwtMiddleware , postUserIntroduction);
-profileRouter.get('/introduction',jwtMiddleware , getUserIntroduction);
 profileRouter.put('/introduction',jwtMiddleware , putUserIntroduction);
 
 export default profileRouter;
