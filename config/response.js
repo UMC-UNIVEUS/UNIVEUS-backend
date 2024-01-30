@@ -68,8 +68,10 @@ export const baseResponse = {
     PROFILE_USER_INTRODUCTION_NOT_EXIST : { "isSuccess": false, "code": "PROFILE0001", "message": "유저 N문 N답 데이터가 존재하지 않습니다." },
     PROFILE_USER_INTRODUCTION_CREATING_DENY_CAUSE_BY_ALREADY_EXIST : { "isSuccess": false, "code": "PROFILE0002", "message": "유저 N문 N답 데이터가 이미 존재하여 생성할 수 없습니다." },
     PROFILE_USER_INTRODUCTION_MODIFYING_DENY_CAUSE_BY_NOT_EXIST : { "isSuccess": false, "code": "PROFILE0003", "message": "유저 N문 N답 데이터가 존재하지 않아 수정할 수 없습니다." },
-    PROFILE_USER_INFORMATION_NOT_EXIST : { "isSuccess": false, "code": "PROFILE0004", "message": "유저 N문 N답 조회 중 유저 정보를 불러오지 못했습니다." },
+    PROFILE_USER_INFORMATION_NOT_EXIST : { "isSuccess": false, "code": "PROFILE0004", "message": "유저 정보를 불러오지 못했습니다." },
     PROFILE_USER_INTRODUCTION_NOT_GET_USER_ID : { "isSuccess": false, "code": "PROFILE0005", "message": "유저 N문 N답 조회 중 조회할 유저의 id를 입력하지 않았습니다." },
+    PROFILE_USER_CREATE_INFORMATION_NOT_EXIST : { "isSuccess": false, "code": "PROFILE0006", "message": "유저 프로필 조회 중 사용자가 작성한 글이 없거나 서버 에러로 생성 정보를 불러오지 못했습니다." },
+    PROFILE_USER_PARTICIPANT_INFORMATION_NOT_EXIST : { "isSuccess": false, "code": "PROFILE0007", "message": "유저 프로필 조회 중 사용자가 참여한 글이 없거나 서버 에러로 참여 정보를 불러오지 못했습니다." },
     PROFILE_UNKNOWN_ERROR : { "isSuccess": false, "code": "PROFILE0999", "message": "알 수 없는 에러입니다. 관리자에게 문의해주세요" },
 
     /** 신고 관련 MSG */

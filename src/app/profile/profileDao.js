@@ -74,3 +74,16 @@ export const selectUserMakingInfo = async(connection, userId) => {
     const [row] = await connection.query(selectUserMakingInfoQuery, userId);
     return row[0].value;
 }
+
+export const selectUserCreateInfo = async(connection, userId) => {
+    const selectUserCreateInfoQuery = `
+    SELECT id, title, limit_gender, meeting_datetime, location, 
+           current_people, limit_people, main_img, post_status
+    FROM post
+    WHERE user_id = ?
+    ORDER BY created_at DESC limit 10
+    ;`;
+
+    const [row] = await connection.query(selectUserCreateInfoQuery, userId);
+    return row;
+}

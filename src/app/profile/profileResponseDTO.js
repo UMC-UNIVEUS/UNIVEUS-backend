@@ -1,4 +1,5 @@
 import { response, errResponse, baseResponse } from "../../../config/response";
+import {formatingMeetingDate} from "../post/postProvider";
 
 /** 학번 계산(ex. 202011234 -> 20학번 */
 export const calculateStudentId = async(value) => {
@@ -27,7 +28,7 @@ export const userIntroductionServiceDTO = async(type, userIntroductionResponse) 
 }
 
 /** N문 N답 조회 시 userInfo Response 변환 */
-export const userInfoDTO= async(Info, userMakingNumInfo, userParticipantNumInfo) => {
+export const userInfoDTO= async(Info, userMakingNumInfo, userParticipantNumInfo, checkIntroductionExist) => {
     if(userParticipantNumInfo != null && userMakingNumInfo != null && Info[0] != null) {
         //생성 횟수, 참여 횟수 userInfo에 합치기
         Info[0].making = userMakingNumInfo;
@@ -43,6 +44,11 @@ export const userInfoDTO= async(Info, userMakingNumInfo, userParticipantNumInfo)
         delete Info[0].updated_at;
         //학번 계산
         Info[0].student_id = await calculateStudentId(Info[0].student_id);
+        //N문 N답 존재 여부 정보 추가
+        if(checkIntroductionExist[0] != null)
+            Info[0].introductionExist = true;
+        else
+            Info[0].introductionExist = false;
     }
     if (Info[0] == null || userParticipantNumInfo == null || userMakingNumInfo == null)
         return false; // 예외 처리용
@@ -70,4 +76,26 @@ export const userIntroductionProviderDTO = async(userIntroductionResponse) => {
         userIntroductionResponse.userIntroduction = errResponse(baseResponse.PROFILE_USER_INTRODUCTION_NOT_EXIST);
 
     return response(baseResponse.SUCCESS, userIntroductionResponse);
+}
+
+export const userProfileDTO = async(type, userProfileResponse) => {
+    /* 예외 처리 */
+    if(userProfileResponse.userInfo === false) // userInfo 정보 누락
+        userProfileResponse.userInfo = errResponse(baseResponse.PROFILE_USER_INFORMATION_NOT_EXIST);
+    if(type === 2 && userProfileResponse.createInfo === false) // createInfo 정보 누락
+        userProfileResponse.createInfo = errResponse(baseResponse.PROFILE_USER_CREATE_INFORMATION_NOT_EXIST);
+    if(type === 3 && userProfileResponse.participantInfo === false) // participantInfo 정보 누락
+    userProfileResponse.participantInfo = errResponse(baseResponse.PROFILE_USER_PARTICIPANT_INFORMATION_NOT_EXIST);
+
+    return response(baseResponse.SUCCESS, userProfileResponse);
+}
+
+export const createInfoDTO = async(InfoArray) => {
+    for(let i = 0; i < InfoArray.length; i++) {
+        if(InfoArray[i].meeting_datetime)
+            formatingMeetingDate(InfoArray[i]);
+    }
+    if(InfoArray[0] == null)
+        InfoArray = false;
+    return InfoArray;
 }
