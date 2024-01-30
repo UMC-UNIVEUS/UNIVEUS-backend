@@ -71,7 +71,7 @@ export const postPost = async(req, res) => {
     const body = {
         "category": req.body.category,
         "limit_gender": req.body.limit_gender,
-        "limit_people": req.body.limit_people,
+        "limit_people": req.body.limit_people + 1,
         "participation_method": req.body.participation_method,
         "meeting_datetime": req.body.meeting_datetime,
         "location": req.body.location,
