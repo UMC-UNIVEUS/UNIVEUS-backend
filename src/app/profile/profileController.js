@@ -10,23 +10,23 @@ import {
     modifyUserIntroduction
 } from "./profileService";
 import {
-    userIntroductionDTO
+    userIntroductionProviderDTO, userIntroductionServiceDTO
 } from "./profileResponseDTO";
 
 
 /* N문 N답 생성 API */
 export const postUserIntroduction = async (req, res) => { //아직 추가는 못했지만, 나중에 이미 생성 데이터가 존재하면 생성하지 않는 예외처리 해줘야함.
-    return res.send(await userIntroductionDTO("create", await createUserIntroduction(req.verifiedToken.userId, req.body)));
+    return res.send(await userIntroductionServiceDTO("create", await createUserIntroduction(req.verifiedToken.userId, req.body)));
 }
 
 /* N문 N답 수정 API */
 export const putUserIntroduction = async (req, res) => {
-    return res.send(await userIntroductionDTO("modify", await modifyUserIntroduction(req.verifiedToken.userId, req.body)));
+    return res.send(await userIntroductionServiceDTO("modify", await modifyUserIntroduction(req.verifiedToken.userId, req.body)));
 }
 
 /* N문 N답 조회 API */
 export const getUserIntroduction = async (req, res) => { // N문 N답 조회는 남이 보는 프로필 조회, 내가 보는 프로필 조회에서 클릭시 보이는 화면(남이 보는 프로필 조회랑 같음) 두가지에서 쓰이기 때문에,
-    return res.send(await userIntroductionDTO("retrieve", await retrieveUserIntroduction(req.params.id, req.verifiedToken.userId)));
+    return res.send(await userIntroductionProviderDTO(await retrieveUserIntroduction(req.params.id, req.verifiedToken.userId)));
 }
 
 /* 본인용 프로필 조회 API */
