@@ -32,12 +32,12 @@ export const retrieveParticipant = async(post_id)=>{
 /** meeting_date 포맷팅 */
 export const formatingMeetingDate = (post) => {
 
-    const date = dayjs(post.meeting_date);
+    const date = dayjs(post.meeting_datetime);
     const meeting_year = date.year();
     const meeting_month = date.month() < 9 ?  "0" + (date.month() + 1) : ""+(date.month() + 1);
     const meeting_date = date.date() < 10 ?  "0" + date.date() : ""+date.date();
     const meeting_time = (date.hour() < 10 ?  "0" + date.hour() : ""+date.hour()) + ":" + (date.minute() < 10 ? "0" + date.minute() : ""+date.minute());
-    delete post.meeting_date;
+    delete post.meeting_datetime;
 
     const datetime = {
         "meeting_year": meeting_year,

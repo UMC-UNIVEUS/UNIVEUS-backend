@@ -4,40 +4,54 @@ import { response, errResponse, baseResponse } from "../../../config/response";
 
 import {
     retrieveUserIntroduction,
+    retrieveUserProfileAboutCreateInfo, retrieveUserProfileAboutParticipantInfo,
+    retrieveUserProfileAboutUserInfo
 } from './profileProvider';
 import {
     createUserIntroduction,
     modifyUserIntroduction
 } from "./profileService";
 import {
-    userIntroductionProviderDTO, userIntroductionServiceDTO
+    userIntroductionProviderDTO, userIntroductionServiceDTO, userProfileDTO
 } from "./profileResponseDTO";
 
 
-/* N문 N답 생성 API */
+/** N문 N답 생성 API */
 export const postUserIntroduction = async (req, res) => { //아직 추가는 못했지만, 나중에 이미 생성 데이터가 존재하면 생성하지 않는 예외처리 해줘야함.
     return res.send(await userIntroductionServiceDTO("create", await createUserIntroduction(req.verifiedToken.userId, req.body)));
 }
 
-/* N문 N답 수정 API */
+/** N문 N답 수정 API */
 export const putUserIntroduction = async (req, res) => {
     return res.send(await userIntroductionServiceDTO("modify", await modifyUserIntroduction(req.verifiedToken.userId, req.body)));
 }
 
-/* N문 N답 조회 API */
+/** N문 N답 조회(=남이 보는 프로필) API */
 export const getUserIntroduction = async (req, res) => { // N문 N답 조회는 남이 보는 프로필 조회, 내가 보는 프로필 조회에서 클릭시 보이는 화면(남이 보는 프로필 조회랑 같음) 두가지에서 쓰이기 때문에,
     return res.send(await userIntroductionProviderDTO(await retrieveUserIntroduction(req.params.id, req.verifiedToken.userId)));
 }
 
-/* 본인용 프로필 조회 API */
-export const getUserProfileForOwner = async (req, res) => {
-    return res.send(await userProfileDTO("owner", await retrieveUserProfileForOwner(req.verifiedToken.userId)));
+/** 본인용 프로필 조회 중 유저 정보 부분 API */
+export const getUserProfileAboutUserInfo = async (req, res) => {
+    return res.send(await userProfileDTO(1, await retrieveUserProfileAboutUserInfo(req.verifiedToken.userId)));
 }
 
-/* 유저 정보 수정 API */
-export const putUserInformation = async (req, res) => {
-    return res.send(await userInformationDTO("modify", await modifyUserInformation(req.verifiedToken.userId, req.body)))
+/** 본인용 프로필 조회 중 생성 정보 부분 API */
+export const getUserProfileAboutCreateInfo = async (req, res) => {
+    return res.send(await userProfileDTO(2, await retrieveUserProfileAboutCreateInfo(req.verifiedToken.userId)));
 }
+
+/** 본인용 프로필 조회 중 참여 정보 부분 API */
+export const getUserProfileAboutParticipantInfo = async (req, res) => {
+    return res.send(await userProfileDTO(3, await retrieveUserProfileAboutParticipantInfo(req.verifiedToken.userId)));
+}
+
+
+
+// /* 유저 정보 수정 API */
+// export const putUserInformation = async (req, res) => {
+//     return res.send(await userInformationDTO("modify", await modifyUserInformation(req.verifiedToken.userId, req.body)))
+// }
 
 
 //24.01.08 추가해야 할 부분

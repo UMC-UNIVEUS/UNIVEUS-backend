@@ -74,3 +74,34 @@ export const selectUserMakingInfo = async(connection, userId) => {
     const [row] = await connection.query(selectUserMakingInfoQuery, userId);
     return row[0].value;
 }
+
+export const selectUserCreateInfo = async(connection, userId) => {
+    const selectUserCreateInfoQuery = `
+    SELECT id, title, limit_gender, meeting_datetime, location, 
+           current_people, limit_people, main_img, post_status
+    FROM post
+    WHERE user_id = ?
+    ORDER BY created_at DESC limit 10
+    ;`;
+
+    const [row] = await connection.query(selectUserCreateInfoQuery, userId);
+    return row;
+}
+
+
+
+export const selectuserParticipantInfo = async(connection, userId) => {
+    const selectuserParticipantInfoQuery = `
+        SELECT user.nickname, user.gender, user.major, user.student_id, user.mebership, user.user_img,
+               post.id, post.title, post.limit_gender, post.meeting_datetime, post.location, post.current_people,
+               post.limit_people, post.main_img, post.post_status
+        FROM participant_user
+        INNER JOIN post ON participant_user.user_id = post.user_id
+        INNER JOIN user ON post.user_id = user.id
+        WHERE participant_user.user_id = ? AND status = "PARTICIPATE_COMPLETE"
+        ORDER BY post.created_at DESC limit 10
+    ;`;
+
+    const [row] = await connection.query(selectuserParticipantInfoQuery, userId);
+    return row;
+}
