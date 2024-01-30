@@ -4,7 +4,7 @@ import { response, errResponse, baseResponse } from "../../../config/response";
 
 import {
     retrieveUserIntroduction,
-    retrieveUserProfileAboutCreateInfo,
+    retrieveUserProfileAboutCreateInfo, retrieveUserProfileAboutParticipantInfo,
     retrieveUserProfileAboutUserInfo
 } from './profileProvider';
 import {
@@ -48,10 +48,10 @@ export const getUserProfileAboutParticipantInfo = async (req, res) => {
 
 
 
-/* 유저 정보 수정 API */
-export const putUserInformation = async (req, res) => {
-    return res.send(await userInformationDTO("modify", await modifyUserInformation(req.verifiedToken.userId, req.body)))
-}
+// /* 유저 정보 수정 API */
+// export const putUserInformation = async (req, res) => {
+//     return res.send(await userInformationDTO("modify", await modifyUserInformation(req.verifiedToken.userId, req.body)))
+// }
 
 
 //24.01.08 추가해야 할 부분

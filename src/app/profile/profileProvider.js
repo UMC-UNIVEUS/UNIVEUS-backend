@@ -2,14 +2,14 @@ import pool from '../../../config/database';
 import {
     selectUserCreateInfo,
     selectUserInfo,
-    selectUserIntroduction, selectUserMakingInfo, selectUserParticipantInfo
+    selectUserIntroduction, selectUserMakingInfo, selectuserParticipantInfo, selectUserParticipantInfo
 } from './profileDao';
 import {baseResponse, response, errResponse} from "../../../config/response";
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration'
 import { formatingMeetingDate } from '../post/postProvider'
 import {userProfileCheckIdExist} from "./profileRequestDTO";
-import {createInfoDTO, userInfoDTO, userIntroductionDTO} from "./profileResponseDTO";
+import {createInfoDTO, participantInfoDTO, userInfoDTO, userIntroductionDTO} from "./profileResponseDTO";
 
 const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');

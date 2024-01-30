@@ -99,3 +99,15 @@ export const createInfoDTO = async(InfoArray) => {
         InfoArray = false;
     return InfoArray;
 }
+
+export const participantInfoDTO = async(InfoArray) => {
+    for(let i = 0; i < InfoArray.length; i++) {
+        if(InfoArray[i].meeting_datetime)
+            await formatingMeetingDate(InfoArray[i]);
+        if(InfoArray[i].student_id)
+            InfoArray[i].student_id = await calculateStudentId(InfoArray[i].student_id);
+    }
+    if(InfoArray[0] == null)
+        InfoArray = false;
+    return InfoArray;
+}
