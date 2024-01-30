@@ -273,15 +273,12 @@ export const agreeParticipation = async(req, res) => {
 export const cancelParticipation = async(req, res) => {
 
     const {post_id} = req.params;
-    const {waitingUsers} = req.body; // 참여 대기 상태인 유저들 리스트
     const userIdFromJWT = req.verifiedToken.userId;
 
     const Post = await retrievePost(post_id);
 
     if(!Post) return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // Post가 존재하는지
     if(Post.post_status === "END")return res.send(errResponse(baseResponse.POST_PARTICIPATE_ALREADY_CLOSE)); // 이미 마감했는지
-    if(!waitingUsers.includes(userIdFromJWT)) return res.send(errResponse(baseResponse.POST_PARTICIPATION_AGREE_OR_NOT_REQUEST));
-    // 접속한 유저가 참여 완료이거나 대기중인지
 
     const removeParticipationResult = await removeParticipation(post_id, userIdFromJWT);// 유니버스 참여 신청 취소
     const sendCancelAlarmToWriter = await sendAlarm(post_id, Post.user_id, 2);
