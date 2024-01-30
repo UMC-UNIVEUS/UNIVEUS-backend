@@ -88,6 +88,17 @@ export const selectUserCreateInfo = async(connection, userId) => {
     return row;
 }
 
+
+
 export const selectuserParticipantInfo = async(connection, userId) => {
+    const selectuserParticipantInfoQuery = `
+        SELECT user.nickname, user.gender, user.major, user.student_id, user.mebership, user.user_img,
+               post.id, post.title, post.limit_gender, post.meeting_datetime, post.location, post.current_people,
+               post.limit_people, post.main_img, post.post_status
+        FROM participant_user
+        INNER JOIN post ON participant_user.user_id = post.user_id
+        INNER JOIN user ON post.user_id = user.id
+        WHERE participant_user.user_id = 3 AND status = "PARTICIPATE_COMPLETE";
+    ;`;
 
 }

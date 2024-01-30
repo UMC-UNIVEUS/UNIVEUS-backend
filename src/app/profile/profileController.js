@@ -42,7 +42,9 @@ export const getUserProfileAboutCreateInfo = async (req, res) => {
 }
 
 /** 본인용 프로필 조회 중 참여 정보 부분 API */
-
+export const getUserProfileAboutParticipantInfo = async (req, res) => {
+    return res.send(await userProfileDTO(3, await retrieveUserProfileAboutParticipantInfo(req.verifiedToken.userId)));
+}
 
 
 
