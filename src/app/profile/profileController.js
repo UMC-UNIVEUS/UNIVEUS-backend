@@ -36,13 +36,13 @@ export const getUserProfileAboutUserInfo = async (req, res) => {
     return res.send(await userProfileDTO(1, await retrieveUserProfileAboutUserInfo(req.verifiedToken.userId)));
 }
 
+/** 본인용 프로필 조회 중 생성 정보 부분 API */
 export const getUserProfileAboutCreateInfo = async (req, res) => {
     return res.send(await userProfileDTO(2, await retrieveUserProfileAboutCreateInfo(req.verifiedToken.userId)));
 }
 
-export const getUserProfileAboutParticipantInfo = async (req, res) => {
-    return res.send(await userProfileDTO(3, await retrieveUserProfileAboutParticipantInfo(req.verifiedToken.userId)));
-}
+/** 본인용 프로필 조회 중 참여 정보 부분 API */
+
 
 
 

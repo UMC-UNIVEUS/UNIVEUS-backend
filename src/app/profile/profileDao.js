@@ -87,3 +87,7 @@ export const selectUserCreateInfo = async(connection, userId) => {
     const [row] = await connection.query(selectUserCreateInfoQuery, userId);
     return row;
 }
+
+export const selectuserParticipantInfo = async(connection, userId) => {
+
+}
