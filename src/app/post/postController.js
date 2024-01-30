@@ -20,6 +20,7 @@ export const getPost = async(req, res) => {
     const {post_id} = req.params;
     const userIdFromJWT = req.verifiedToken.userId;
     const Post = await retrievePost(post_id);
+    const User = await getUserById(userIdFromJWT);
 
     if (typeof Post == "undefined") return res.send(errResponse(baseResponse.POST_POSTID_NOT_EXIST)); // 게시글이 존재하지 않는다면
 
@@ -48,6 +49,7 @@ export const getPost = async(req, res) => {
 
     const connectedUser = {
         "user_id": userIdFromJWT,
+        "gender": User.gender,
         "status": status
     }
 
