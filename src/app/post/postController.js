@@ -229,7 +229,7 @@ export const requestParticipation = async(req, res) => {
 
     }catch (TypeError) { // typeError가 난 경우는 status가 존재하지 않다는 것. 따라서 접속자는 아무런 행위도 하지 않은 지나가는 아무개다.
 
-        if(Post.limit_gender !== "all" && User.gender !== Post.limit_gender) return res.send(errResponse(baseResponse.POST_GENDER_LIMIT));
+        if(Post.limit_gender !== "ALL" && User.gender !== Post.limit_gender) return res.send(errResponse(baseResponse.POST_GENDER_LIMIT));
         // 성별 제한에 걸리는지
 
         const participateWaiterNum = await getWaiterNum(post_id);
