@@ -28,7 +28,7 @@ export const retrieveUserIntroduction = async(userId, unnecessaryId) => {
     const userParticipantNumInfo = await selectUserParticipantInfo(connection, userId);
     connection.release();
 
-    const userInfo = await userInfoDTO(response1, userMakingNumInfo, userParticipantNumInfo);
+    const userInfo = await userInfoDTO(response1, userMakingNumInfo, userParticipantNumInfo, response2);
     const userIntroduction = await userIntroductionDTO(response2);
 
     return {userInfo, userIntroduction};
