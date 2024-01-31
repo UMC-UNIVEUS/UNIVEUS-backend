@@ -49,7 +49,7 @@ export const getUserProfileAboutParticipantInfo = async (req, res) => {
 
 /* 유저 정보 수정 API */
 export const putUserInformation = async (req, res) => {
-    return res.send(await userInformationModifyDTO(await modifyUserInformation(15, req.body)))
+    return res.send(await userInformationModifyDTO(await modifyUserInformation(req.verifiedToken.userId, req.body)))
 }
 
 
