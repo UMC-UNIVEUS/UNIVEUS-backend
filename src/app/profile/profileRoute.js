@@ -13,12 +13,12 @@ import { jwtMiddleware } from "../../../config/jwtMiddleWare";
 import {wrapAsync} from "../../../config/errorhandler";
 const profileRouter = express.Router();
 
-profileRouter.get('/userInfo',jwtMiddleware , getUserProfileAboutUserInfo);
-profileRouter.get('/createInfo',jwtMiddleware , getUserProfileAboutCreateInfo);
-profileRouter.get('/participantInfo',jwtMiddleware , getUserProfileAboutParticipantInfo);
+profileRouter.get('/userInfo',jwtMiddleware , wrapAsync(getUserProfileAboutUserInfo));
+profileRouter.get('/createInfo',jwtMiddleware , wrapAsync(getUserProfileAboutCreateInfo));
+profileRouter.get('/participantInfo',jwtMiddleware , wrapAsync(getUserProfileAboutParticipantInfo));
 profileRouter.get('/introduction/:id',jwtMiddleware , wrapAsync(getUserIntroduction));
 profileRouter.post('/introduction',jwtMiddleware , wrapAsync(postUserIntroduction));
 profileRouter.put('/introduction',jwtMiddleware , wrapAsync(putUserIntroduction));
-profileRouter.put('/mypage',jwtMiddleware , putUserInformation);
+profileRouter.put('/mypage',jwtMiddleware , wrapAsync(putUserInformation));
 
 export default profileRouter;
