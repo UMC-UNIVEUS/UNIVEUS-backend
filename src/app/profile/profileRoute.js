@@ -7,7 +7,7 @@ import {
     getUserProfileAboutCreateInfo,
     getUserProfileAboutParticipantInfo,
     postUserIntroduction,
-    putUserIntroduction
+    putUserIntroduction, putUserInformation
 } from "./profileController";
 import { jwtMiddleware } from "../../../config/jwtMiddleWare";
 import {wrapAsync} from "../../../config/errorhandler";
@@ -19,5 +19,6 @@ profileRouter.get('/participantInfo',jwtMiddleware , getUserProfileAboutParticip
 profileRouter.get('/introduction/:id',jwtMiddleware , wrapAsync(getUserIntroduction));
 profileRouter.post('/introduction',jwtMiddleware , wrapAsync(postUserIntroduction));
 profileRouter.put('/introduction',jwtMiddleware , wrapAsync(putUserIntroduction));
+profileRouter.put('/mypage',jwtMiddleware , putUserInformation);
 
 export default profileRouter;

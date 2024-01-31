@@ -38,3 +38,11 @@ export const userProfileCheckIdExist = async(userId) => {
         userId = false;
     return userId;
 }
+
+export const userInformationBodyReformattingDTO = async(userId, body) => {
+    return [
+        body.nickname,
+        body.user_img,
+        userId
+    ]
+}

@@ -105,3 +105,13 @@ export const selectuserParticipantInfo = async(connection, userId) => {
     const [row] = await connection.query(selectuserParticipantInfoQuery, userId);
     return row;
 }
+
+export const updateInformation = async(connection, params) => {
+    const updateInformationQuery = ` 
+    UPDATE user
+    SET nickname = ?, user_img = ? 
+    WHERE id = ?;`;
+
+    const [row] = await connection.query(updateInformationQuery, params);
+    return row;
+}
