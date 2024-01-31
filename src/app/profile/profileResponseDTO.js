@@ -85,7 +85,7 @@ export const userProfileDTO = async(type, userProfileResponse) => {
     if(type === 2 && userProfileResponse.createInfo === false) // createInfo 정보 누락
         userProfileResponse.createInfo = errResponse(baseResponse.PROFILE_USER_CREATE_INFORMATION_NOT_EXIST);
     if(type === 3 && userProfileResponse.participantInfo === false) // participantInfo 정보 누락
-    userProfileResponse.participantInfo = errResponse(baseResponse.PROFILE_USER_PARTICIPANT_INFORMATION_NOT_EXIST);
+        userProfileResponse.participantInfo = errResponse(baseResponse.PROFILE_USER_PARTICIPANT_INFORMATION_NOT_EXIST);
 
     return response(baseResponse.SUCCESS, userProfileResponse);
 }
@@ -110,4 +110,10 @@ export const participantInfoDTO = async(InfoArray) => {
     if(InfoArray[0] == null)
         InfoArray = false;
     return InfoArray;
+}
+
+export const userInformationModifyDTO = async(userInformationResponse) => {
+    if(userInformationResponse === false)
+        return errResponse(baseResponse.PROFILE_USER_INFORMATION_MODIFY_ERROR);
+    return response(baseResponse.SUCCESS);
 }
