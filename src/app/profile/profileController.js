@@ -3,7 +3,7 @@
 import { response, errResponse, baseResponse } from "../../../config/response";
 
 import {
-    retrieveUserIntroduction,
+    retrieveUserIntroduction, retrieveUserOwnIntroduction,
     retrieveUserProfileAboutCreateInfo, retrieveUserProfileAboutParticipantInfo,
     retrieveUserProfileAboutUserInfo
 } from './profileProvider';
@@ -29,7 +29,11 @@ export const putUserIntroduction = async (req, res) => {
 
 /** N문 N답 조회(=남이 보는 프로필) API */
 export const getUserIntroduction = async (req, res) => { // N문 N답 조회는 남이 보는 프로필 조회, 내가 보는 프로필 조회에서 클릭시 보이는 화면(남이 보는 프로필 조회랑 같음) 두가지에서 쓰이기 때문에,
-    return res.send(await userIntroductionProviderDTO(await retrieveUserIntroduction(req.params.id, req.verifiedToken.userId)));
+    return res.send(await userIntroductionProviderDTO(0, await retrieveUserIntroduction(req.params.id, req.verifiedToken.userId)));
+}
+
+export const getUserOwnedIntroduction = async (req, res) => { // N문 N답 조회는 남이 보는 프로필 조회, 내가 보는 프로필 조회에서 클릭시 보이는 화면(남이 보는 프로필 조회랑 같음) 두가지에서 쓰이기 때문에,
+    return res.send(await userIntroductionProviderDTO(1, await retrieveUserOwnIntroduction(req.verifiedToken.userId)));
 }
 
 /** 본인용 프로필 조회 중 유저 정보 부분 API */
