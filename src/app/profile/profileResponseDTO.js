@@ -68,9 +68,9 @@ export const userIntroductionDTO = async(Introduction) => {
 }
 
 /** N문 N답 조회 */
-export const userIntroductionProviderDTO = async(userIntroductionResponse) => {
+export const userIntroductionProviderDTO = async(type, userIntroductionResponse) => {
     /* 예외 처리 */
-    if(userIntroductionResponse.userInfo === false) // userInfo 정보 누락
+    if(type === 0 && userIntroductionResponse.userInfo === false) // userInfo 정보 누락
         userIntroductionResponse.userInfo = errResponse(baseResponse.PROFILE_USER_INFORMATION_NOT_EXIST);
     if(userIntroductionResponse.userIntroduction === false) //userIntroduction 정보 누락
         userIntroductionResponse.userIntroduction = errResponse(baseResponse.PROFILE_USER_INTRODUCTION_NOT_EXIST);

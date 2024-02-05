@@ -21,7 +21,7 @@ dayjs.extend(duration);
 
 //여기서 부터 새로 작성한 부분
 export const retrieveUserIntroduction = async(userId, unnecessaryId) => {
-    const connection = await pool.getConnection(async (conn) => conn);
+
     const response1 = await selectUserInfo(connection, userId);
     const response2 = await selectUserIntroduction(connection, userId);
     const userMakingNumInfo = await selectUserMakingInfo(connection, userId);
@@ -32,6 +32,14 @@ export const retrieveUserIntroduction = async(userId, unnecessaryId) => {
     const userIntroduction = await userIntroductionDTO(response2);
 
     return {userInfo, userIntroduction};
+}
+
+export const retrieveUserOwnIntroduction = async(userId) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const response2 = await selectUserIntroduction(connection, userId);
+    connection.release();
+    const userIntroduction = await userIntroductionDTO(response2);
+    return {userIntroduction};
 }
 
 export const retrieveUserProfileAboutUserInfo = async(userId) => {
