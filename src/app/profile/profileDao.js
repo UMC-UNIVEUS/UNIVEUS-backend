@@ -98,7 +98,7 @@ export const selectuserParticipantInfo = async(connection, userId) => {
         FROM participant_user
         INNER JOIN post ON participant_user.user_id = post.user_id
         INNER JOIN user ON post.user_id = user.id
-        WHERE participant_user.user_id = ? AND status = "PARTICIPATE_COMPLETE"
+        WHERE participant_user.user_id = ? AND status = "PARTICIPATING"
         ORDER BY post.created_at DESC limit 10
     ;`;
 
