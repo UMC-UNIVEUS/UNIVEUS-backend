@@ -59,7 +59,7 @@ export const selectUserParticipantInfo = async(connection, userId) => {
     const selectUserParticipantInfoQuery = `
     SELECT COUNT(*) AS value
     FROM participant_user
-    WHERE status = "PARTICIPATE_COMPLETE" and user_id = ?;`;
+    WHERE status = "PARTICIPATING" and user_id = ?;`;
 
     const [row] = await connection.query(selectUserParticipantInfoQuery, userId);
     return row[0].value;
@@ -98,7 +98,7 @@ export const selectuserParticipantInfo = async(connection, userId) => {
         FROM participant_user
         INNER JOIN post ON participant_user.user_id = post.user_id
         INNER JOIN user ON post.user_id = user.id
-        WHERE participant_user.user_id = ? AND status = "PARTICIPATE_COMPLETE"
+        WHERE participant_user.user_id = ? AND status = "PARTICIPATING"
         ORDER BY post.created_at DESC limit 10
     ;`;
 
