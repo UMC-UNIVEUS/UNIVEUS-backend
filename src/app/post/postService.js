@@ -2,8 +2,19 @@
 (CRUD에 해당하는 서버 로직 처리) */
 import pool from "../../../config/database";
 import {
-    insertPost, insertPostImages, updatePost, updatePostImages, erasePost, insertLike,
-    askParticipation, deleteLike, insertAlarm, acceptParticipation, finishPostStatus, deleteParticipation
+    insertPost,
+    insertPostImages,
+    updatePost,
+    updatePostImages,
+    erasePost,
+    insertLike,
+    askParticipation,
+    deleteLike,
+    insertAlarm,
+    acceptParticipation,
+    finishPostStatus,
+    deleteParticipation,
+    joinParticipation
 } from "./postDao";
 
 export const createPost = async(userIdFromJWT, body) =>{ // 게시글 생성
@@ -93,6 +104,15 @@ export const proposeParticipation = async(post_id, userIdFromJWT) =>{// 게시�
 
     const connection = await pool.getConnection(async conn => conn);
     const proposeParticipationResult = await askParticipation(connection,proposeParticipationParams);
+    connection.release();
+};
+
+export const participateParticipation = async(post_id, userIdFromJWT) =>{// 게시글 참여 신청 (자동 모집일 때)
+
+    const participateParticipationParams =[post_id, userIdFromJWT];
+
+    const connection = await pool.getConnection(async conn => conn);
+    const joinParticipationResult = await joinParticipation(connection,participateParticipationParams);
     connection.release();
 };
 
