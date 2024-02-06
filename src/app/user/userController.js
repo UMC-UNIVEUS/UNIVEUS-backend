@@ -82,8 +82,9 @@ export const loginRedirect = async(req, res) => {
 
         console.log(`code : ${ code }`);
 
-        
-        
+        console.log("클라이언트 ID : " + process.env.GOOGLE_CLIENT_ID)
+        console.log("클라이언트 시크릿 : " + process.env.GOOGLE_CLIENT_SECRET)
+        console.log("클라이언트 URI : "  + GOOGLE_LOGIN_REDIRECT_URI)
 
         const resp = await axios.post(GOOGLE_TOKEN_URL, {
             code,
