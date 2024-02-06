@@ -19,7 +19,7 @@ profileRouter.get('/userInfo',jwtMiddleware , wrapAsync(getUserProfileAboutUserI
 profileRouter.get('/createInfo',jwtMiddleware , wrapAsync(getUserProfileAboutCreateInfo));
 profileRouter.get('/participantInfo',jwtMiddleware , wrapAsync(getUserProfileAboutParticipantInfo));
 profileRouter.get('/introduction/:id',jwtMiddleware , wrapAsync(getUserIntroduction));
-profileRouter.get('/mypage/introduction',jwtMiddleware , wrapAsync(getUserOwnedIntroduction));
+profileRouter.get('/mypage/introduction',jwtMiddleware , getUserOwnedIntroduction);
 profileRouter.post('/introduction',jwtMiddleware , wrapAsync(postUserIntroduction));
 profileRouter.put('/introduction',jwtMiddleware , wrapAsync(putUserIntroduction));
 profileRouter.put('/mypage',jwtMiddleware , wrapAsync(putUserInformation));
