@@ -73,7 +73,7 @@ export const loginRedirect = async(req, res) => {
 
     console.log("들어옴")
 
-    const GOOGLE_LOGIN_REDIRECT_URI = 'https://univeus.site/user/login/redirect';
+    const GOOGLE_LOGIN_REDIRECT_URI = 'http://localhost:3000/user/login/redirect';
     const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
     const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 
