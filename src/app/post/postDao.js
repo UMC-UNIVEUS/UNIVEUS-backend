@@ -147,6 +147,11 @@ export const insertAlarm = async (connection, sendAlarmParams, type)=>{
         INSERT INTO alarm(post_id, receiver_id, type)
         VALUES (?,?,"PARTICIPATION_CANCEL_ALARM");
     `;
+    }else if(type === 4){ // 참여자가 승인됐다는 알람 (to 작성자) (자동 마감일 때 사용)
+        insertAlarmQuery = `
+        INSERT INTO alarm(post_id, receiver_id, type)
+        VALUES (?,?,"PARTICIPATION_COMPLETE_ALARM");
+    `;
     }
     const insertAlarmRow = await connection.query(insertAlarmQuery, sendAlarmParams);
 }
@@ -157,6 +162,14 @@ export const askParticipation = async(connection, proposeParticipationParams)=>{
         VALUES (?,?, "WAITING");
     `;
     const askParticipationRow = await connection.query(askParticipationQuery, proposeParticipationParams);
+};
+
+export const joinParticipation = async(connection, participateParticipationParams)=>{// 게시글 참여 신청
+    const joinParticipationQuery = `
+        INSERT INTO participant_user(post_id, user_id, status) 
+        VALUES (?,?, "PARTICIPATING");
+    `;
+    const joinParticipationRow = await connection.query(joinParticipationQuery, participateParticipationParams);
 };
 
 export const acceptParticipation = async(connection, insertParticipantParams)=>{// 게시글 참여 신청 승인
