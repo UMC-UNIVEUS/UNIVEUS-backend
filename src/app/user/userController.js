@@ -69,6 +69,60 @@ export const login = async(req, res) => {
     return res.send(response(baseResponse.SUCCESS,{ accessToken }));
 }
 
+export const loginRedirect = async(req, res) => {
+    const GOOGLE_LOGIN_REDIRECT_URI = 'http://localhost:3000/user/login/redirect';
+    const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
+    const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
+
+
+        const { code } = req.body;
+
+        console.log(`code : ${ code }`);
+        const resp = await axios.post(GOOGLE_TOKEN_URL, {
+            code,
+            client_id: process.env.GOOGLE_CLIENT_ID,
+            client_secret: process.env.GOOGLE_CLIENT_SECRET,
+            redirect_uri: GOOGLE_LOGIN_REDIRECT_URI,
+            grant_type: 'authorization_code',
+        });
+        const resp2 = await axios.get(GOOGLE_USERINFO_URL, {
+          headers: {
+              Authorization: `Bearer ${resp.data.access_token}`,
+          },
+      });
+
+      console.log(resp2)
+    }
+
+
+
+    //     try {
+    //         const userEmail = resp2.data.email;   
+    //         if (validEmailCheck(userEmail) == false) {
+    //             return res.send(errResponse(baseResponse.SIGNUP_EMAIL_KYONGGI));
+    //         }
+    //         if (!await isUser(userEmail)) {
+    //             res.send(errResponse(baseResponse.LOGIN_NOT_USER));
+    //         }
+    //         const accessToken = await jwt.sign({ userEmail : userEmail }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '1m', issuer : 'univeus' });
+    //         const refreshToken = await jwt.sign({ userEmail : userEmail }, process.env.REFRESH_TOKEN_SECRET, { expiresIn : '24days', issuer : 'univeus' });
+    //         const insertRefreshTokenResult = await insertRefreshToken(refreshToken, userEmail);
+
+    //         if (accessToken && refreshToken) {
+    //             return res.send(response(baseResponse.SUCCESS,{ accessToken, refreshToken }));
+    //         }
+    //     } catch(err) {
+    //         console.log(err)
+    //     }
+    // } catch(err) {
+    //     console.log(err);
+    // }
+
+
+
+
+
+
 /** 인증번호 문자 전송 API */
 export const sendAuthNumber = async(req, res) => {
     const to = req.body.phoneNumber;
