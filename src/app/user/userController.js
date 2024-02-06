@@ -93,6 +93,8 @@ export const loginRedirect = async(req, res) => {
             grant_type: 'authorization_code',
         });
 
+        console.log(resp)
+
         const resp2 = await axios.get(GOOGLE_USERINFO_URL, {
           headers: {
               Authorization: `Bearer ${resp.data.access_token}`,
