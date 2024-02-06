@@ -67,6 +67,12 @@ export const userIntroductionDTO = async(Introduction) => {
     return Introduction[0];
 }
 
+export const userIntroductionExistDTO = async(checkIntroductionExist) => {
+    if(checkIntroductionExist[0] == null)
+        return false;
+    return true;
+}
+
 /** N문 N답 조회 */
 export const userIntroductionProviderDTO = async(type, userIntroductionResponse) => {
     /* 예외 처리 */
