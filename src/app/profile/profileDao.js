@@ -92,10 +92,10 @@ export const selectUserCreateInfo = async(connection, userId) => {
 
 export const selectuserParticipantInfo = async(connection, userId) => {
     const selectuserParticipantInfoQuery = `
-        SELECT user.id, user.nickname, user.gender, user.major, user.student_id, user.mebership, user.user_img,
-               post.id, post.title, post.category, post.limit_gender, post.meeting_datetime, post.location, post.current_people,
+        SELECT user.id AS user_id, user.nickname, user.gender, user.major, user.student_id, user.mebership, user.user_img,
+               post.id AS post_id, post.title, post.category, post.limit_gender, post.meeting_datetime, post.location, post.current_people,
                post.limit_people, post.main_img, post.post_status
-        FROM (SELECT * FROM participant_user WHERE user_id = 3 AND status = "PARTICIPATING") AS pa
+        FROM (SELECT * FROM participant_user WHERE user_id = ? AND status = "PARTICIPATING") AS pa
                  INNER JOIN post ON pa.post_id = post.id
                  INNER JOIN user ON post.user_id = user.id
         ORDER BY post.created_at;
