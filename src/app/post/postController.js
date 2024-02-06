@@ -3,8 +3,19 @@ import {baseResponse, response, errResponse} from "../../../config/response";
 import {
     retrievePost, retrieveParticipant,retrievePostImages,getWaiterNum, getParticiaptionStatus} from "./postProvider";
 import {
-    createPost, createPostImage, editPost, patchPostImage, removePost, addLike,
-    proposeParticipation, cancelLike,sendAlarm, closePostStatus, approveParticipation, removeParticipation
+    createPost,
+    createPostImage,
+    editPost,
+    patchPostImage,
+    removePost,
+    addLike,
+    proposeParticipation,
+    cancelLike,
+    sendAlarm,
+    closePostStatus,
+    approveParticipation,
+    removeParticipation,
+    participateParticipation
 } from "./postService";
 import {postPostResponseDTO} from "./postDto";
 import {getUserById, getUserParticipateStatusById} from "../user/userProvider";
@@ -231,7 +242,13 @@ export const requestParticipation = async(req, res) => {
 
         if(Post.limit_gender !== "ALL" && User.gender !== Post.limit_gender) return res.send(errResponse(baseResponse.POST_GENDER_LIMIT));
         // 성별 제한에 걸리는지
+        if(Post.participation_method === "자동승인"){
+            const participateParticipationResult = await participateParticipation(post_id, userIdFromJWT);
+            const sendParticipateAlarmToParticipant = await sendAlarm(post_id, userIdFromJWT, 2); // 참여자에게 참여 승인 문자 알림
+            const sendParticipateAlarmToWriter = await sendAlarm(post_id, Post.user_id, 4); // 작성자에게 참여 승인 문자 알림
 
+            return res.send(response(baseResponse.SUCCESS, participateParticipationResult));
+        }
         const participateWaiterNum = await getWaiterNum(post_id);
         if(participateWaiterNum >= 10) return res.send(errResponse(baseResponse.POST_WAITER_LIMIT));
 
