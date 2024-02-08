@@ -22,7 +22,8 @@ export const login = async(req, res) => {
     const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
     const googleAccessToken = req.body.token;
 
-    console.log(googleAccessToken);
+    console.log(googleAccessToken)
+    console.log(req.body.token)
 
     let userId
 
