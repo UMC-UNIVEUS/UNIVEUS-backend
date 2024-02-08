@@ -27,7 +27,7 @@ export const login = async(req, res) => {
 
     let userId
 
-    const resUserInfo = await axios.get(GOOGLE_USERINFO_URL, {
+    const { resUserInfo } = await axios.get(GOOGLE_USERINFO_URL, {
         headers: {
             Authorization: `Bearer ${googleAccessToken}`,
         },
