@@ -16,8 +16,10 @@ const cache = new NodeCache();
 
 /** 구글 로그인 API */
 export const login = async(req, res) => {
+
     const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
-    const googleAccessToken = req.body.accessToken;
+    const googleAccessToken = req.body.token;
+
     let userId
 
     const resUserInfo = await axios.get(GOOGLE_USERINFO_URL, {
