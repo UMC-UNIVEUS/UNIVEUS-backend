@@ -20,7 +20,10 @@ export const login = async(req, res) => {
     console.log("api 연결 완료")
 
     const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
-    const googleAccessToken = req.body.accessToken;
+    const googleAccessToken = req.body.token;
+
+    console.log(googleAccessToken);
+
     let userId
 
     const resUserInfo = await axios.get(GOOGLE_USERINFO_URL, {
