@@ -17,13 +17,8 @@ const cache = new NodeCache();
 /** 구글 로그인 API */
 export const login = async(req, res) => {
 
-    console.log("api 연결 완료")
-
     const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
     const googleAccessToken = req.body.token;
-
-    console.log(googleAccessToken)
-    console.log(req.body.token)
 
     let userId
 
@@ -32,8 +27,6 @@ export const login = async(req, res) => {
             Authorization: `Bearer ${googleAccessToken}`,
         },
     });
-
-    console.log(resUserInfo);
 
     const userEmail = resUserInfo.data.email;
 
