@@ -16,6 +16,9 @@ const cache = new NodeCache();
 
 /** 구글 로그인 API */
 export const login = async(req, res) => {
+
+    console.log("api 연결 완료")
+
     const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
     const googleAccessToken = req.body.accessToken;
     let userId
@@ -25,6 +28,8 @@ export const login = async(req, res) => {
             Authorization: `Bearer ${googleAccessToken}`,
         },
     });
+
+    console.log("유저 정보" + resUserInfo);
 
     const userEmail = resUserInfo.data.email;
 
@@ -68,71 +73,6 @@ export const login = async(req, res) => {
     // 성공 시 response 반환
     return res.send(response(baseResponse.SUCCESS,{ accessToken }));
 }
-
-export const loginRedirect = async(req, res) => {
-
-    console.log("들어옴")
-
-    const GOOGLE_LOGIN_REDIRECT_URI = 'https://univeus.site/login';
-    const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
-    const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
-
-
-        const { code } = req.body;
-
-        console.log(`code : ${ code }`);
-
-        console.log("클라이언트 ID : " + process.env.GOOGLE_CLIENT_ID)
-        console.log("클라이언트 시크릿 : " + process.env.GOOGLE_CLIENT_SECRET)
-        console.log("클라이언트 URI : "  + GOOGLE_LOGIN_REDIRECT_URI)
-
-        const resp = await axios.post(GOOGLE_TOKEN_URL, {
-            code,
-            client_id: process.env.GOOGLE_CLIENT_ID,
-            client_secret: process.env.GOOGLE_CLIENT_SECRET,
-            redirect_uri: GOOGLE_LOGIN_REDIRECT_URI,
-            grant_type: 'authorization_code',
-        });
-
-        console.log(resp)
-
-        const resp2 = await axios.get(GOOGLE_USERINFO_URL, {
-          headers: {
-              Authorization: `Bearer ${resp.data.access_token}`,
-          },
-      });
-
-      console.log(resp2)
-    }
-
-
-
-    //     try {
-    //         const userEmail = resp2.data.email;   
-    //         if (validEmailCheck(userEmail) == false) {
-    //             return res.send(errResponse(baseResponse.SIGNUP_EMAIL_KYONGGI));
-    //         }
-    //         if (!await isUser(userEmail)) {
-    //             res.send(errResponse(baseResponse.LOGIN_NOT_USER));
-    //         }
-    //         const accessToken = await jwt.sign({ userEmail : userEmail }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '1m', issuer : 'univeus' });
-    //         const refreshToken = await jwt.sign({ userEmail : userEmail }, process.env.REFRESH_TOKEN_SECRET, { expiresIn : '24days', issuer : 'univeus' });
-    //         const insertRefreshTokenResult = await insertRefreshToken(refreshToken, userEmail);
-
-    //         if (accessToken && refreshToken) {
-    //             return res.send(response(baseResponse.SUCCESS,{ accessToken, refreshToken }));
-    //         }
-    //     } catch(err) {
-    //         console.log(err)
-    //     }
-    // } catch(err) {
-    //     console.log(err);
-    // }
-
-
-
-
-
 
 /** 인증번호 문자 전송 API */
 export const sendAuthNumber = async(req, res) => {
