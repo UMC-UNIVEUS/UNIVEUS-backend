@@ -27,13 +27,13 @@ export const login = async(req, res) => {
 
     let userId
 
-    const { resUserInfo } = await axios.get(GOOGLE_USERINFO_URL, {
+    const resUserInfo = await axios.get(GOOGLE_USERINFO_URL, {
         headers: {
             Authorization: `Bearer ${googleAccessToken}`,
         },
     });
 
-    console.log("유저 정보" + resUserInfo);
+    console.log(resUserInfo);
 
     const userEmail = resUserInfo.data.email;
 
