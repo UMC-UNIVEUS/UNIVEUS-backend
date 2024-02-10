@@ -1,14 +1,19 @@
 import { baseResponse, response, errResponse } from "../../../config/response";
-import {getPostList, countPosts, searchPosts, retrieveMainPageList} from "./mainProvider";
+import {getPostList, countPosts, searchPosts, retrieveMainPageList, retrieveSearchByTitleList} from "./mainProvider";
 import { getUserIdByEmail, getParticipateAvailable } from "../user/userProvider";
 import { getCurrentTime, sliceTime, isMyPost, addDueDate } from "./mainService"
 import {validationDTO} from "./mainRequestDTO";
-import {mainPageResponseDTO} from "./mainResponseDTO";
+import {mainPageResponseDTO, SearchResponseDTO} from "./mainResponseDTO";
 
 
 /** 서비스용 메인 페이지 조회 - 카테고리 별 분류 */
 export const getMainPageList = async (req, res) => {
-    return res.send(await mainPageResponseDTO(await retrieveMainPageList(await validationDTO(req.query), req.verifiedToken.id)));
+    return res.send(await mainPageResponseDTO(await retrieveMainPageList(await validationDTO("main", req.query), req.verifiedToken.id)));
+}
+
+/** 서비스용 게시글 제목 검색 */
+export const searchByTitle = async (req, res) => {
+    return res.send(await SearchResponseDTO(await retrieveSearchByTitleList(await validationDTO("search", req.query), req.verifiedToken.id)));
 }
 
 

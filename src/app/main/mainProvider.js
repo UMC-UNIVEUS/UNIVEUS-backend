@@ -5,7 +5,7 @@ import {
     findTitle,
     selectRecentlyPostList$,
     selectPopularPostList$,
-    findTitle$, selectMainPageNotPaging, selectMainPage
+    findTitle$, selectMainPageNotPaging, selectMainPage, selectPostByTitle
 } from "./mainDao"
 import pool from "../../../config/database";
 import { formatingMeetingDate } from "../post/postProvider";
@@ -25,7 +25,7 @@ export const retrieveMainPageList = async (queryValue, unnecessaryId) => {
     if(queryValue.category === "empty")
         return [{ Exception : "inValidCategory" }];
 
-    //2. 페이징 처리 x, 글 20개 받아오기.
+    //2. 페이징 x
     else if(queryValue.id === "default") {
         const connection = await pool.getConnection(async conn => conn);
         const getMainPageList = await selectMainPageNotPaging(connection, queryValue.category);
@@ -46,22 +46,42 @@ export const retrieveMainPageList = async (queryValue, unnecessaryId) => {
             queryValue.id
         ]);
         connection.release();
+        if(getMainPageList[0] == null)
+            return [{ Exception : "NoLeftPostForPaging"}];
         return getMainPageList;
     }
-
-    //4. 기타 에러
-    // return [{ Exception : "etc" }];
-
 }
 
-// /** 게시글 제목 검색 */
-// export const searchPosts = async (keywordParam) => {
-//     const connection = await pool.getConnection(async conn => conn);
-//     const getSearchPosts = await findTitle$(connection, keywordParam);
-//     for(let i  = 0; i < getSearchPosts.length; i++) {
-//         if(getSearchPosts[i].meeting_date) {
-//             formatingMeetingDate(getSearchPosts[i]);
-//         }
-//     }
-//     return getSearchPosts;
-// }
+/** 게시글 제목 검색 */
+export const retrieveSearchByTitleList = async (queryValue, unnecessaryId) =>  {
+
+    //1. 예외 처리
+    if(queryValue.searchWord === "empty")
+        return [{ Exception : "SearchWordEmpty" }];
+
+    //2. 페이징 x
+    else if(queryValue.id === "default") {
+        const connection = await pool.getConnection(async conn => conn);
+        const getSearchPost = await selectPostByTitle(connection, [queryValue.searchWord]);
+        connection.release();
+        return getSearchPost;
+    }
+
+    //3. 페이징 처리
+    else {
+        const connection = await pool.getConnection(async conn => conn);
+        const IsPostExist = await selectPost(connection, queryValue.id);
+        if(IsPostExist[0] == null) {
+            connection.release();
+            return [{ Exception : "inValidIdForPaging" }];
+        }
+        const getSearchPost = await selectPostByTitle(connection, [
+            queryValue.searchWord,
+            queryValue.id
+        ]);
+        connection.release();
+        if(getSearchPost[0] == null)
+            return [{ Exception : "NoLeftPostForPaging"}];
+        return getSearchPost;
+    }
+}

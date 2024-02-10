@@ -77,8 +77,12 @@ export const baseResponse = {
 
     /** 메인 관련 오류 */
     MAIN_CATEGORY_IS_NOT_INVALID : { "isSuccess": false, "code": "MAIN0001", "message": "메인 게시글 조회를 위한 카테고리가 올바르지 않습니다." },
-    MAIN_PAGING_ID_IS_NOT_VALID : { "isSuccess": false, "code": "MAIN0002", "message": "메인 게시글 조회 페이징 처리를 위한 글 id가 올바르지 않습니다." },
+    MAIN_PAGING_ID_IS_NOT_VALID : { "isSuccess": false, "code": "MAIN0002", "message": "메인 게시글 페이징 처리를 위한 글 id가 올바르지 않습니다." },
+    MAIN_NOT_EXIST_POST_FOR_PAGING : { "isSuccess": false, "code": "MAIN0003", "message": "메인 게시글 페이징 처리 시 조회된 게시글이 없습니다." },
+    SEARCH_NOT_EXIST_POST_FOR_PAGING : { "isSuccess": false, "code": "MAIN0004", "message": "검색 페이징 처리 시 조회된 게시글이 없습니다." },
+    SEARCH_WORD_IS_EMPTY : { "isSuccess": false, "code": "MAIN0005", "message": "검색어가 누락되었습니다." },
     MAIN_UNKNOWN_ERROR : { "isSuccess": false, "code": "MAIN0999", "message": "알 수 없는 에러입니다. 관리자에게 문의해주세요." },
+
 
 
     /** 신고 관련 MSG */
