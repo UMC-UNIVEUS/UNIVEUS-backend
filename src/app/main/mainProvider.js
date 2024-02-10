@@ -1,21 +1,17 @@
 import {
-    selectPopularPostList,
-    selectRecentlyPostList,
-    countPostsByCategory,
-    findTitle,
-    selectRecentlyPostList$,
-    selectPopularPostList$,
-    findTitle$, selectMainPageNotPaging, selectMainPage, selectPostByTitle
+    selectMainPageNotPaging,
+    selectMainPage,
+    selectPostByTitle
 } from "./mainDao"
 import pool from "../../../config/database";
-import { formatingMeetingDate } from "../post/postProvider";
-import {selectPost} from "../post/postDao";
+import {
+    selectPost
+} from "../post/postDao";
 
 
 /** 메인페이지 글 불러오기 */
 export const retrieveMainPageList = async (queryValue, unnecessaryId) => {
     //userId가 unnecessaryId인 이유는 아직 차단 기능 구현 안해서다. 차단하면 글이 보이지 않도록 추가하려면 나중에 쓴다.
-
 
     // //0. 페이징 처리를 위한 id가 올바르지 않음.
     // if(queryValue.id === "inValid")
