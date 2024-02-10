@@ -61,7 +61,7 @@ export const baseResponse = {
     VERIFIED_ACCESS_TOKEN_EMPTY : { "isSuccess": false, "code": 5002, "message":"검증된 토큰이 존재하지 않습니다." },
 
 
-    // 프로필 관련 오류 
+    /** 프로필 관련 오류 */
     PROFILE_INFO_NOT_EXIST : { "isSuccess": false, "code": 2201, "message": "유저 프로필 정보가 존재하지 않습니다." },
     PROFILE_DEFAULT_INFO_NOT_EXIST : { "isSuccess": false, "code": 2202, "message": "유저 기본 프로필 정보가 존재하지 않습니다." },
     PROFILE_INTRO_INFO_NOT_EXIST : { "isSuccess": false, "code": 2203, "message": "유저 자기소개 프로필 정보가 존재하지 않습니다." },
@@ -73,7 +73,13 @@ export const baseResponse = {
     PROFILE_USER_CREATE_INFORMATION_NOT_EXIST : { "isSuccess": false, "code": "PROFILE0006", "message": "유저 프로필 조회 중 사용자가 작성한 글이 없거나 서버 에러로 생성 정보를 불러오지 못했습니다." },
     PROFILE_USER_PARTICIPANT_INFORMATION_NOT_EXIST : { "isSuccess": false, "code": "PROFILE0007", "message": "유저 프로필 조회 중 사용자가 참여한 글이 없거나 서버 에러로 참여 정보를 불러오지 못했습니다." },
     PROFILE_USER_INFORMATION_MODIFY_ERROR : { "isSuccess": false, "code": "PROFILE0007", "message": "수정 대상인 유저 정보를 불러올 수 없어 정보를 수정할 수 없습니다." },
-    PROFILE_UNKNOWN_ERROR : { "isSuccess": false, "code": "PROFILE0999", "message": "알 수 없는 에러입니다. 관리자에게 문의해주세요" },
+    PROFILE_UNKNOWN_ERROR : { "isSuccess": false, "code": "PROFILE0999", "message": "알 수 없는 에러입니다. 관리자에게 문의해주세요." },
+
+    /** 메인 관련 오류 */
+    MAIN_CATEGORY_IS_NOT_INVALID : { "isSuccess": false, "code": "MAIN0001", "message": "메인 게시글 조회를 위한 카테고리가 올바르지 않습니다." },
+    MAIN_PAGING_ID_IS_NOT_VALID : { "isSuccess": false, "code": "MAIN0002", "message": "메인 게시글 조회 페이징 처리를 위한 글 id가 올바르지 않습니다." },
+    MAIN_UNKNOWN_ERROR : { "isSuccess": false, "code": "MAIN0999", "message": "알 수 없는 에러입니다. 관리자에게 문의해주세요." },
+
 
     /** 신고 관련 MSG */
     REPORT_FAIL : {"isSuccess" : false, "code" : 6001, "message" : "신고접수를 실패하였습니다."},

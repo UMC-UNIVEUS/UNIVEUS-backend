@@ -1,92 +1,55 @@
+export const selectMainPageNotPaging = async(connection, category) => {
+    const defaultQuery = `
+    SELECT user.id AS user_id, user.nickname, user.gender, user.major, user.student_id, user.mebership, user.user_img,
+           po.id AS post_id, po.title, po.category, po.limit_gender, po.meeting_datetime, po.location, po.current_people,
+           po.limit_people, po.main_img, po.post_status
+    FROM post AS po
+    INNER JOIN user
+    ON po.user_id = user.id
+    ORDER BY po.created_at DESC LIMIT 20;`;
 
-/** select 인기순 postList */
-export const selectPopularPostList = async(connection, getPostParams) => {
-    const selectPostListQuery = 
-    `SELECT * FROM post WHERE category = ? ORDER BY likes DESC LIMIT ?, ?`;
-    const [rows] = await connection.query(selectPostListQuery, getPostParams);
+    const query = `
+    SELECT user.id AS user_id, user.nickname, user.gender, user.major, user.student_id, user.mebership, user.user_img,
+           po.id AS post_id, po.title, po.category, po.limit_gender, po.meeting_datetime, po.location, po.current_people,
+           po.limit_people, po.main_img, po.post_status
+    FROM (SELECT * FROM post WHERE category = ?) AS po
+    INNER JOIN user
+    ON po.user_id = user.id
+    ORDER BY po.created_at DESC LIMIT 20;`;
 
+    if(category === "전체") {
+        const [rows] = await connection.query(defaultQuery, category);
+        return rows;
+    }
+    const [rows] = await connection.query(query, category);
     return rows;
 }
 
-/* select 인기순 postList 쿼리문 변경 1안*/
-export const selectPopularPostList$ = async(connection, getPostParams) => {
-const selectPopularPostQuery =
-    `SELECT post.post_id, post.title, post.limit_gender, post.content,
-       location, meeting_date, current_people, limit_people,
-       main_img, post_status, hidden, post.user_id, user.gender, user.nickname
-    FROM post
-    INNER JOIN user ON post.user_id = user.user_id
-    WHERE post.category = ?
-    ORDER BY likes DESC  ;`;
-const [rows] = await connection.query(selectPopularPostQuery, getPostParams);
-return rows;
-};
-/** select 최신순 postList - 업데이트용 */
-// export const selectRecentlyPostList = async(connection, getPostParams) => {
-//     const selectPostListQuery = 
-//     `SELECT * FROM post WHERE category = ? ORDER BY created_at DESC LIMIT ?, ?`
-//     const [rows] = await connection.query(selectPostListQuery, getPostParams);
+export const selectMainPage = async(connection, params) => {
+    const defaultQuery = `
+    SELECT user.id AS user_id, user.nickname, user.gender, user.major, user.student_id, user.mebership, user.user_img,
+           po.id AS post_id, po.title, po.category, po.limit_gender, po.meeting_datetime, po.location, po.current_people,
+           po.limit_people, po.main_img, po.post_status
+    FROM post AS po
+    INNER JOIN user
+    ON po.user_id = user.id
+    WHERE po.created_at < (SELECT created_at FROM post WHERE id = ?) 
+    ORDER BY po.created_at DESC LIMIT 20;`;
 
-//     return rows;
-// }
+    const query = `
+    SELECT user.id AS user_id, user.nickname, user.gender, user.major, user.student_id, user.mebership, user.user_img,
+           po.id AS post_id, po.title, po.category, po.limit_gender, po.meeting_datetime, po.location, po.current_people,
+           po.limit_people, po.main_img, po.post_status
+    FROM (SELECT * FROM post WHERE category = ?) AS po
+    INNER JOIN user
+    ON po.user_id = user.id
+    WHERE po.created_at < (SELECT created_at FROM post WHERE id = ?) 
+    ORDER BY po.created_at DESC LIMIT 20;`;
 
-/** select 최신순 postList - 축제용 */
-export const selectRecentlyPostList = async(connection, getPostParams) => {
-    const selectPostListQuery = 
-    `SELECT post.*, user.profile_img, user.profile_img, user.gender, user.nickname, user.class_of
-    FROM post
-    INNER JOIN user ON post.user_id = user.user_id
-    WHERE post.category = ?
-    ORDER BY post.created_at DESC;
-    `
-    const [rows] = await connection.query(selectPostListQuery, getPostParams);
-
+    if(params[0] === "전체") {
+        const [rows] = await connection.query(defaultQuery, params[1]);
+        return rows;
+    }
+    const [rows] = await connection.query(query, params);
     return rows;
 }
-
-/* select 최신순 postList 쿼리문 변경 1안 */
-export const selectRecentlyPostList$ = async(connection, getPostParams) => {
-    const selectRecentlyPostQuery =
-        `SELECT post.post_id, post.title, post.limit_gender, post.content,
-       location, meeting_date, current_people, limit_people,
-       main_img, post_status, hidden, post.user_id, user.gender, user.nickname
-    FROM post
-    INNER JOIN user ON post.user_id = user.user_id
-    WHERE post.category = ?
-    ORDER BY post.created_at DESC ;`;
-    const [rows] = await connection.query(selectRecentlyPostQuery, getPostParams);
-
-    return rows;
-};
-
-/** 카테고리 별 게시글 개수 세기 */
-export const countPostsByCategory = async(connection, categoryParams) => {
-    const countPostsQuery = 
-    `SELECT COUNT(*) AS post_num FROM post WHERE category = ?;`
-    const [rows] = await connection.query(countPostsQuery, categoryParams);
-
-    return rows[0].post_num;
-}
-
-/** 게시글 제목 검색 */
-export const findTitle = async(connection, keywordParam) => {
-    const searchQuery = 
-    `SELECT * FROM post WHERE title LIKE ?;`
-    const [rows] = await connection.query(searchQuery, keywordParam);
-
-    return rows;
-};
-
-/* 게시물 제목 검색 쿼리문 변경 1안 */
-export const findTitle$ = async(connection, keywordParam) => {
-    const searchQuery =
-        `SELECT post.post_id, post.title, post.limit_gender, post.content,
-       location, meeting_date, current_people, limit_people,
-       main_img, post_status, hidden, post.user_id, user.gender, user.nickname
-    FROM post
-    INNER JOIN user ON post.user_id = user.user_id 
-    WHERE title LIKE ?;`
-    const [rows] = await connection.query(searchQuery, keywordParam);
-
-    return rows;
-};
