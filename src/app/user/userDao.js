@@ -166,3 +166,18 @@ export const selectUserParticipateStatusById = async(connection, selectUserParti
     const [userParticipateStatusRow] = await connection.query(selectUserParticipateStatusByIdQuery,selectUserParticipateStatusParams);
     return userParticipateStatusRow[0];
 }
+
+/** user 테이블에서 refresh 토큰 조회 */
+export const selectRefreshTokenById = async(connection, userId) => {
+    const selectRefreshTokenQuery = `SELECT refresh_token FROM user WHERE id = ${userId}`
+    const [selectRefreshTokenRow] = await connection.query(selectRefreshTokenQuery);
+    return selectRefreshTokenRow[0].refresh_token;
+}
+
+/** user 테이블에 refresh 토큰 update */
+export const updateRefreshTokenById = async(connection, userId, refreshToken) => {
+    const updateRefreshTokenQuery = `
+        UPDATE user SET refresh_token = '${refreshToken}' WHERE id = ${userId};
+    `
+    const [updateRefreshTokenRow] = await connection.query(updateRefreshTokenQuery)
+}

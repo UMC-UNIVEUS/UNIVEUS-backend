@@ -40,4 +40,3 @@ export const jwtMiddleware = (req, res, next) =>{
         next();
     }).catch(onError);
 }
-
