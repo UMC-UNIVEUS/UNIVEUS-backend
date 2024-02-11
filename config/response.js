@@ -18,7 +18,10 @@ export const baseResponse = {
     LOGIN_NOT_AUTH_NUMBER : {"isSuccess" : false, "code" : "USER0012", "message" : "번호인증이 필요합니다. 번호인증 페이지로 리다이렉트 됩니다." },
     LOGIN_NOT_USER_AGREE : {"isSuccess" : false, "code" : "USER0013", "message" : "약관동의를 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
     LOGIN_NOT_AUTH_COMPLETE_USER : {"isSuccess" : false, "code" : "USER0014", "message" : "소속인증을 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
+
     LOGIN_PROFILE_NOT_EXIST : {"isSuccess" : false, "code" : "USER0015", "message" : "프로필 등록을 완료한 유저가 아닙니다. 해당 페이지로 리다이렉트 됩니다." },
+    FIRST_AGREEMENT_EMPTY : {"isSuccess" : false, "code" : "USER0016", "message" : "첫 번째 약관에 동의하지 않았습니다." },
+    SECOND_AGREEMENT_EMPTY : {"isSuccess" : false, "code" : "USER0017", "message" : "두 번째 약관에 동의하지 않았습니다." },
 
     USER_FIRST_NOT_EXIST : { "isSuccess": false, "code": 2000, "message": "초대한 유저 중 첫 번째 유저가 존재하지 않습니다." },
     USER_SECOND_NOT_EXIST : { "isSuccess": false, "code": 2001, "message": "초대한 유저 중 두 번째 유저가 존재하지 않습니다." },
@@ -34,8 +37,6 @@ export const baseResponse = {
     USER_USERID_EMPTY : { "isSuccess": false, "code": 2017, "message": "user_Id를 입력해주세요." },
     USER_USER_NICKNAME_LENGTH : { "isSuccess": false, "code": 2018, "message": "닉네임 길이 제한을 초과하였습니다." },
     NOT_ADMIN :{"isSuccess" : false, "code" : 2021, "message" : "축제 때 사용해 보시라우.ᐟ" },
-    FIRST_AGREEMENT_EMPTY : {"isSuccess" : false, "code" : 2022, "message" : "첫 번째 약관에 동의하지 않았습니다." },
-    SECOND_AGREEMENT_EMPTY : {"isSuccess" : false, "code" : 2023, "message" : "두 번째 약관에 동의하지 않았습니다." },
     THIRD_AGREEMENT_EMPTY : {"isSuccess" : false, "code" : 2024, "message" : "세 번째 약관에 동의하지 않았습니다." },
     USERS_ACCOUNT_WITHDRAW : {"isSuccess" : false, "code" : 2025, "message" : "탈퇴한 회원입니다." },
     USERS_ACCOUNT_BLOCKED : {"isSuccess" : false, "code" : 2026, "message" : "정지된 계정입니다." },
@@ -56,9 +57,11 @@ export const baseResponse = {
 
 
     // 토큰 오류
-    TOKEN_EMPTY : { "isSuccess": false, "code": 5000, "message":"JWT 토큰을 입력해주세요." },
-    TOKEN_VERIFICATION_FAILURE : { "isSuccess": false, "code": 5001, "message":"JWT 토큰 검증 실패" },
-    VERIFIED_ACCESS_TOKEN_EMPTY : { "isSuccess": false, "code": 5002, "message":"검증된 토큰이 존재하지 않습니다." },
+    TOKEN_EMPTY : { "isSuccess": false, "code": "TOKEN0000", "message":"JWT 토큰을 입력해주세요." },
+    TOKEN_VERIFICATION_FAILURE : { "isSuccess": false, "code": "TOKEN0001", "message":"JWT 토큰 검증 실패"},
+    VERIFIED_ACCESS_TOKEN_EMPTY : { "isSuccess": false, "code": "TOKEN0002", "message":"검증된 토큰이 존재하지 않습니다." },
+    REFRESH_TOKEN_VERIFICATION_FAILURE : { "isSuccess": false, "code": "TOKEN0003", "message":"리프레시 토큰 검증 실패"},
+    REFRESH_TOKEN_EXPIRED : { "isSuccess": false, "code": "TOKEN0004", "message":"유효하지 않는 토큰입니다. 다시 로그인하세요."},
 
 
     /** 프로필 관련 오류 */

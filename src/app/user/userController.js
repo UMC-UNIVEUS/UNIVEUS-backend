@@ -1,10 +1,10 @@
 import { baseResponse, errResponse, response } from "../../../config/response";
 import axios from "axios";
 import { addUserAffiliation, isKyonggiEmail, createAuthNum, checkAlarms,
-    createUser, addUserPhoneNumber, addAgreementTerms, addUserProfile } from "./userService";
+    createUser, addUserPhoneNumber, addAgreementTerms, addUserProfile, refreshVerify,
+    updateRefreshToken } from "./userService";
 import { isUser, isNicknameDuplicate, retrieveAlarms, getUserIdByEmail,
-    isAuthNumber, isAuthUser,
-    getUserById, getUserPhoneNumber, removeEmojisAndSpace,
+    isAuthNumber, isAuthUser, getUserPhoneNumber, removeEmojisAndSpace,
     isProfileExist, isUserAgree } from "./userProvider";
 import jwt from "jsonwebtoken";
 import { sendSMS } from "../../../config/naverCloudClient";
@@ -38,37 +38,45 @@ export const login = async(req, res) => {
     // 구글 로그인을 해 본 유저인지 확인
     if (!await isUser(userEmail)) {
         userId = await createUser(userEmail);
-        const accessToken = jwt.sign({ userId : userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '100days', issuer : 'univeus' })
-        return res.send(response(baseResponse.LOGIN_NOT_USER, { accessToken }));
+
+        const accessToken = jwt.sign({ userId : userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '1h', issuer : 'univeus' })
+        const refreshToken = jwt.sign({}, process.env.REFRESH_TOKEN_SECRET, { expiresIn : '14days', issuer : 'univeus' })
+
+        await updateRefreshToken(refreshToken, userId);
+
+        return res.send(response(baseResponse.LOGIN_NOT_USER, { accessToken : accessToken , refreshToken : refreshToken }));
     }
 
     userId = await getUserIdByEmail(userEmail);
 
-    const accessToken = jwt.sign({ userId : userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '100days', issuer : 'univeus' })
+    const accessToken = jwt.sign({ userId : userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '1h', issuer : 'univeus' })
+    const refreshToken = jwt.sign({}, process.env.REFRESH_TOKEN_SECRET, { expiresIn : '14days', issuer : 'univeus' })
+
+    await updateRefreshToken(refreshToken, userId);
 
     if(!accessToken) return res.send(errResponse(baseResponse.VERIFIED_ACCESS_TOKEN_EMPTY));
 
     // 번호인증을 한 유저인지 확인
     if (!await isAuthNumber(userId)) {
-        return res.send(response(baseResponse.LOGIN_NOT_AUTH_NUMBER, { accessToken }));
+        return res.send(response(baseResponse.LOGIN_NOT_AUTH_NUMBER, { accessToken : accessToken, refreshToken : refreshToken }));
     }
     // 약관 동의를 한 유저인지 확인
     if (!await isUserAgree(userId)) {
-        return res.send(response(baseResponse.LOGIN_NOT_USER_AGREE, { accessToken }));
+        return res.send(response(baseResponse.LOGIN_NOT_USER_AGREE, { accessToken : accessToken, refreshToken : refreshToken }));
     }
 
     // 소속인증 한 유저인지 확인
     if (!await isAuthUser(userId)) {
-        return res.send(response(baseResponse.LOGIN_NOT_AUTH_COMPLETE_USER, { accessToken }));
+        return res.send(response(baseResponse.LOGIN_NOT_AUTH_COMPLETE_USER, { accessToken : accessToken, refreshToken : refreshToken }));
     }
 
     // 프로필등록을 한 유저인지 확인
     if (!await isProfileExist(userId)) {
-        return res.send(response(baseResponse.LOGIN_PROFILE_NOT_EXIST, { accessToken }));
+        return res.send(response(baseResponse.LOGIN_PROFILE_NOT_EXIST, { accessToken : accessToken, refreshToken : refreshToken }));
     }
 
     // 성공 시 response 반환
-    return res.send(response(baseResponse.SUCCESS,{ accessToken }));
+    return res.send(response(baseResponse.SUCCESS,{ accessToken : accessToken, refreshToken : refreshToken }));
 }
 
 /** 인증번호 문자 전송 API */
@@ -255,4 +263,46 @@ export const registerUserProfile = async(req, res) => {
     await addUserProfile(userId, userProfile)
 
     return res.send(response(baseResponse.SUCCESS));
+}
+
+/** refreshToken으로 accessToken 요청 함수 */
+export const refreshToken = async(req, res) => {
+
+    const refreshToken = req.headers['refresh-token']
+    const accessToken = req.headers['x-access-token']
+
+    const { userId } = jwt.decode(accessToken)
+
+    const p = new Promise(
+        (resolve, reject) => {
+            jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET , (err, verifiedRefreshToken) => {
+
+
+                if(err) reject(err);
+                resolve(verifiedRefreshToken)
+            })
+        }
+    );
+
+    /** 토큰 검증 실패 시 오류 발생*/
+    const onError = (error) => {
+
+        return res.send(errResponse(baseResponse.REFRESH_TOKEN_EXPIRED));
+        
+    };
+    /** 토큰 검증 성공 */
+    p.then(async(verifiedRefreshToken) => {
+        
+        const status = await refreshVerify(refreshToken, userId);
+
+        if (status == false) {
+            return res.send(errResponse(baseResponse.REFRESH_TOKEN_VERIFICATION_FAILURE));
+        }
+
+        const access = jwt.sign({ userId : userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '1h', issuer : 'univeus' })
+
+        return res.send(response(baseResponse.SUCCESS,{ accessToken : access }));
+                                
+    }).catch(onError);
+
 }

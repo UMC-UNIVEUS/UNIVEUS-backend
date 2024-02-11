@@ -1,6 +1,7 @@
 import { updateUserAffiliation, updateAlarms, insertUserEmail,
     updateUserPhoneNumber, insertAgreementTerms, updateAccountStatus,
-    updateUserReportedNum,updateNicknameAndGender } from "./userDao"
+    updateUserReportedNum,updateNicknameAndGender, selectRefreshTokenById,
+    updateRefreshTokenById } from "./userDao"
 import pool from "../../../config/database"
 
 /** 유저 생성 - 프로필 등록, 번호인증 전 user */
@@ -79,5 +80,26 @@ export const increaseUserReportedNum = async(userId) => {
 export const addUserProfile = async(userId, userProfile) => {
     const connection = await pool.getConnection(async conn => conn);
     const updateUserProfileResult = await updateNicknameAndGender(connection, userId, userProfile);
+    connection.release();
+}
+
+/** refresh Token 유효성 검사 */
+export const refreshVerify = async(refreshToken, userId) => {
+    const connection = await pool.getConnection(async conn => conn);
+    const refreshTokenFromDB = await selectRefreshTokenById(connection, userId);
+
+    connection.release();
+
+    if (refreshToken === refreshTokenFromDB) {
+        return true
+    }
+
+    return false;
+}
+
+/** refresh Token DB에 저장 */
+export const updateRefreshToken = async(refreshToken, userId) => {
+    const connection = await pool.getConnection(async conn => conn);
+    const updateRefreshTokenResult = await updateRefreshTokenById(connection, userId, refreshToken)
     connection.release();
 }
