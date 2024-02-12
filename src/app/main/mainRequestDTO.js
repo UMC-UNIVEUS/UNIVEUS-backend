@@ -6,7 +6,9 @@ export const validationDTO = async (type, requestValue) => {
             return {id: "empty", category: "empty"};
         else if (requestValue.category !== "전체" && // category 값이 Valid 한지 판별
             requestValue.category !== "우주공강" && requestValue.category !== "스펙쌓기" && requestValue.category !== "취미문화" &&
-            requestValue.category && "습관형성" && requestValue.category !== "취업활동" && requestValue.category !== "수업친구")
+            requestValue.category !== "습관형성" && requestValue.category !== "취업활동" && requestValue.category !== "수업친구" &&
+            requestValue.category !== "맛집탐방"    
+                )
             return {id: "default", category: "empty"};
 
         /* 정상 처리 */
