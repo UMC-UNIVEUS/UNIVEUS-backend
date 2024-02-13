@@ -2,7 +2,7 @@ import express from "express"
 import { sendAuthNumber, login, 
     verifyNumber, checkNickNameDuplicate, registerAffiliation,
     getAlarms, patchAlarms, agreementTerms, registerUserProfile, 
-    refreshToken, userImage } from "./userController"
+    refreshToken } from "./userController"
 import { jwtMiddleware } from "../../../config/jwtMiddleWare";
 import { accountStatusMiddleware } from "../../../config/accountStatusMiddleware";
 import { wrapAsync } from "../../../config/errorhandler";
