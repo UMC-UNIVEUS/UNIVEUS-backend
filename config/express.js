@@ -10,11 +10,14 @@ import mainRouter from "../src/app/main/mainRoute"
 import reportRouter from "../src/app/report/reportRoute";
 import profileRouter from "../src/app/profile/profileRoute";
 import adminRouter from "../src/app/admin/adminRoute";
+import cookieParser from "cookie-parser";
+
 
 const app = express();  
 
 dotenv.config();
 
+app.use(cookieParser())
 app.use(compression()); 
 app.use(express.json());   
 app.use(express.urlencoded({extended:true}));
