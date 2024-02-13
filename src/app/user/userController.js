@@ -19,6 +19,7 @@ export const login = async(req, res) => {
 
     const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
     const googleAccessToken = req.body.token;
+    const maxAgeTwoWeeks = 2 * 7 * 24 * 60 * 60 * 1000; // 2주의 밀리초 값
 
     let userId
 
@@ -43,8 +44,11 @@ export const login = async(req, res) => {
         const refreshToken = jwt.sign({}, process.env.REFRESH_TOKEN_SECRET, { expiresIn : '14days', issuer : 'univeus' })
 
         await updateRefreshToken(refreshToken, userId);
-
-        return res.send(response(baseResponse.LOGIN_NOT_USER, { accessToken : accessToken , refreshToken : refreshToken }));
+        
+        return res.cookie("refresh-token", refreshToken, {
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000,
+        }).send(response(baseResponse.LOGIN_NOT_USER, {accessToken : accessToken}));
     }
 
     userId = await getUserIdByEmail(userEmail);
@@ -58,25 +62,56 @@ export const login = async(req, res) => {
 
     // 번호인증을 한 유저인지 확인
     if (!await isAuthNumber(userId)) {
-        return res.send(response(baseResponse.LOGIN_NOT_AUTH_NUMBER, { accessToken : accessToken, refreshToken : refreshToken }));
+
+        return res.cookie("refresh-token", refreshToken, {
+            httpOnly: true,
+            maxAge: maxAgeTwoWeeks,
+        }).send(response(baseResponse.LOGIN_NOT_AUTH_NUMBER, {accessToken : accessToken}));
+
+        // return res.send(response(baseResponse.LOGIN_NOT_AUTH_NUMBER, { accessToken : accessToken, refreshToken : refreshToken }));
     }
     // 약관 동의를 한 유저인지 확인
     if (!await isUserAgree(userId)) {
-        return res.send(response(baseResponse.LOGIN_NOT_USER_AGREE, { accessToken : accessToken, refreshToken : refreshToken }));
+
+        return res.cookie("refresh-token", refreshToken, {
+            httpOnly: true,
+            maxAge: maxAgeTwoWeeks,
+        }).send(response(baseResponse.LOGIN_NOT_USER_AGREE, {accessToken : accessToken}));
+
+
+        // return res.send(response(baseResponse.LOGIN_NOT_USER_AGREE, { accessToken : accessToken, refreshToken : refreshToken }));
     }
 
     // 소속인증 한 유저인지 확인
     if (!await isAuthUser(userId)) {
-        return res.send(response(baseResponse.LOGIN_NOT_AUTH_COMPLETE_USER, { accessToken : accessToken, refreshToken : refreshToken }));
+
+        return res.cookie("refresh-token", refreshToken, {
+            httpOnly: true,
+            maxAge: maxAgeTwoWeeks,
+        }).send(response(baseResponse.LOGIN_NOT_AUTH_COMPLETE_USER, {accessToken : accessToken}));
+
+        // return res.send(response(baseResponse.LOGIN_NOT_AUTH_COMPLETE_USER, { accessToken : accessToken, refreshToken : refreshToken }));
     }
 
     // 프로필등록을 한 유저인지 확인
     if (!await isProfileExist(userId)) {
-        return res.send(response(baseResponse.LOGIN_PROFILE_NOT_EXIST, { accessToken : accessToken, refreshToken : refreshToken }));
+
+        return res.cookie("refresh-token", refreshToken, {
+            httpOnly: true,
+            maxAge: maxAgeTwoWeeks,
+        }).send(response(baseResponse.LOGIN_PROFILE_NOT_EXIST, {accessToken : accessToken}));
+        
+        // return res.send(response(baseResponse.LOGIN_PROFILE_NOT_EXIST, { accessToken : accessToken, refreshToken : refreshToken }));
     }
 
     // 성공 시 response 반환
-    return res.send(response(baseResponse.SUCCESS,{ accessToken : accessToken, refreshToken : refreshToken }));
+
+    return res.cookie("refresh-token", refreshToken, {
+        httpOnly: true,
+        maxAge: maxAgeTwoWeeks,
+    }).send(response(baseResponse.SUCCESS, {accessToken : accessToken}));
+
+    // return res.send(response(baseResponse.SUCCESS,{ accessToken : accessToken, refreshToken : refreshToken }));
 }
 
 /** 인증번호 문자 전송 API */

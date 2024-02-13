@@ -6,7 +6,6 @@ import { sendAuthNumber, login,
 import { jwtMiddleware } from "../../../config/jwtMiddleWare";
 import { accountStatusMiddleware } from "../../../config/accountStatusMiddleware";
 import { wrapAsync } from "../../../config/errorhandler";
-import { handleMulterErrors, uploadImage } from "../../../config/imageUploader";
 
 const userRouter = express.Router();
 
