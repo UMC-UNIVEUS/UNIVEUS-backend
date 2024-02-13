@@ -248,7 +248,8 @@ export const registerUserProfile = async(req, res) => {
 
     const userProfile = {
         nickname : req.body.nickname,
-        gender : req.body.gender
+        gender : req.body.gender,
+        userImage : req.body.userImage
     }
 
     /**
