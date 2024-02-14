@@ -2,7 +2,7 @@
 쿼리문은 userDao에 작성한다. */
 
 import dotenv from "dotenv";
-import mysql from "mysql2/promise"; 
+import mysql from "mysql2/promise";
 dotenv.config();
 
 
@@ -14,5 +14,4 @@ const pool = mysql.createPool({
     password: `${process.env.DB_PASS}`,
     database: `${process.env.DB_NAME}`
 });
-
 export default pool;
