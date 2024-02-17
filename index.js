@@ -14,8 +14,10 @@ const io = new Server(httpServer,{ // 웹 소켓 서버 생성
     },
 });
 
-import ioHandler from "./config/io"; // io 매개변수를 io.js에서 가져옴
-ioHandler(io);
+import ioHandler from "./config/io";
+import {jwtMiddleware} from "./config/jwtMiddleWare"; // io 매개변수를 io.js에서 가져옴
+ioHandler(jwtMiddleware,io);
+
 httpServer.listen(process.env.SERVER_PORT, ()=>{ // 앱 서버
     console.log("Server listening on port:", process.env.SERVER_PORT)
 });

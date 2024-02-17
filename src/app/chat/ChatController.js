@@ -1,6 +1,5 @@
 import {baseResponse, response} from "../../../config/response";
-import {createRoom, retrieveRooms} from "./ChatService";
-
+import {createMessage, createRoom, retrieveRooms} from "./ChatService";
 
 /**
  * API name : 채팅방 리스트 조회
@@ -34,8 +33,17 @@ export const getRoomDetail = async(req, res) => {
  */
 export const postRoom = async (req,res) => {
 
-    const {users} = req.body;
-    const postRoomResult = await createRoom(users);
+    const {usersId, title} = req.body;
+    const postRoomResult = await createRoom(usersId, title);
 
     return res.send(response(baseResponse.SUCCESS, postRoomResult));
+}
+
+/**
+ * API name : 메시지 생성
+ */
+export const postMessage = async (message,room_id,user) => {
+
+    const postRoomResult = await createMessage(message, room_id,user);
+
 }

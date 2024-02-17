@@ -11,11 +11,13 @@ const chatSchema = new mongoose.Schema(
         name: String,
     },
     room: {
-        type: Number,
+        type: mongoose.Schema.ObjectId,
         ref: "Room",
     },
 
     },
-    { timestamp: true}
-);
+    {
+        timestamps: true,
+        versionKey: false // __v 필드 제거
+    });
 module.exports = mongoose.model("Chat", chatSchema);
