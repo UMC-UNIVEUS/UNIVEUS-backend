@@ -11,6 +11,15 @@ export const retrieveRooms = async(userIdFromJWT) =>{
     return roomList;
 };
 
+export const retrieveRoomDetail = async(room_id) =>{ // 채팅방 개별 조회
+
+    const roomDetail = await Chat.find({room: room_id});// 채팅 내용과 각 채팅을 남긴 유저의 정보를 함께 반환
+    console.log(roomDetail);
+
+    return roomDetail;
+};
+
+
 
 export const createRoom = async (usersId, title) => { // 채팅방 생성 + 유저 정보 저장
     //채팅방 생성하면서 유저도 생성해줘야 함. 이때 채팅방 조회에서 필요한 모든 정보를 몽고DB에도 저장해둠.

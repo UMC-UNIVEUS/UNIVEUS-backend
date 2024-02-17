@@ -8,7 +8,23 @@ const chatSchema = new mongoose.Schema(
             type: Number,
             ref: "User",
         },
-        name: String,
+        nickname: String,
+
+        gender: {
+            type: String,
+        },
+
+        student_id: { // 학번
+            type: String,
+        },
+
+        major: { // 학과
+            type: String,
+        },
+
+        user_img: {
+            type: String,
+        },
     },
     room: {
         type: mongoose.Schema.ObjectId,

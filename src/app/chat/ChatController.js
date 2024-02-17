@@ -1,5 +1,5 @@
 import {baseResponse, response} from "../../../config/response";
-import {createMessage, createRoom, retrieveRooms} from "./ChatService";
+import {createMessage, createRoom, retrieveRoomDetail, retrieveRooms} from "./ChatService";
 
 /**
  * API name : 채팅방 리스트 조회
@@ -23,8 +23,11 @@ export const getRooms = async(req, res) => {
 export const getRoomDetail = async(req, res) => {
 
     const {room_id} = req.params;
-    const userIdFromJWT = req.verifiedToken.userId;
+    const userIdFromJWT = req.verifiedToken.userId; // 이 채팅방에 참여한 인원인지 유효성 검증을 할 때 필요한 값임.
 
+    const getRoomDetailResult = await retrieveRoomDetail(room_id);
+
+    return res.send(response(baseResponse.SUCCESS,getRoomDetailResult));
 }
 
 /**
