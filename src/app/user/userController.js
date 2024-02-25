@@ -78,6 +78,8 @@ export const login = async(req, res) => {
         return res.cookie("refresh-token", refreshToken, {
             httpOnly: true,
             maxAge: maxAgeTwoWeeks,
+            sameSite: 'none',
+            secure: true
         }).send(response(baseResponse.LOGIN_NOT_USER_AGREE, {accessToken : accessToken}));
 
 
@@ -111,6 +113,8 @@ export const login = async(req, res) => {
     return res.cookie("refresh-token", refreshToken, {
         httpOnly: true,
         maxAge: maxAgeTwoWeeks,
+        sameSite: 'none',
+        secure: true
     }).send(response(baseResponse.SUCCESS, {accessToken : accessToken}));
 
     // return res.send(response(baseResponse.SUCCESS,{ accessToken : accessToken, refreshToken : refreshToken }));
