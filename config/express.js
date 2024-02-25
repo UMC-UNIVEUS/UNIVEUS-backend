@@ -17,7 +17,7 @@ const app = express();
 
 dotenv.config();
 
-app.use(cors({credentials: true, origin : "https://univeus.com"}));
+app.use(cors({credentials: true, origin : "https://www.univeus.com"}));
 app.use(cookieParser())
 app.use(compression()); 
 app.use(express.json());   
