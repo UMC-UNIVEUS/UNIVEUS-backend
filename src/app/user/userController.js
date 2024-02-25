@@ -32,9 +32,9 @@ export const login = async(req, res) => {
     const userEmail = resUserInfo.data.email;
 
     // 경기대 이메일인지 확인
-    if (isKyonggiEmail(userEmail) == false) {
-        return res.send(errResponse(baseResponse.SIGNUP_EMAIL_KYONGGI));
-    }
+    // if (isKyonggiEmail(userEmail) == false) {
+    //     return res.send(errResponse(baseResponse.SIGNUP_EMAIL_KYONGGI));
+    // }
 
     // 구글 로그인을 해 본 유저인지 확인
     if (!await isUser(userEmail)) {
