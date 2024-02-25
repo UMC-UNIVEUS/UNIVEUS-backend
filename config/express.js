@@ -17,12 +17,12 @@ const app = express();
 
 dotenv.config();
 
+app.use(cors({credentials: true}));
 app.use(cookieParser())
 app.use(compression()); 
 app.use(express.json());   
 app.use(express.urlencoded({extended:true}));
 app.use(methodOverride());
-app.use(cors({credentials: true}));
 
 app.set('views', './src/app/views');
 app.set('view engine', 'ejs');
