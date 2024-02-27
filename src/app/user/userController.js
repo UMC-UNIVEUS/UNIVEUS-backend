@@ -306,7 +306,12 @@ export const registerUserProfile = async(req, res) => {
 /** refreshToken으로 accessToken 요청 함수 */
 export const refreshToken = async(req, res) => {
 
-    const refreshToken = req.headers['refresh-token']
+    const headerCookies = req.headers.cookie;
+    const tokenRegex = /refresh-token=([^;]+)/;
+    const refreshToken = headerCookies.match(tokenRegex)[1];
+
+    if (refreshToken == undefined) return res.send(errResponse(baseResponse.REFRESH_TOKEN_VERIFICATION_FAILURE));
+
     const accessToken = req.headers['x-access-token']
 
     const { userId } = jwt.decode(accessToken)
