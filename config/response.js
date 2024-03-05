@@ -62,7 +62,8 @@ export const baseResponse = {
     VERIFIED_ACCESS_TOKEN_EMPTY : { "isSuccess": false, "code": "TOKEN0002", "message":"검증된 토큰이 존재하지 않습니다." },
     REFRESH_TOKEN_VERIFICATION_FAILURE : { "isSuccess": false, "code": "TOKEN0003", "message":"리프레시 토큰 검증 실패"},
     REFRESH_TOKEN_EXPIRED : { "isSuccess": false, "code": "TOKEN0004", "message":"유효하지 않는 토큰입니다. 다시 로그인하세요."},
-
+    ALREADY_LOGOUT_REFRESH_TOKEN : { "isSuccess": false, "code": "TOKEN0005", "message":"이미 로그아웃 된 토큰입니다."},
+    REFRESH_TOKEN_NOT_EXIST : {"isSuccess" : false, "code" : "TOKEN0006", "message" : "리프레시 토큰이 존재하지 않습니다."},
 
     /** 프로필 관련 오류 */
     PROFILE_INFO_NOT_EXIST : { "isSuccess": false, "code": 2201, "message": "유저 프로필 정보가 존재하지 않습니다." },

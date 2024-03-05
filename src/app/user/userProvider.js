@@ -1,6 +1,6 @@
 import {
     selectUserByNickname, selectUserIdByEmail, selectAlarms,
-    selectUserById, selectPhoneById, selectAuthInfoByUserId, selectUserReportedNum,
+    selectUserById, selectPhoneById, selectAuthInfoByUserId, selectUserReportedNum, selectBlackRefreshToken,
     selectUserAccountStatus, selectUserAgreeById, selectUserParticipateStatusById, selectUserNickNameById
 } from "./userDao"
 import pool from "../../../config/database"
@@ -127,4 +127,25 @@ export const getUserParticipateStatusById = async (userId, post_id) =>{
     const UserParticipateStatus = await selectUserParticipateStatusById(connection, selectUserParticipateStatusParams);
     connection.release();
     return UserParticipateStatus;
+}
+
+/** 쿠키들 중 리프레시 토큰 가져오기 */
+export const getRefreshTokenFromCookies = (headerCookies) => {
+    const tokenRegex = /refresh-token=([^;]+)/;
+    const matchRegex = headerCookies.match(tokenRegex);
+
+    if (matchRegex == null) return;
+
+    const refreshToken = matchRegex[1];
+
+    return refreshToken;
+}
+
+/** blackList테이블에서 refresh token이 존재하는지 보기 */
+export const isBlackListToken = async (refreshToken) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const blackRefreshToken = await selectBlackRefreshToken(connection, refreshToken)
+    connection.release();
+    
+    return blackRefreshToken.length;
 }

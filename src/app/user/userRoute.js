@@ -2,7 +2,7 @@ import express from "express"
 import { sendAuthNumber, login, 
     verifyNumber, checkNickNameDuplicate, registerAffiliation,
     getAlarms, patchAlarms, agreementTerms, registerUserProfile, 
-    refreshToken } from "./userController"
+    refreshToken, logout } from "./userController"
 import { jwtMiddleware } from "../../../config/jwtMiddleWare";
 import { accountStatusMiddleware } from "../../../config/accountStatusMiddleware";
 import { wrapAsync } from "../../../config/errorhandler";
@@ -18,6 +18,7 @@ userRouter.patch('/:user_id/alarm', jwtMiddleware, wrapAsync(accountStatusMiddle
 userRouter.post('/agreement', jwtMiddleware, agreementTerms);
 userRouter.post('/register/profile', jwtMiddleware, registerUserProfile);
 userRouter.post('/login', login);
-userRouter.get('/refresh', refreshToken)
+userRouter.get('/refresh', refreshToken);
+userRouter.get('/logout', jwtMiddleware, logout);
 
 export default userRouter;

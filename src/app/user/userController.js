@@ -2,10 +2,10 @@ import { baseResponse, errResponse, response } from "../../../config/response";
 import axios from "axios";
 import { addUserAffiliation, isKyonggiEmail, createAuthNum, checkAlarms,
     createUser, addUserPhoneNumber, addAgreementTerms, addUserProfile, refreshVerify,
-    updateRefreshToken } from "./userService";
+    updateRefreshToken, addBlackList, deleteRefreshToken } from "./userService";
 import { isUser, isNicknameDuplicate, retrieveAlarms, getUserIdByEmail,
     isAuthNumber, isAuthUser, getUserPhoneNumber, removeEmojisAndSpace,
-    isProfileExist, isUserAgree } from "./userProvider";
+    isProfileExist, isUserAgree, getRefreshTokenFromCookies, isBlackListToken } from "./userProvider";
 import jwt from "jsonwebtoken";
 import { sendSMS } from "../../../config/naverCloudClient";
 import { naverCloudSensSecret } from "../../../config/configs";
@@ -307,8 +307,7 @@ export const registerUserProfile = async(req, res) => {
 export const refreshToken = async(req, res) => {
 
     const headerCookies = req.headers.cookie;
-    const tokenRegex = /refresh-token=([^;]+)/;
-    const refreshToken = headerCookies.match(tokenRegex)[1];
+    const refreshToken = getRefreshTokenFromCookies(headerCookies);
 
     if (refreshToken == undefined) return res.send(errResponse(baseResponse.REFRESH_TOKEN_VERIFICATION_FAILURE));
 
@@ -347,5 +346,29 @@ export const refreshToken = async(req, res) => {
         return res.send(response(baseResponse.SUCCESS,{ accessToken : access }));
                                 
     }).catch(onError);
+}
 
+
+/** 로그아웃 함수 */
+export const logout = async (req, res) => {
+    const userId = req.verifiedToken.userId;
+    const headerCookies = req.headers.cookie;
+    
+    // 헤더에 쿠키가 존재하지 않을 경우
+    if (typeof headerCookies == 'undefined') return res.send(errResponse(baseResponse.REFRESH_TOKEN_NOT_EXIST))
+
+    const refreshToken = getRefreshTokenFromCookies(headerCookies);
+
+    if (typeof refreshToken == 'undefined') return res.send(errResponse(baseResponse.REFRESH_TOKEN_NOT_EXIST))
+
+    // 이미 로그아웃 된 토큰으로 로그아웃을 시도할 경우
+    if (await isBlackListToken(refreshToken)) return res.send(errResponse(baseResponse.ALREADY_LOGOUT_REFRESH_TOKEN));
+
+    // 저장된 리프레시 토큰 삭제
+    await deleteRefreshToken(userId);
+
+    // 로그아웃 후 블랙리스트에 리프레시 토큰 넣기
+    await addBlackList(refreshToken, userId);
+
+    return res.send(response(baseResponse.SUCCESS));
 }
