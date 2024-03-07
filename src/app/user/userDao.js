@@ -203,12 +203,3 @@ export const insertRefreshTokenBlacklist = async(connection, refreshToken, userI
     const insertParams = [userId, refreshToken];
     const insertRow = await connection.query(insertQuery, insertParams);
 }
-
-/** user테이블의 refresh token 컬럼에 null 삽입 */
-export const insertEmptyRefreshToken = async(connection, userId) => {
-
-    const insertQuery = `
-        UPDATE user SET refresh_token = NULL WHERE id = ${userId};
-    `
-    const insertRow = await connection.query(insertQuery);
-}
