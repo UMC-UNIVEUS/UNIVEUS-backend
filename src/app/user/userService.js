@@ -39,14 +39,10 @@ export const checkAlarms = async(alarm_id) =>{// 알림 확인
 
 /** 유저생성 - 번호 인증 후 번호 등록 */
 export const addUserPhoneNumber = async(userPhoneNumber, userId) => {
-    try {
         const connection = await pool.getConnection(async conn => conn);
         const authUserResult = await updateUserPhoneNumber(connection, userPhoneNumber, userId);
         connection.release();
         return authUserResult;
-    } catch(err) {
-        console.log(err);
-    }
 };
 
 /** 약관동의 - 다음 클릭 시 수행 */
@@ -74,6 +70,7 @@ export const changeUserStatus = async(userId, userStatus) => {
 export const increaseUserReportedNum = async(userId) => {
     const connection = await pool.getConnection(async conn => conn);
     const increaseUserReportedNumResult = await updateUserReportedNum(connection , userId);
+    connection.release();
 }
 
 /** 유저 프로필 추가 */
@@ -117,4 +114,5 @@ export const addBlackList = async(refreshToken, userId) => {
 export const deleteRefreshToken = async(userId) => {
     const connection = await pool.getConnection(async conn => conn);
     const emptyRefreshToken = await updateRefreshTokenById(connection, userId, 'LOGOUT');
+    connection.release();
 }
