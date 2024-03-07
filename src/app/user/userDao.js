@@ -181,3 +181,34 @@ export const updateRefreshTokenById = async(connection, userId, refreshToken) =>
     `
     const [updateRefreshTokenRow] = await connection.query(updateRefreshTokenQuery)
 }
+
+/** token_blacklist에서 해당 refreshtoken이 존재하는지 확인 */
+export const selectBlackRefreshToken= async(connection, refreshToken) => {
+
+    const selectQuery = `
+        SELECT refresh_token FROM token_blacklist WHERE refresh_token = '${refreshToken}';
+    `
+    const [selectRow] = await connection.query(selectQuery);
+
+    return selectRow;
+}
+
+/** blacklist에 refresh token 넣기 */
+export const insertRefreshTokenBlacklist = async(connection, refreshToken, userId) => {
+
+    const insertQuery = `
+        INSERT INTO token_blacklist(user_id, refresh_token, created_at) VALUES(?, ?, now());
+    `;
+
+    const insertParams = [userId, refreshToken];
+    const insertRow = await connection.query(insertQuery, insertParams);
+}
+
+/** user테이블의 refresh token 컬럼에 null 삽입 */
+export const insertEmptyRefreshToken = async(connection, userId) => {
+
+    const insertQuery = `
+        UPDATE user SET refresh_token = NULL WHERE id = ${userId};
+    `
+    const insertRow = await connection.query(insertQuery);
+}

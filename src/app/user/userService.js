@@ -1,7 +1,7 @@
 import { updateUserAffiliation, updateAlarms, insertUserEmail,
     updateUserPhoneNumber, insertAgreementTerms, updateAccountStatus,
     updateUserReportedNum,updateNicknameAndGender, selectRefreshTokenById,
-    updateRefreshTokenById } from "./userDao"
+    updateRefreshTokenById, insertRefreshTokenBlacklist, insertEmptyRefreshToken } from "./userDao"
 import pool from "../../../config/database"
 
 /** 유저 생성 - 프로필 등록, 번호인증 전 user */
@@ -102,4 +102,19 @@ export const updateRefreshToken = async(refreshToken, userId) => {
     const connection = await pool.getConnection(async conn => conn);
     const updateRefreshTokenResult = await updateRefreshTokenById(connection, userId, refreshToken)
     connection.release();
+}
+
+
+/** refresh Token 블랙리스트에 저장 */
+export const addBlackList = async(refreshToken, userId) => {
+    const connection =await pool.getConnection(async conn => conn);
+    const addBlackListResult = await insertRefreshTokenBlacklist(connection, refreshToken, userId);
+    connection.release();
+}
+
+/** user table에 저장되어 있는 refresh-token지우기 */
+
+export const deleteRefreshToken = async(userId) => {
+    const connection = await pool.getConnection(async conn => conn);
+    const emptyRefreshToken = await insertEmptyRefreshToken(connection, userId);
 }
